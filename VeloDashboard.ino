@@ -24,16 +24,34 @@
 #define OUTPUT_LED_RIGHT          5
 #define OUTPUT_LED_LEFT           6
 
+#define OUTPUT_BUZZER             9 // PWM
+
+/**
+ * DEFAULTS
+ */
+
+#define BUZZER_TIME               660
+#define INDICATOR_TIME            750
+#define ALARM_TIME                350
+
+/**
+ * INPUTS & OUTPUTS
+ */
+
 Button ButtonIndicatorRight;
 Button ButtonIndicatorLeft;
 Button ButtonIndicatorAlarm;
 Output LedRight;
 Output LedLeft;
+Output Buzzer;
 
-
+/**
+ * VARIABLES
+ */
 
 bool AlarmState = false;
 int IndicatorState = 0;
+
 
 /**
  * 
@@ -51,6 +69,9 @@ void setup() {
     // Indicator LEDS
     LedRight.init(OUTPUT_LED_RIGHT);
     LedLeft.init(OUTPUT_LED_LEFT);
+
+    pinMode(OUTPUT_BUZZER, OUTPUT);
+    buzzer(false);
 }
 
 
@@ -68,16 +89,25 @@ int read_indicators() {
 void change_indicators(int state) {
     switch (state) {
         case 1 :
-            LedRight.blink();
+            LedRight.blink(INDICATOR_TIME);
             LedLeft.off();
             break;
         case -1 :
             LedRight.off();
-            LedLeft.blink();
+            LedLeft.blink(INDICATOR_TIME);
             break;
         default:
             LedRight.off();
             LedLeft.off();
+    }
+}
+
+void buzzer(bool state) {
+    if (state) {
+        tone(OUTPUT_BUZZER, BUZZER_TIME);
+    }
+    else {
+        noTone(OUTPUT_BUZZER);
     }
 }
 
@@ -95,8 +125,8 @@ void loop() {
         AlarmState = ! AlarmState;
         if ( AlarmState ) {
             IndicatorState = 0; // Indicators to default state
-            LedRight.blink();
-            LedLeft.blink();
+            LedRight.blink(ALARM_TIME);
+            LedLeft.blink(ALARM_TIME);
         }
         else {
             LedRight.off();
@@ -111,8 +141,10 @@ void loop() {
             IndicatorState = newIndicatorState;
             change_indicators(IndicatorState);
         }
-
     }
+
+    // BUZZER
+    buzzer( LedRight.getState() || LedLeft.getState() );
 
 
 
