@@ -10,11 +10,10 @@
 
 #include "lib/Button.cpp"
 #include "lib/Output.cpp"
-// #include "lib/Input.cpp"
-
+#include "lib/LEDstrips.cpp"
 
 /**
- * PINS
+ * other PINS
  */
 
 #define INPUT_INDICATOR_RIGHT     2
@@ -23,7 +22,6 @@
 
 #define OUTPUT_LED_RIGHT          5
 #define OUTPUT_LED_LEFT           6
-
 #define OUTPUT_BUZZER             9 // PWM
 
 /**
@@ -44,6 +42,7 @@ Button ButtonIndicatorAlarm;
 Output LedRight;
 Output LedLeft;
 Output Buzzer;
+LEDstrips LEDstrips;
 
 /**
  * VARIABLES
@@ -70,8 +69,14 @@ void setup() {
     LedRight.init(OUTPUT_LED_RIGHT);
     LedLeft.init(OUTPUT_LED_LEFT);
 
+    // Buzzer
     pinMode(OUTPUT_BUZZER, OUTPUT);
     buzzer(false);
+
+    // LEDstrips start
+    LEDstrips.off(BOTH);
+    delay(50);
+    LEDstrips.normal(BOTH);
 }
 
 
@@ -88,17 +93,20 @@ int read_indicators() {
 
 void change_indicators(int state) {
     switch (state) {
-        case 1 :
-            LedRight.blink(INDICATOR_TIME);
-            LedLeft.off();
-            break;
-        case -1 :
+        case LEFT :
             LedRight.off();
             LedLeft.blink(INDICATOR_TIME);
+            LEDstrips.blink(LEFT,INDICATOR_TIME);
+            break;
+        case RIGHT :
+            LedRight.blink(INDICATOR_TIME);
+            LedLeft.off();
+            LEDstrips.blink(RIGHT,INDICATOR_TIME);
             break;
         default:
             LedRight.off();
             LedLeft.off();
+            LEDstrips.normal(BOTH);
     }
 }
 
@@ -110,6 +118,12 @@ void buzzer(bool state) {
         noTone(OUTPUT_BUZZER);
     }
 }
+
+
+
+
+
+
 
 
 /**
@@ -127,10 +141,12 @@ void loop() {
             IndicatorState = 0; // Indicators to default state
             LedRight.blink(ALARM_TIME);
             LedLeft.blink(ALARM_TIME);
+            LEDstrips.blink(BOTH,ALARM_TIME);
         }
         else {
             LedRight.off();
             LedLeft.off();
+            LEDstrips.normal(BOTH);
         }
     }
 
@@ -146,11 +162,10 @@ void loop() {
     // BUZZER
     buzzer( LedRight.getState() || LedLeft.getState() );
 
-
-
-    // Output loops
+    // Loops
     LedRight.loop();
     LedLeft.loop();
+    LEDstrips.loop();
 
     if (DEBUG) {
         Serial.print("\tINDICATOR: \t");  Serial.print(IndicatorState);
@@ -159,3 +174,68 @@ void loop() {
     };
 
 }
+
+
+/**
+ * LED STRIP CHOICES
+ */
+
+// void STRIPS_off() {
+//   int x;
+//   for(x=0; x<NUM_LEDS; x++){
+//       left_leds[x] = CRGB(0,0,0);
+//       right_leds[x] = CRGB(0,0,0);
+//     }
+// }
+
+
+
+// void STRIP_indicater_toggle( int left_right ) {
+//     CRGB color = CRGB::OrangeRed;
+//     if (STRIP_indicater_state) {
+//         CRGB color = CRGB(0,0,0);
+//     }
+//     STRIP_indicater_state = ! STRIP_indicater_state;
+//     int i;
+//     for(i=0; i < NUM_USED_LEDS; i++) {
+//         if (left_right == -1) {
+//             left_leds[NUM_LEDS-i-1] = color;
+//             left_leds[i] = color;
+//         }
+//         if (left_right == 1) {
+//             right_leds[NUM_LEDS-1-i] = color;
+//             right_leds[i] = color;
+//         }
+//     }
+// }
+
+// void STRIP_indicater( int left_right ) {
+//     if (left_right == 0) {
+//         timer.cancel();
+//         STRIP_indicater_state = false;
+//     }
+//     else {
+//         STRIP_indicater_state = true;
+//         timer.every(INDICATOR_TIME, STRIP_indicater_toggle,left_right);
+//     }
+// }
+
+
+
+
+/**
+ * Normal lightning:
+ * Front LEDs white
+ * Back LEDs red
+ *
+ * @param numberofleds [description]
+ */
+// void STRIPS_normal() {
+//   int i;
+//   for(i=0; i < NUM_USED_LEDS; i++){
+//     left_leds[NUM_LEDS-i-1] = CRGB::Red;
+//     left_leds[i] = CRGB::White;
+//     right_leds[NUM_LEDS-1-i] = CRGB::Red;
+//     right_leds[i] = CRGB::White;
+//   }
+// }
