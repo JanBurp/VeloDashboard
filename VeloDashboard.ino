@@ -69,14 +69,10 @@ void setup() {
     LedRight.init(OUTPUT_LED_RIGHT);
     LedLeft.init(OUTPUT_LED_LEFT);
 
-    // Buzzer
     pinMode(OUTPUT_BUZZER, OUTPUT);
     buzzer(false);
 
-    // LEDstrips start
-    LEDstrips.off(BOTH);
-    delay(50);
-    LEDstrips.normal(BOTH);
+    LEDstrips.startup_animation();
 }
 
 

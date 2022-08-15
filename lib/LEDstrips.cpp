@@ -10,7 +10,7 @@
 
 #define NUM_LEDS            20
 #define NUM_USED_LEDS       5
-#define BRIGHTNESS          60
+#define BRIGHTNESS          100
 #define MAX_MILLIAMPS       800
 #define FRAMES_PER_SECOND   100
 
@@ -21,27 +21,21 @@
 #define BOTH    0
 #define RIGHT   1
 
-CRGB right_leds[NUM_LEDS];
-CRGB left_leds[NUM_LEDS];
 
 
 class LEDstrips {
 
     private:
+        CRGB BLACK = CRGB(0,0,0);
+        CRGB WHITE = CRGB(255,255,255);
+        CRGB RED = CRGB(255,0,0);
+        CRGB ORANGE = CRGB(255,102,0);
         CRGB leds_left[NUM_LEDS], leds_right[NUM_LEDS];
-
         unsigned int blinkMs;
         unsigned long blinkStartedMs;
         int blinkStrip;
         bool blinkState;
         float blinkDuty;
-        // unsigned long lastOnMs;
-
-        // unsigned int minDurationMs;
-        // bool state;
-        // bool stateHardware;
-        // unsigned int blinkMs;
-        // unsigned long blinkStartedMs;
 
 
 	public:
@@ -65,12 +59,11 @@ class LEDstrips {
             FastLED.show();
         }
 
-        void off(int strip) {
-            this->set_all(strip,CRGB(0,0,0));
+        void off(int strip = BOTH) {
+            this->set_all(strip,BLACK);
             this->blinkMs = 0;
             this->blinkState = false;
         }
-
 
         void set_start_end(int strip, CRGB start_color, CRGB end_color) {
             for(int x=0; x < NUM_USED_LEDS; x++){
@@ -86,8 +79,8 @@ class LEDstrips {
             FastLED.show();
         }
 
-        void normal(int strip) {
-            this->set_start_end(strip,CRGB::White,CRGB::Red);
+        void normal(int strip = BOTH) {
+            this->set_start_end(strip,WHITE,RED);
             this->blinkMs = 0;
             this->blinkState = false;
         }
@@ -101,11 +94,58 @@ class LEDstrips {
         }
 
         void _blink_start() {
-            this->set_start_end(this->blinkStrip,CRGB::Orange,CRGB::Orange);
+            this->set_start_end(this->blinkStrip,ORANGE,ORANGE);
         }
         void _blink_stop() {
-            this->set_start_end(this->blinkStrip,CRGB(0,0,0),CRGB(0,0,0));
+            this->set_start_end(this->blinkStrip,BLACK,BLACK);
         }
+
+        // This uses delay, so stops all other actions...
+        void startup_animation() {
+            unsigned long delayMs = 500/NUM_LEDS;
+            const int NUM_GRADIENT_LEDS = NUM_LEDS - 2*NUM_USED_LEDS;
+            CRGB colors[NUM_LEDS];
+            CRGB gradient_colors[NUM_GRADIENT_LEDS];
+            fill_gradient_RGB( gradient_colors, 0, WHITE, NUM_GRADIENT_LEDS, RED );
+            for (int i = 0; i < NUM_LEDS; ++i)
+            {
+                if (i<=NUM_USED_LEDS) {
+                    colors[i] = WHITE;
+                }
+                else {
+                    if (i>NUM_USED_LEDS && i<(NUM_LEDS - NUM_USED_LEDS)) {
+                        colors[i] = gradient_colors[i - NUM_USED_LEDS];
+                    }
+                    else {
+                        colors[i] = RED;
+                    }
+                }
+            }
+
+            for (int t = 0; t < 4; ++t)
+            {
+                this->off();
+                int i;
+                for (i = 0; i < NUM_LEDS; ++i) {
+                    this->leds_left[i] = colors[i];
+                    this->leds_right[i] = colors[i];
+                    if (i>=NUM_USED_LEDS) {
+                        this->leds_left[i - NUM_USED_LEDS] = BLACK;
+                        this->leds_right[i - NUM_USED_LEDS] = BLACK;
+                    }
+                    delay(delayMs);
+                    FastLED.show();
+                }
+                for (i = NUM_LEDS - NUM_USED_LEDS; i < NUM_LEDS; ++i) {
+                    this->leds_left[i] = BLACK;
+                    this->leds_right[i] = BLACK;
+                    delay(delayMs);
+                    FastLED.show();
+                }
+            }
+            this->normal();
+        }
+
 
 		/**
 		 * Call this in the main loop.
@@ -122,22 +162,6 @@ class LEDstrips {
                 }
 			}
 		}
-
-		// void on() {
-		// 	this->set(true);
-		// }
-
-		// void off() {
-		// 	this->set(false);
-		// }
-
-		// void toggle() {
-		// 	this->set(!state);
-		// }
-
-  //       bool getState() {
-  //           return this->stateHardware;
-  //       }
 
 		// /**
 		//  * Turn on the OUTPUT, then turn it off immediately.
