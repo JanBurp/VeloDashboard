@@ -28,9 +28,9 @@
  * DEFAULTS
  */
 
-#define BUZZER_TIME               660
-#define INDICATOR_TIME            750
-#define ALARM_TIME                350
+#define BUZZER_TONE               660
+#define INDICATOR_TIME            800
+#define ALARM_TIME                400
 
 /**
  * INPUTS & OUTPUTS
@@ -108,7 +108,7 @@ void change_indicators(int state) {
 
 void buzzer(bool state) {
     if (state) {
-        tone(OUTPUT_BUZZER, BUZZER_TIME);
+        tone(OUTPUT_BUZZER, BUZZER_TONE);
     }
     else {
         noTone(OUTPUT_BUZZER);
@@ -163,11 +163,11 @@ void loop() {
     LedLeft.loop();
     LEDstrips.loop();
 
-    if (DEBUG) {
-        Serial.print("\tINDICATOR: \t");  Serial.print(IndicatorState);
-        Serial.print("\tALARM: \t");      Serial.print(AlarmState);
-        Serial.println("");
-    };
+    // if (DEBUG) {
+    //     Serial.print("\tINDICATOR: \t");  Serial.print(IndicatorState);
+    //     Serial.print("\tALARM: \t");      Serial.print(AlarmState);
+    //     Serial.println("");
+    // };
 
 }
 
