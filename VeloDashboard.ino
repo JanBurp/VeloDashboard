@@ -12,6 +12,20 @@
 #include "lib/Output.cpp"
 #include "lib/LEDstrips.cpp"
 
+
+
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+
+
 /**
  * other PINS
  */
@@ -23,6 +37,8 @@
 #define OUTPUT_LED_RIGHT          5
 #define OUTPUT_LED_LEFT           6
 #define OUTPUT_BUZZER             9 // PWM
+
+#define SPEED_INPUT               14 // A0 // D14
 
 /**
  * DEFAULTS
@@ -42,7 +58,7 @@ Button ButtonIndicatorAlarm;
 Output LedRight;
 Output LedLeft;
 Output Buzzer;
-LEDstrips LEDstrips;
+// LEDstrips LEDstrips;
 
 /**
  * VARIABLES
@@ -50,6 +66,13 @@ LEDstrips LEDstrips;
 
 bool AlarmState = false;
 int IndicatorState = 0;
+
+
+bool SpeedSensor = false;
+unsigned long LastSensorTimeMs = 0;
+unsigned long startTime = 0;
+float maxSpeed = 0;
+float avgSpeed = 0;
 
 
 /**
@@ -72,7 +95,18 @@ void setup() {
     pinMode(OUTPUT_BUZZER, OUTPUT);
     buzzer(false);
 
-    LEDstrips.startup_animation();
+
+    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
+        Serial.println(F("SSD1306 allocation failed"));
+        for(;;);
+    }
+
+    // LEDstrips.startup_animation();
+
+    pinMode(SPEED_INPUT, INPUT_PULLUP);
+    LastSensorTimeMs = millis();
+    startTime = millis();
+
 }
 
 
@@ -92,17 +126,17 @@ void change_indicators(int state) {
         case LEFT :
             LedRight.off();
             LedLeft.blink(INDICATOR_TIME);
-            LEDstrips.blink(LEFT,INDICATOR_TIME);
+            // LEDstrips.blink(LEFT,INDICATOR_TIME);
             break;
         case RIGHT :
             LedRight.blink(INDICATOR_TIME);
             LedLeft.off();
-            LEDstrips.blink(RIGHT,INDICATOR_TIME);
+            // LEDstrips.blink(RIGHT,INDICATOR_TIME);
             break;
         default:
             LedRight.off();
             LedLeft.off();
-            LEDstrips.normal(BOTH);
+            // LEDstrips.normal(BOTH);
     }
 }
 
@@ -114,10 +148,6 @@ void buzzer(bool state) {
         noTone(OUTPUT_BUZZER);
     }
 }
-
-
-
-
 
 
 
@@ -137,12 +167,12 @@ void loop() {
             IndicatorState = 0; // Indicators to default state
             LedRight.blink(ALARM_TIME);
             LedLeft.blink(ALARM_TIME);
-            LEDstrips.blink(BOTH,ALARM_TIME);
+            // LEDstrips.blink(BOTH,ALARM_TIME);
         }
         else {
             LedRight.off();
             LedLeft.off();
-            LEDstrips.normal(BOTH);
+            // LEDstrips.normal(BOTH);
         }
     }
 
@@ -161,7 +191,41 @@ void loop() {
     // Loops
     LedRight.loop();
     LedLeft.loop();
-    LEDstrips.loop();
+    // LEDstrips.loop();
+
+
+    bool sensor = digitalRead(SPEED_INPUT);
+    if (sensor != SpeedSensor) {
+        SpeedSensor = sensor;
+        if ( SpeedSensor ) {
+            float SensorTime = millis() - LastSensorTimeMs;
+            LastSensorTimeMs = millis();
+
+            float RPM = ( 1000.0 / SensorTime ) * 60.0;
+            float Speed = (RPM * 1.4 * 60 / 1000); // 1.4 = omtrek
+
+            if ( Speed <1000 && Speed >= maxSpeed ) {
+                maxSpeed = Speed;
+            }
+
+
+
+
+            display.clearDisplay();
+            display.setTextSize(4);
+            display.setTextColor(WHITE);
+            display.setCursor(5,10);
+            display.println( Speed );
+
+            display.setTextSize(2);
+            display.setCursor(5,50);
+            display.println( maxSpeed );
+
+            display.display();
+
+            Serial.println( Speed );
+        }
+    }
 
     // if (DEBUG) {
     //     Serial.print("\tINDICATOR: \t");  Serial.print(IndicatorState);
@@ -171,67 +235,3 @@ void loop() {
 
 }
 
-
-/**
- * LED STRIP CHOICES
- */
-
-// void STRIPS_off() {
-//   int x;
-//   for(x=0; x<NUM_LEDS; x++){
-//       left_leds[x] = CRGB(0,0,0);
-//       right_leds[x] = CRGB(0,0,0);
-//     }
-// }
-
-
-
-// void STRIP_indicater_toggle( int left_right ) {
-//     CRGB color = CRGB::OrangeRed;
-//     if (STRIP_indicater_state) {
-//         CRGB color = CRGB(0,0,0);
-//     }
-//     STRIP_indicater_state = ! STRIP_indicater_state;
-//     int i;
-//     for(i=0; i < NUM_USED_LEDS; i++) {
-//         if (left_right == -1) {
-//             left_leds[NUM_LEDS-i-1] = color;
-//             left_leds[i] = color;
-//         }
-//         if (left_right == 1) {
-//             right_leds[NUM_LEDS-1-i] = color;
-//             right_leds[i] = color;
-//         }
-//     }
-// }
-
-// void STRIP_indicater( int left_right ) {
-//     if (left_right == 0) {
-//         timer.cancel();
-//         STRIP_indicater_state = false;
-//     }
-//     else {
-//         STRIP_indicater_state = true;
-//         timer.every(INDICATOR_TIME, STRIP_indicater_toggle,left_right);
-//     }
-// }
-
-
-
-
-/**
- * Normal lightning:
- * Front LEDs white
- * Back LEDs red
- *
- * @param numberofleds [description]
- */
-// void STRIPS_normal() {
-//   int i;
-//   for(i=0; i < NUM_USED_LEDS; i++){
-//     left_leds[NUM_LEDS-i-1] = CRGB::Red;
-//     left_leds[i] = CRGB::White;
-//     right_leds[NUM_LEDS-1-i] = CRGB::Red;
-//     right_leds[i] = CRGB::White;
-//   }
-// }
