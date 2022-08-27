@@ -125,9 +125,10 @@ void displayShow( displayType type ) {
             display.setTextColor(WHITE);
             display.setCursor(2, 2);
             display.println("Quest");
-            display.setCursor(20, 80);
             display.setTextSize(3);
-            display.println("631");
+            display.setTextColor(WHITE);
+            display.setCursor(8, 40);
+            display.println("- 631- ");
             break;
 
         case SPEED:
@@ -145,6 +146,7 @@ void displayShow( displayType type ) {
         default:
             break;
     }
+
     display.display();
 }
 
