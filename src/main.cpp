@@ -58,7 +58,7 @@ Output LedRight;
 Output LedLeft;
 Output Buzzer;
 Speed SpeedoMeter;
-// LEDstrips LEDstrips;
+LEDstrips LEDstrips;
 
 enum displayType
 {
@@ -92,17 +92,17 @@ void change_indicators(int state) {
         case LEFT :
             LedRight.off();
             LedLeft.blink(INDICATOR_TIME);
-            // LEDstrips.blink(LEFT,INDICATOR_TIME);
+            LEDstrips.blink(LEFT,INDICATOR_TIME);
             break;
         case RIGHT :
             LedRight.blink(INDICATOR_TIME);
             LedLeft.off();
-            // LEDstrips.blink(RIGHT,INDICATOR_TIME);
+            LEDstrips.blink(RIGHT,INDICATOR_TIME);
             break;
         default:
             LedRight.off();
             LedLeft.off();
-            // LEDstrips.normal(BOTH);
+            LEDstrips.normal(BOTH);
     }
 }
 
@@ -180,7 +180,7 @@ void setup()
 
     SpeedoMeter.init(SPEED_INPUT);
 
-    // LEDstrips.startup_animation();
+    LEDstrips.startup_animation();
 }
 
 /**
@@ -198,12 +198,12 @@ void loop() {
             IndicatorState = 0; // Indicators to default state
             LedRight.blink(ALARM_TIME);
             LedLeft.blink(ALARM_TIME);
-            // LEDstrips.blink(BOTH,ALARM_TIME);
+            LEDstrips.blink(BOTH,ALARM_TIME);
         }
         else {
             LedRight.off();
             LedLeft.off();
-            // LEDstrips.normal(BOTH);
+            LEDstrips.normal(BOTH);
         }
     }
 
@@ -223,7 +223,7 @@ void loop() {
     LedRight.loop();
     LedLeft.loop();
     SpeedoMeter.loop();
-    // LEDstrips.loop();
+    LEDstrips.loop();
 
     if ( SpeedoMeter.isUpdated() ) {
         displayShow(SPEED);

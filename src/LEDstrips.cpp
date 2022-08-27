@@ -10,7 +10,7 @@
 
 #define NUM_LEDS            20
 #define NUM_USED_LEDS       5
-#define BRIGHTNESS          100
+#define BRIGHTNESS          55
 #define MAX_MILLIAMPS       800
 #define FRAMES_PER_SECOND   100
 
