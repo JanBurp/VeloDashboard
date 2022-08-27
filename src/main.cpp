@@ -197,15 +197,15 @@ void loop() {
 
 
     display.clearDisplay();
-    display.setTextSize(4);
+    display.setTextSize(5);
     display.setTextColor(WHITE);
     display.setCursor(2,2);
-    display.println( SpeedoMeter.getSpeed() );
+    display.println( SpeedoMeter.getSpeedasString() );
     display.setTextSize(2);
     display.setCursor(2, 50);
-    display.println(SpeedoMeter.getAvgSpeed());
+    display.println(SpeedoMeter.getAvgSpeedasString());
     display.setCursor(SCREEN_WIDTH / 2, 50);
-    display.println( SpeedoMeter.getMaxSpeed() );
+    display.println( SpeedoMeter.getMaxSpeedasString() );
     display.display();
 
     // if (DEBUG) {

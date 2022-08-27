@@ -31,23 +31,23 @@ class Speed {
             pinMode(this->pin, INPUT_PULLUP);
 		}
 
-        float getSpeed() {
-            return round(this->speed * 10) / 10.0;
+        String getSpeedasString(){
+            return String(this->speed,1);
         }
 
-        float getAvgSpeed() {
-            return round(this->avgSpeed * 10) / 10.0;
+        String getAvgSpeedasString() {
+            return String(this->avgSpeed,1);
         }
 
-        float getMaxSpeed() {
-            return round(this->maxSpeed * 10) / 10.0;
+        String getMaxSpeedasString() {
+            return String(this->maxSpeed,1);
         }
 
-        float getDistance() {
-            return this->distance;
+        String getDistanceasString() {
+            return String(this->distance,1);
         }
 
-		void loop() {
+        void loop() {
 
             bool sensor = digitalRead(this->pin);
             unsigned long now = millis();
@@ -78,13 +78,13 @@ class Speed {
                     }
                     this->avgSpeed = this->distance / ( this->tripTimeMs / 1000.0) * 3.6;
 
-                    Serial.print("Distance: \t");Serial.print(this->distance);
-                    Serial.print("\tSpeed m: \t");Serial.print(Speed_meter_sec);
-                    Serial.print("\tSpeed: \t");Serial.print(this->speed);
-                    Serial.print("\tAvg Speed: \t");Serial.print(this->avgSpeed);
-                    Serial.print("\tMax Speed: \t");Serial.print(this->maxSpeed);
-                    Serial.print("\tTime: \t");Serial.print(this->tripTimeMs);
-                    Serial.println();
+                    // Serial.print("Distance: \t");Serial.print(this->distance);
+                    // Serial.print("\tSpeed m: \t");Serial.print(Speed_meter_sec);
+                    // Serial.print("\tSpeed: \t");Serial.print(this->speed);
+                    // Serial.print("\tAvg Speed: \t");Serial.print(this->avgSpeed);
+                    // Serial.print("\tMax Speed: \t");Serial.print(this->maxSpeed);
+                    // Serial.print("\tTime: \t");Serial.print(this->tripTimeMs);
+                    // Serial.println();
 
                 }
 
