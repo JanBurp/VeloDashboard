@@ -35,7 +35,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 #define OUTPUT_LED_RIGHT          5
 #define OUTPUT_LED_LEFT           6
-#define OUTPUT_BUZZER             9 // PWM
+#define OUTPUT_BUZZER             7 // PWM
 
 #define SPEED_INPUT               14 // A0 // D14
 
@@ -66,14 +66,6 @@ Speed SpeedoMeter;
 
 bool AlarmState = false;
 int IndicatorState = 0;
-
-
-// bool SpeedSensor = false;
-// unsigned long LastSensorTimeMs = 0;
-// unsigned long startTime = 0;
-// float maxSpeed = 0;
-// float avgSpeed = 0;
-
 
 
 int read_indicators() {
@@ -123,8 +115,7 @@ void buzzer(bool state) {
 
 void setup()
 {
-    if (DEBUG)
-        Serial.begin(9600);
+    if (DEBUG) Serial.begin(9600);
 
     // Indicator inputs
     ButtonIndicatorRight.init(INPUT_INDICATOR_RIGHT);
@@ -144,13 +135,16 @@ void setup()
             ;
     }
 
+    display.clearDisplay();
+    display.setTextSize(5);
+    display.setTextColor(WHITE);
+    display.setCursor(2,2);
+    display.println( "Hello" );
+    display.display();
+
     SpeedoMeter.init(SPEED_INPUT);
 
     // LEDstrips.startup_animation();
-
-    // pinMode(SPEED_INPUT, INPUT_PULLUP);
-    // LastSensorTimeMs = millis();
-    // startTime = millis();
 }
 
 /**
