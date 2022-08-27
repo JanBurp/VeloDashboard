@@ -8,11 +8,10 @@
 
 #define DEBUG true
 
-#include "lib/Button.cpp"
-#include "lib/Output.cpp"
-#include "lib/LEDstrips.cpp"
-
-
+#include "Button.cpp"
+#include "Output.cpp"
+#include "LEDstrips.cpp"
+#include "Speed.cpp"
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -58,6 +57,7 @@ Button ButtonIndicatorAlarm;
 Output LedRight;
 Output LedLeft;
 Output Buzzer;
+Speed SpeedoMeter;
 // LEDstrips LEDstrips;
 
 /**
@@ -68,46 +68,12 @@ bool AlarmState = false;
 int IndicatorState = 0;
 
 
-bool SpeedSensor = false;
-unsigned long LastSensorTimeMs = 0;
-unsigned long startTime = 0;
-float maxSpeed = 0;
-float avgSpeed = 0;
+// bool SpeedSensor = false;
+// unsigned long LastSensorTimeMs = 0;
+// unsigned long startTime = 0;
+// float maxSpeed = 0;
+// float avgSpeed = 0;
 
-
-/**
- *
- * ==== SETUP ====
- *
- */
-
-void setup() {
-    if (DEBUG) Serial.begin(9600);
-
-    // Indicator inputs
-    ButtonIndicatorRight.init(INPUT_INDICATOR_RIGHT);
-    ButtonIndicatorLeft.init(INPUT_INDICATOR_LEFT);
-    ButtonIndicatorAlarm.init(INPUT_ALARM);
-    // Indicator LEDS
-    LedRight.init(OUTPUT_LED_RIGHT);
-    LedLeft.init(OUTPUT_LED_LEFT);
-
-    pinMode(OUTPUT_BUZZER, OUTPUT);
-    buzzer(false);
-
-
-    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
-        Serial.println(F("SSD1306 allocation failed"));
-        for(;;);
-    }
-
-    // LEDstrips.startup_animation();
-
-    pinMode(SPEED_INPUT, INPUT_PULLUP);
-    LastSensorTimeMs = millis();
-    startTime = millis();
-
-}
 
 
 int read_indicators() {
@@ -149,8 +115,43 @@ void buzzer(bool state) {
     }
 }
 
+/**
+ *
+ * ==== SETUP ====
+ *
+ */
 
+void setup()
+{
+    if (DEBUG)
+        Serial.begin(9600);
 
+    // Indicator inputs
+    ButtonIndicatorRight.init(INPUT_INDICATOR_RIGHT);
+    ButtonIndicatorLeft.init(INPUT_INDICATOR_LEFT);
+    ButtonIndicatorAlarm.init(INPUT_ALARM);
+    // Indicator LEDS
+    LedRight.init(OUTPUT_LED_RIGHT);
+    LedLeft.init(OUTPUT_LED_LEFT);
+
+    pinMode(OUTPUT_BUZZER, OUTPUT);
+    buzzer(false);
+
+    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+    { // Address 0x3D for 128x64
+        Serial.println(F("SSD1306 allocation failed"));
+        for (;;)
+            ;
+    }
+
+    SpeedoMeter.init(SPEED_INPUT);
+
+    // LEDstrips.startup_animation();
+
+    // pinMode(SPEED_INPUT, INPUT_PULLUP);
+    // LastSensorTimeMs = millis();
+    // startTime = millis();
+}
 
 /**
  *
@@ -191,41 +192,21 @@ void loop() {
     // Loops
     LedRight.loop();
     LedLeft.loop();
+    SpeedoMeter.loop();
     // LEDstrips.loop();
 
 
-    bool sensor = digitalRead(SPEED_INPUT);
-    if (sensor != SpeedSensor) {
-        SpeedSensor = sensor;
-        if ( SpeedSensor ) {
-            float SensorTime = millis() - LastSensorTimeMs;
-            LastSensorTimeMs = millis();
-
-            float RPM = ( 1000.0 / SensorTime ) * 60.0;
-            float Speed = (RPM * 1.4 * 60 / 1000); // 1.4 = omtrek
-
-            if ( Speed <1000 && Speed >= maxSpeed ) {
-                maxSpeed = Speed;
-            }
-
-
-
-
-            display.clearDisplay();
-            display.setTextSize(4);
-            display.setTextColor(WHITE);
-            display.setCursor(5,10);
-            display.println( Speed );
-
-            display.setTextSize(2);
-            display.setCursor(5,50);
-            display.println( maxSpeed );
-
-            display.display();
-
-            Serial.println( Speed );
-        }
-    }
+    display.clearDisplay();
+    display.setTextSize(5);
+    display.setTextColor(WHITE);
+    display.setCursor(2,2);
+    display.println( SpeedoMeter.getSpeedasString() );
+    display.setTextSize(2);
+    display.setCursor(2, 50);
+    display.println(SpeedoMeter.getAvgSpeedasString());
+    display.setCursor(SCREEN_WIDTH / 2, 50);
+    display.println( SpeedoMeter.getMaxSpeedasString() );
+    display.display();
 
     // if (DEBUG) {
     //     Serial.print("\tINDICATOR: \t");  Serial.print(IndicatorState);
