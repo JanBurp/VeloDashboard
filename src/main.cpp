@@ -13,6 +13,8 @@
 #include "LEDstrips.cpp"
 #include "Speed.cpp"
 
+#include <TimeLib.h>
+
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -63,7 +65,8 @@ LEDstrips LEDstrips;
 enum displayType
 {
     WELCOME,
-    SPEED,
+    SPEED_AND_TIME,
+    SPEEDS,
     DISTANCE,
     TIME,
 };
@@ -131,7 +134,20 @@ void displayShow( displayType type ) {
             display.println("- 631- ");
             break;
 
-        case SPEED:
+        case SPEED_AND_TIME:
+            display.setTextSize(5);
+            display.setTextColor(WHITE);
+            display.setCursor(2, 2);
+            display.println(SpeedoMeter.getSpeedasString());
+
+            char timeStr[9];
+            snprintf(timeStr, 9, "%02i:%02i:%02i", hour(), minute(), second() );
+            display.setTextSize(2);
+            display.setCursor(2, 50);
+            display.println(timeStr);
+            break;
+
+        case SPEEDS:
             display.setTextSize(5);
             display.setTextColor(WHITE);
             display.setCursor(2, 2);
@@ -159,6 +175,8 @@ void displayShow( displayType type ) {
 void setup()
 {
     if (DEBUG) Serial.begin(9600);
+
+    setTime(22, 5, 0, 27, 8, 2022);
 
     // Indicator inputs
     ButtonIndicatorRight.init(INPUT_INDICATOR_RIGHT);
@@ -228,7 +246,7 @@ void loop() {
     LEDstrips.loop();
 
     if ( SpeedoMeter.isUpdated() ) {
-        displayShow(SPEED);
+        displayShow(SPEED_AND_TIME);
     }
 
 
