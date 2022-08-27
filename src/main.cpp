@@ -37,7 +37,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 #define OUTPUT_LED_LEFT           6
 #define OUTPUT_BUZZER             7 // PWM
 
-#define SPEED_INPUT               14 // A0 // D14
+#define SPEED_INPUT               8
 
 /**
  * DEFAULTS
