@@ -9,7 +9,8 @@ class Speed {
         byte pin;
 
         bool started = false;
-        bool SpeedSensor = false;
+        bool updated = false;
+        bool SpeedSensor = true;
         unsigned long lastSensorTimeMs = 0;
         unsigned long SensorTimeMs = 0;
 
@@ -30,6 +31,18 @@ class Speed {
 			this->pin = pin;
             pinMode(this->pin, INPUT_PULLUP);
 		}
+
+        bool isStarted() {
+            return this->started;
+        }
+
+        bool isUpdated() {
+            if (this->updated) {
+                return true;
+                this->updated = false;
+            }
+            return false;
+        }
 
         String getSpeedasString(){
             return String(this->speed,1);
@@ -60,6 +73,7 @@ class Speed {
                 {
                     this->lastSensorTimeMs = now;
                     this->startTimeMs = now;
+                    this->started = true;
                 }
 
                 if ( this->SpeedSensor )
@@ -78,17 +92,16 @@ class Speed {
                     }
                     this->avgSpeed = this->distance / ( this->tripTimeMs / 1000.0) * 3.6;
 
-                    // Serial.print("Distance: \t");Serial.print(this->distance);
-                    // Serial.print("\tSpeed m: \t");Serial.print(Speed_meter_sec);
-                    // Serial.print("\tSpeed: \t");Serial.print(this->speed);
-                    // Serial.print("\tAvg Speed: \t");Serial.print(this->avgSpeed);
-                    // Serial.print("\tMax Speed: \t");Serial.print(this->maxSpeed);
-                    // Serial.print("\tTime: \t");Serial.print(this->tripTimeMs);
-                    // Serial.println();
+                    Serial.print("Distance: \t");Serial.print(this->distance);
+                    Serial.print("\tSpeed m: \t");Serial.print(Speed_meter_sec);
+                    Serial.print("\tSpeed: \t");Serial.print(this->speed);
+                    Serial.print("\tAvg Speed: \t");Serial.print(this->avgSpeed);
+                    Serial.print("\tMax Speed: \t");Serial.print(this->maxSpeed);
+                    Serial.print("\tTime: \t");Serial.print(this->tripTimeMs);
+                    Serial.println();
 
+                    this->updated = true;
                 }
-
-                this->started = true;
             };
         }
 };

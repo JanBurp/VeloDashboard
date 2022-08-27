@@ -60,6 +60,14 @@ Output Buzzer;
 Speed SpeedoMeter;
 // LEDstrips LEDstrips;
 
+enum displayType
+{
+    WELCOME,
+    SPEED,
+    DISTANCE,
+    TIME,
+};
+
 /**
  * VARIABLES
  */
@@ -107,6 +115,39 @@ void buzzer(bool state) {
     }
 }
 
+
+void displayShow( displayType type ) {
+    display.clearDisplay();
+    switch (type) {
+
+        case WELCOME:
+            display.setTextSize(4);
+            display.setTextColor(WHITE);
+            display.setCursor(2, 2);
+            display.println("Quest");
+            display.setCursor(20, 80);
+            display.setTextSize(3);
+            display.println("631");
+            break;
+
+        case SPEED:
+            display.setTextSize(5);
+            display.setTextColor(WHITE);
+            display.setCursor(2, 2);
+            display.println(SpeedoMeter.getSpeedasString());
+            display.setTextSize(2);
+            display.setCursor(2, 50);
+            display.println(SpeedoMeter.getAvgSpeedasString());
+            display.setCursor(SCREEN_WIDTH / 2, 50);
+            display.println(SpeedoMeter.getMaxSpeedasString());
+            break;
+
+        default:
+            break;
+    }
+    display.display();
+}
+
 /**
  *
  * ==== SETUP ====
@@ -135,12 +176,7 @@ void setup()
             ;
     }
 
-    display.clearDisplay();
-    display.setTextSize(5);
-    display.setTextColor(WHITE);
-    display.setCursor(2,2);
-    display.println( "Hello" );
-    display.display();
+    displayShow(WELCOME);
 
     SpeedoMeter.init(SPEED_INPUT);
 
@@ -189,18 +225,10 @@ void loop() {
     SpeedoMeter.loop();
     // LEDstrips.loop();
 
+    if ( SpeedoMeter.isUpdated() ) {
+        displayShow(SPEED);
+    }
 
-    display.clearDisplay();
-    display.setTextSize(5);
-    display.setTextColor(WHITE);
-    display.setCursor(2,2);
-    display.println( SpeedoMeter.getSpeedasString() );
-    display.setTextSize(2);
-    display.setCursor(2, 50);
-    display.println(SpeedoMeter.getAvgSpeedasString());
-    display.setCursor(SCREEN_WIDTH / 2, 50);
-    display.println( SpeedoMeter.getMaxSpeedasString() );
-    display.display();
 
     // if (DEBUG) {
     //     Serial.print("\tINDICATOR: \t");  Serial.print(IndicatorState);
