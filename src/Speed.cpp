@@ -24,6 +24,7 @@ class Speed {
 
         // Times in ms
         unsigned long startTimeMs = 0;
+        unsigned long runningTimeMs = 0;
         unsigned long tripTimeMs = 0;
 
         // all in meters or meters/per hour
@@ -52,12 +53,20 @@ class Speed {
             return this->started;
         }
 
+        bool isPaused() {
+            return this->paused;
+        }
+
         float getSpeed(){
             return this->speed;
         }
 
         float getAvgSpeed() {
             return this->avgSpeed;
+        }
+
+        bool isFaster() {
+            return this->speed > this->avgSpeed;
         }
 
         float getMaxSpeed() {
@@ -72,24 +81,18 @@ class Speed {
             return this->tripTimeMs;
         }
 
+        unsigned long getTotalTime() {
+            return millis() - this->startTimeMs;
+        }
+
         void loop() {
             bool sensor = digitalRead(this->pin);
             unsigned long now = millis();
 
             if ( this->started ) {
-                this->tripTimeMs = now - this->startTimeMs;
-
                 unsigned long calcedTime = now - this->lastCalcedTime;
                 if (calcedTime >= SPEED_CALC_TIME) {
                     this->lastCalcedTime = now;
-
-                    // Serial.print(this->lastSensorTimeMs);
-                    // for (size_t i = 0; i < SENSOR_BUFF; i++)
-                    // {
-                    //     Serial.print("\t");
-                    //     Serial.print(this->sensorTimesMs[i]);
-                    // }
-                    // Serial.println("");
 
                     // Calc sensor time average (only those that are larger than 0)
                     int buffLength = SENSOR_BUFF;
@@ -105,12 +108,7 @@ class Speed {
                     }
                     long avgSensorTime = totalSensorTime / buffLength;
 
-                    // Serial.println();
-                    // Serial.print("total\t"); Serial.print(totalSensorTime);
-                    // Serial.print("buff\t"); Serial.print(buffLength);
-                    // Serial.print("avg\t"); Serial.println(avgSensorTime);
-
-                    // Calc speeds
+                    // Calc speeds & times
                     float Speed_meter_sec = this->circumference / (avgSensorTime / 1000.0);
                     this->speed = Speed_meter_sec * 3.6;
                     if ( this->speed < MIN_SPEED ) {
@@ -123,7 +121,9 @@ class Speed {
                             this->maxSpeed = this->speed;
                         }
                         this->paused = false;
+                        this->tripTimeMs += now - this->runningTimeMs;
                     }
+                    this->runningTimeMs = now;
 
                 }
             }
@@ -133,6 +133,7 @@ class Speed {
 
                 if ( ! this->started ) {
                     this->startTimeMs = now;
+                    this->runningTimeMs = now;
                     this->lastSensorTimeMs = now;
                     this->started = true;
                 }
@@ -149,17 +150,6 @@ class Speed {
                 this->_add_to_sensor_buff(now - this->lastSensorTimeMs);
             }
 
-            // Serial.print("Distance: \t");
-            // Serial.print(this->distance);
-            // Serial.print("\tSpeed: \t");
-            // Serial.print(this->speed);
-            // Serial.print("\tAvg Speed: \t");
-            // Serial.print(this->avgSpeed);
-            // Serial.print("\tMax Speed: \t");
-            // Serial.print(this->maxSpeed);
-            // Serial.print("\tTime: \t");
-            // Serial.print(this->tripTimeMs);
-            // Serial.println();
         }
 
         void _add_to_sensor_buff(unsigned long sensorTime ) {

@@ -6,7 +6,7 @@
  *
  */
 
-#define DEBUG true
+#define DEBUG false
 
 #include "Button.cpp"
 #include "Output.cpp"
@@ -19,8 +19,10 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define SCREEN_WIDTH 128        // OLED display width, in pixels
+#define SCREEN_HEIGHT 64        // OLED display height, in pixels
+#define SCREEN_HALF_HEIGHT_INFO   40
+#define SCREEN_HALF_HEIGHT_VALUES 50
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
@@ -122,6 +124,10 @@ void buzzer(bool state) {
 }
 
 
+unsigned int displayMargin( unsigned int textLen ) {
+    return (SCREEN_WIDTH - textLen * 12) / 2;
+}
+
 void displayShow( int type ) {
     display.clearDisplay();
 
@@ -129,21 +135,32 @@ void displayShow( int type ) {
         display.setTextSize(4);
         display.setTextColor(WHITE);
         display.setCursor(2, 2);
-        display.println("Quest");
+        display.print("Quest");
         display.setTextSize(3);
         display.setTextColor(WHITE);
         display.setCursor(8, 40);
-        display.println("- 631- ");
+        display.print("- 631- ");
     }
 
     else {
         // Speed
         display.setTextSize(5);
         display.setTextColor(WHITE);
-        display.setCursor(4, 0);
+        display.setCursor(8, 0);
         char speedStr[5];
         snprintf(speedStr, 5, "%4.1f", SpeedoMeter.getSpeed());
-        display.println(speedStr);
+        display.print(speedStr);
+
+        // Faster?
+        if ( ! SpeedoMeter.isPaused() ) {
+            display.setTextSize(2);
+            display.setTextColor(WHITE);
+            display.setCursor(0, 10);
+            if (SpeedoMeter.isFaster())
+                display.print("+");
+            else
+                display.print("-");
+        }
 
         // Data
         switch (type)
@@ -151,30 +168,44 @@ void displayShow( int type ) {
 
         case DISPLAY_SPEED_AND_TIME:
             char timeStr[9];
-            snprintf(timeStr, 9, "%02i:%02i:%02i", hour(), minute(), second());
+            snprintf(timeStr, 9, "%2i:%02i:%02i", hour(), minute(), second());
             display.setTextSize(2);
-            display.setCursor(20, 42);
-            display.println(timeStr);
+            display.setCursor( displayMargin(8) , SCREEN_HALF_HEIGHT_VALUES);
+            display.print(timeStr);
             break;
 
         case DISPLAY_SPEEDS:
             char avgSpeedStr[6];
-            snprintf(avgSpeedStr, 6, "%4.1f", SpeedoMeter.getAvgSpeed());
+            snprintf(avgSpeedStr, 6, "%-4.1f", SpeedoMeter.getAvgSpeed());
             char maxSpeedStr[6];
             snprintf(maxSpeedStr, 6, "%4.1f", SpeedoMeter.getMaxSpeed());
+
+            display.setTextSize(1);
+            display.setCursor(0, SCREEN_HALF_HEIGHT_INFO);
+            display.print("avg");
+            display.setCursor(SCREEN_WIDTH-20, SCREEN_HALF_HEIGHT_INFO);
+            display.print("max");
+
             display.setTextSize(2);
-            display.setCursor(2, 42);
-            display.println(avgSpeedStr);
-            display.setCursor(SCREEN_WIDTH / 2, 42);
-            display.println(maxSpeedStr);
+            display.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
+            display.print(avgSpeedStr);
+            display.setCursor(80, SCREEN_HALF_HEIGHT_VALUES);
+            display.print(maxSpeedStr);
             break;
 
         case DISPLAY_DISTANCE:
-            char distStr[5];
-            snprintf(distStr, 5, "%3.1f", SpeedoMeter.getDistance());
+            char distStr[6];
+            snprintf(distStr, 6, "%-4.1f", SpeedoMeter.getDistance());
+
+            display.setTextSize(1);
+            display.setCursor(0, SCREEN_HALF_HEIGHT_INFO);
+            display.print("dist");
+            display.setCursor(SCREEN_WIDTH - 20, SCREEN_HALF_HEIGHT_INFO);
+            display.print("odo");
+
             display.setTextSize(2);
-            display.setCursor(20, 42);
-            display.println(distStr);
+            display.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
+            display.print(distStr);
             break;
 
         case DISPLAY_TIME:
@@ -183,19 +214,29 @@ void displayShow( int type ) {
             unsigned long tripTimeSec = tripTimeMs / 1000;
             unsigned int minutes = tripTimeSec / 60;
             unsigned int seconds = tripTimeSec % 60;
-            snprintf(timeTripStr, 7, "%02u:%02u", minutes,seconds );
+            snprintf(timeTripStr, 7, "%2u:%02u", minutes,seconds );
+            // char totalTripTimeStr[7];
+            // unsigned long totalTimeMs = SpeedoMeter.getTotalTime();
+            // unsigned long totalTimeSec = totalTimeMs / 1000;
+            // minutes = totalTimeSec / 60;
+            // seconds = totalTimeSec % 60;
+            // snprintf(totalTripTimeStr, 7, "%2u:%02u", minutes, seconds);
+
+            display.setTextSize(1);
+            display.setCursor(0, SCREEN_HALF_HEIGHT_INFO);
+            display.print("trip time");
+            // display.setCursor(SCREEN_WIDTH - 32, SCREEN_HALF_HEIGHT_INFO);
+            // display.print("total");
+
             display.setTextSize(2);
-            display.setCursor(20, 42);
-            display.println(timeTripStr);
+            display.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
+            display.print(timeTripStr);
+            // display.setCursor(68, SCREEN_HALF_HEIGHT_VALUES);
+            // display.print(totalTripTimeStr);
+
             break;
         }
 
-        // Page indicator
-        int pageIndicatorWidth = SCREEN_WIDTH / 4;
-        for (size_t i = 0; i < 3; i++)
-        {
-            display.drawLine(pageIndicatorWidth * (type - 1), SCREEN_HEIGHT - i, pageIndicatorWidth * type, SCREEN_HEIGHT - i, WHITE);
-        }
     }
 
     display.display();
