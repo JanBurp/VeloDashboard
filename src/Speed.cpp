@@ -44,20 +44,24 @@ class Speed {
             return false;
         }
 
-        String getSpeedasString(){
-            return String(this->speed,1);
+        float getSpeed(){
+            return this->speed;
         }
 
-        String getAvgSpeedasString() {
-            return String(this->avgSpeed,1);
+        float getAvgSpeed() {
+            return this->avgSpeed;
         }
 
-        String getMaxSpeedasString() {
-            return String(this->maxSpeed,1);
+        float getMaxSpeed() {
+            return this->maxSpeed;
         }
 
-        String getDistanceasString() {
-            return String(this->distance,1);
+        float getDistance() {
+            return this->distance;
+        }
+
+        unsigned long getTripTime() {
+            return this->tripTimeMs;
         }
 
         void loop() {

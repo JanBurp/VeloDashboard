@@ -41,6 +41,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 #define SPEED_INPUT               8
 
+#define DISPLAY_SWITCH            9
+
 /**
  * DEFAULTS
  */
@@ -49,6 +51,13 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 #define INDICATOR_TIME            800
 #define ALARM_TIME                400
 
+#define DISPLAY_WELCOME           0
+#define DISPLAY_SPEED_AND_TIME    1
+#define DISPLAY_SPEEDS            2
+#define DISPLAY_DISTANCE          3
+#define DISPLAY_TIME              4
+
+
 /**
  * INPUTS & OUTPUTS
  */
@@ -56,20 +65,14 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 Button ButtonIndicatorRight;
 Button ButtonIndicatorLeft;
 Button ButtonIndicatorAlarm;
+Button DisplayButton;
 Output LedRight;
 Output LedLeft;
 Output Buzzer;
 Speed SpeedoMeter;
 LEDstrips LEDstrips;
 
-enum displayType
-{
-    WELCOME,
-    SPEED_AND_TIME,
-    SPEEDS,
-    DISTANCE,
-    TIME,
-};
+int CurrentDisplay = DISPLAY_SPEED_AND_TIME;
 
 /**
  * VARIABLES
@@ -119,48 +122,80 @@ void buzzer(bool state) {
 }
 
 
-void displayShow( displayType type ) {
+void displayShow( int type ) {
     display.clearDisplay();
-    switch (type) {
 
-        case WELCOME:
-            display.setTextSize(4);
-            display.setTextColor(WHITE);
-            display.setCursor(2, 2);
-            display.println("Quest");
-            display.setTextSize(3);
-            display.setTextColor(WHITE);
-            display.setCursor(8, 40);
-            display.println("- 631- ");
-            break;
+    if ( type == DISPLAY_WELCOME ) {
+        display.setTextSize(4);
+        display.setTextColor(WHITE);
+        display.setCursor(2, 2);
+        display.println("Quest");
+        display.setTextSize(3);
+        display.setTextColor(WHITE);
+        display.setCursor(8, 40);
+        display.println("- 631- ");
+    }
 
-        case SPEED_AND_TIME:
-            display.setTextSize(5);
-            display.setTextColor(WHITE);
-            display.setCursor(2, 2);
-            display.println(SpeedoMeter.getSpeedasString());
+    else {
+        // Speed
+        display.setTextSize(5);
+        display.setTextColor(WHITE);
+        display.setCursor(4, 0);
+        char speedStr[6];
+        snprintf(speedStr, 6, "%4.1f", SpeedoMeter.getSpeed());
+        display.println(speedStr);
 
+        // Data
+        switch (type)
+        {
+
+        case DISPLAY_SPEED_AND_TIME:
             char timeStr[9];
-            snprintf(timeStr, 9, "%02i:%02i:%02i", hour(), minute(), second() );
+            snprintf(timeStr, 9, "%02i:%02i:%02i", hour(), minute(), second());
             display.setTextSize(2);
-            display.setCursor(2, 50);
+            display.setCursor(20, 42);
             display.println(timeStr);
             break;
 
-        case SPEEDS:
-            display.setTextSize(5);
-            display.setTextColor(WHITE);
-            display.setCursor(2, 2);
-            display.println(SpeedoMeter.getSpeedasString());
+        case DISPLAY_SPEEDS:
+            char avgSpeedStr[6];
+            snprintf(avgSpeedStr, 6, "%4.1f", SpeedoMeter.getAvgSpeed());
+            char maxSpeedStr[6];
+            snprintf(maxSpeedStr, 6, "%4.1f", SpeedoMeter.getMaxSpeed());
             display.setTextSize(2);
-            display.setCursor(2, 50);
-            display.println(SpeedoMeter.getAvgSpeedasString());
-            display.setCursor(SCREEN_WIDTH / 2, 50);
-            display.println(SpeedoMeter.getMaxSpeedasString());
+            display.setCursor(2, 42);
+            display.println(avgSpeedStr);
+            display.setCursor(SCREEN_WIDTH / 2, 42);
+            display.println(maxSpeedStr);
             break;
 
-        default:
+        case DISPLAY_DISTANCE:
+            char distStr[5];
+            snprintf(distStr, 5, "%3.1f", SpeedoMeter.getDistance());
+            display.setTextSize(2);
+            display.setCursor(20, 42);
+            display.println(distStr);
             break;
+
+        case DISPLAY_TIME:
+            char timeTripStr[7];
+            unsigned long tripTimeMs = SpeedoMeter.getTripTime();
+            unsigned long tripTimeSec = tripTimeMs / 1000;
+            unsigned int minutes = tripTimeSec / 60;
+            unsigned int seconds = tripTimeSec % 60;
+            snprintf(timeTripStr, 7, "%02u:%02u", minutes,seconds );
+            display.setTextSize(2);
+            display.setCursor(20, 42);
+            display.println(timeTripStr);
+            break;
+        }
+
+        // Page indicator
+        int pageIndicatorWidth = SCREEN_WIDTH / 4;
+        for (size_t i = 0; i < 3; i++)
+        {
+            display.drawLine(pageIndicatorWidth * (type - 1), SCREEN_HEIGHT - i, pageIndicatorWidth * type, SCREEN_HEIGHT - i, WHITE);
+        }
     }
 
     display.display();
@@ -176,7 +211,7 @@ void setup()
 {
     if (DEBUG) Serial.begin(9600);
 
-    setTime(22, 5, 0, 27, 8, 2022);
+    // setTime(22, 5, 0, 27, 8, 2022);
 
     // Indicator inputs
     ButtonIndicatorRight.init(INPUT_INDICATOR_RIGHT);
@@ -185,6 +220,8 @@ void setup()
     // Indicator LEDS
     LedRight.init(OUTPUT_LED_RIGHT);
     LedLeft.init(OUTPUT_LED_LEFT);
+
+    DisplayButton.init(DISPLAY_SWITCH);
 
     pinMode(OUTPUT_BUZZER, OUTPUT);
     buzzer(false);
@@ -196,11 +233,13 @@ void setup()
             ;
     }
 
-    displayShow(WELCOME);
+
+    displayShow(DISPLAY_SPEED_AND_TIME);
 
     SpeedoMeter.init(SPEED_INPUT);
-
     LEDstrips.startup_animation();
+
+    displayShow(CurrentDisplay);
 }
 
 /**
@@ -239,16 +278,21 @@ void loop() {
     // BUZZER
     buzzer( LedRight.getState() || LedLeft.getState() );
 
+    // Display page
+    if ( DisplayButton.readOnce() ) {
+        CurrentDisplay++;
+        if (CurrentDisplay>DISPLAY_TIME) {
+            CurrentDisplay = DISPLAY_SPEED_AND_TIME;
+        }
+    }
+
     // Loops
     LedRight.loop();
     LedLeft.loop();
     SpeedoMeter.loop();
     LEDstrips.loop();
 
-    if ( SpeedoMeter.isUpdated() ) {
-        displayShow(SPEED_AND_TIME);
-    }
-
+    displayShow(CurrentDisplay);
 
     // if (DEBUG) {
     //     Serial.print("\tINDICATOR: \t");  Serial.print(IndicatorState);

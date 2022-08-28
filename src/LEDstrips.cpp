@@ -122,7 +122,7 @@ class LEDstrips {
                 }
             }
 
-            for (int t = 0; t < 2; ++t)
+            for (int t = 0; t < 4; ++t)
             {
                 this->off();
                 int i;
