@@ -141,8 +141,8 @@ void displayShow( int type ) {
         display.setTextSize(5);
         display.setTextColor(WHITE);
         display.setCursor(4, 0);
-        char speedStr[6];
-        snprintf(speedStr, 6, "%4.1f", SpeedoMeter.getSpeed());
+        char speedStr[5];
+        snprintf(speedStr, 5, "%4.1f", SpeedoMeter.getSpeed());
         display.println(speedStr);
 
         // Data
@@ -234,7 +234,7 @@ void setup()
     }
 
 
-    displayShow(DISPLAY_SPEED_AND_TIME);
+    displayShow(DISPLAY_WELCOME);
 
     SpeedoMeter.init(SPEED_INPUT);
     LEDstrips.startup_animation();

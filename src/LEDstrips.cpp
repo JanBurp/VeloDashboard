@@ -8,6 +8,8 @@
  * LED STRIPS
  */
 
+#define WELCOME_LENGTH      2
+
 #define NUM_LEDS            20
 #define NUM_USED_LEDS       5
 #define BRIGHTNESS          55
@@ -122,7 +124,7 @@ class LEDstrips {
                 }
             }
 
-            for (int t = 0; t < 4; ++t)
+            for (int t = 0; t < WELCOME_LENGTH; ++t)
             {
                 this->off();
                 int i;
