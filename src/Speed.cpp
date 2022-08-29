@@ -3,8 +3,8 @@
 
 #include "Arduino.h"
 
-#define SENSOR_BUFF     5
-#define MAX_SENSOR_TIME 1000
+#define SENSOR_BUFF     8
+#define MAX_SENSOR_TIME 4000
 #define SPEED_CALC_TIME 100
 #define MIN_SPEED       2
 
@@ -145,9 +145,9 @@ class Speed {
                 }
             }
 
-            // If stopped or slow, add long times...
+            // If stopped or slow...
             if ((now - this->lastSensorTimeMs) > MAX_SENSOR_TIME) {
-                this->_add_to_sensor_buff(now - this->lastSensorTimeMs);
+                this->_add_to_sensor_buff(999999);
             }
 
         }
