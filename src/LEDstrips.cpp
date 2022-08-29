@@ -10,9 +10,9 @@
 
 #define WELCOME_LENGTH      2
 
-#define NUM_LEDS            20
-#define NUM_USED_LEDS       5
-#define BRIGHTNESS          55
+#define NUM_LEDS            186 // 2,85 m * 66 = 188
+#define NUM_USED_LEDS       30
+#define BRIGHTNESS          100
 #define MAX_MILLIAMPS       800
 #define FRAMES_PER_SECOND   100
 
@@ -29,9 +29,9 @@ class LEDstrips {
 
     private:
         CRGB BLACK = CRGB(0,0,0);
-        CRGB WHITE = CRGB(255,255,255);
+        CRGB WHITE = CRGB(64,64,64);
         CRGB RED = CRGB(255,0,0);
-        CRGB ORANGE = CRGB(255,102,0);
+        CRGB ORANGE = CRGB(255,96,0);
         CRGB leds_left[NUM_LEDS], leds_right[NUM_LEDS];
         unsigned int blinkMs;
         unsigned long blinkStartedMs;
@@ -104,7 +104,7 @@ class LEDstrips {
 
         // This uses delay, so stops all other actions...
         void startup_animation() {
-            unsigned long delayMs = 500/NUM_LEDS;
+            unsigned long delayMs = 200/NUM_LEDS;
             const int NUM_GRADIENT_LEDS = NUM_LEDS - 2*NUM_USED_LEDS;
             CRGB colors[NUM_LEDS];
             CRGB gradient_colors[NUM_GRADIENT_LEDS];
