@@ -177,7 +177,7 @@ void displayShow( int type ) {
         // Faster / Slower than average
         if (!SpeedoMeter.isPaused())
         {
-            display.setTextSize(3);
+            display.setTextSize(2);
             display.setTextColor(WHITE);
             display.setCursor(110, 10);
             if (SpeedoMeter.isFaster())
