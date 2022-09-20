@@ -21,6 +21,8 @@
 
 #define SCREEN_WIDTH 128        // OLED display width, in pixels
 #define SCREEN_HEIGHT 64        // OLED display height, in pixels
+#define SCREEN_HALF_HEIGHT 32
+#define SCREEN_HALF_WIDTH 64
 #define SCREEN_HALF_HEIGHT_INFO   40
 #define SCREEN_HALF_HEIGHT_VALUES 50
 
@@ -160,6 +162,7 @@ void displayShow( int type ) {
         display.setCursor(80, 0);
         display.print(speedStr);
 
+        // Sensor
         display.setTextSize(4);
         display.setCursor(56, 8);
         if (SpeedoMeter.getSpeedSensor())
@@ -171,7 +174,7 @@ void displayShow( int type ) {
             display.print(" ");
         }
 
-        // Faster?
+        // Faster / Slower than average
         if (!SpeedoMeter.isPaused())
         {
             display.setTextSize(3);
@@ -183,15 +186,26 @@ void displayShow( int type ) {
                 display.print("-");
         }
 
+
+        // Indicators
+        if ( LedLeft.getState() )
+        {
+            display.fillTriangle(SCREEN_HALF_WIDTH, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH, SCREEN_HEIGHT, WHITE);
+        }
+        if ( LedRight.getState() ) {
+            display.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH, 0, SCREEN_HALF_WIDTH, SCREEN_HEIGHT, WHITE);
+        }
+
+
         // Data
         switch (type)
         {
 
         case DISPLAY_SPEED_AND_TIME:
-            char timeStr[9];
-            snprintf(timeStr, 9, "%2i:%02i:%02i", hour(), minute(), second());
-            display.setTextSize(2);
-            display.setCursor( displayMargin(8) , SCREEN_HALF_HEIGHT_VALUES);
+            char timeStr[7];
+            snprintf(timeStr, 7, "%2i:%02i", hour(), minute(), second());
+            display.setTextSize(3);
+            display.setCursor( displayMargin(7) , SCREEN_HALF_HEIGHT_VALUES-6);
             display.print(timeStr);
             break;
 
@@ -278,7 +292,7 @@ void setup()
 {
     if (DEBUG) Serial.begin(9600);
 
-    // setTime(22, 5, 0, 27, 8, 2022);
+    setTime(22, 5, 0, 27, 8, 2022);
 
     // Indicator inputs
     ButtonIndicatorRight.init(INPUT_INDICATOR_RIGHT);
