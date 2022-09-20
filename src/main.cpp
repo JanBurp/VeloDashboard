@@ -151,17 +151,6 @@ void displayShow( int type ) {
         snprintf(speedStr, 5, "%4.1f", SpeedoMeter.getSpeed());
         display.print(speedStr);
 
-        // Faster?
-        if ( ! SpeedoMeter.isPaused() ) {
-            display.setTextSize(2);
-            display.setTextColor(WHITE);
-            display.setCursor(0, 10);
-            if (SpeedoMeter.isFaster())
-                display.print("+");
-            else
-                display.print("-");
-        }
-
         // Data
         switch (type)
         {
