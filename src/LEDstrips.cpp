@@ -8,7 +8,7 @@
  * LED STRIPS
  */
 
-#define WELCOME_LENGTH      2
+#define WELCOME_LENGTH      1
 
 #define NUM_LEDS            186 // 2,85 m * 66 = 188
 #define NUM_USED_LEDS       30
