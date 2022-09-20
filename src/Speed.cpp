@@ -57,6 +57,10 @@ class Speed {
             return this->paused;
         }
 
+        bool getSpeedSensor() {
+            return this->SpeedSensor;
+        }
+
         float getSpeed(){
             return this->speed;
         }

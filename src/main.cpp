@@ -144,12 +144,44 @@ void displayShow( int type ) {
 
     else {
         // Speed
+        float speed = SpeedoMeter.getSpeed();
+        int decis = (int) speed;
+        int precision = (speed - decis) * 10;
+
         display.setTextSize(5);
         display.setTextColor(WHITE);
         display.setCursor(8, 0);
-        char speedStr[5];
-        snprintf(speedStr, 5, "%4.1f", SpeedoMeter.getSpeed());
+
+        char speedStr[3];
+        snprintf(speedStr, 3, "%2i", decis);
+        display.setCursor(0, 0);
         display.print(speedStr);
+        snprintf(speedStr, 3, "%1i", precision);
+        display.setCursor(80, 0);
+        display.print(speedStr);
+
+        display.setTextSize(4);
+        display.setCursor(56, 8);
+        if (SpeedoMeter.getSpeedSensor())
+        {
+            display.print(".");
+        }
+        else
+        {
+            display.print(" ");
+        }
+
+        // Faster?
+        if (!SpeedoMeter.isPaused())
+        {
+            display.setTextSize(3);
+            display.setTextColor(WHITE);
+            display.setCursor(110, 10);
+            if (SpeedoMeter.isFaster())
+                display.print("+");
+            else
+                display.print("-");
+        }
 
         // Data
         switch (type)
