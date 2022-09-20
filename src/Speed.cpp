@@ -78,7 +78,7 @@ class Speed {
         }
 
         float getDistance() {
-            return this->distance;
+            return (this->distance / 1000) + 999;
         }
 
         unsigned long getTripTime() {
@@ -107,7 +107,7 @@ class Speed {
                             totalSensorTime += this->sensorTimesMs[i];
                         }
                         else {
-                            // buffLength--;
+                            buffLength--;
                         }
                     }
                     long avgSensorTime = totalSensorTime / buffLength;

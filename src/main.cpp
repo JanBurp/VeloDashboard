@@ -215,8 +215,8 @@ void displayShow( int type ) {
             break;
 
         case DISPLAY_DISTANCE:
-            char distStr[6];
-            snprintf(distStr, 6, "%-4.1f", SpeedoMeter.getDistance());
+            char distStr[8];
+            snprintf(distStr, 8, "%-6.2f", SpeedoMeter.getDistance());
 
             display.setTextSize(1);
             display.setCursor(0, SCREEN_HALF_HEIGHT_INFO);
@@ -227,6 +227,11 @@ void displayShow( int type ) {
             display.setTextSize(2);
             display.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
             display.print(distStr);
+
+            snprintf(distStr, 8, "%5i", (int) SpeedoMeter.getDistance());
+            display.setCursor(68, SCREEN_HALF_HEIGHT_VALUES);
+            display.print(distStr);
+
             break;
 
         case DISPLAY_TIME:
