@@ -35,17 +35,22 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
  * other PINS
  */
 
-#define INPUT_INDICATOR_RIGHT     2
-#define INPUT_INDICATOR_LEFT      3
-#define INPUT_ALARM               4
+#define UI_BUTTON_WHITE         23
+#define UI_BUTTON_RED           20
+#define UI_BUTTON_YELLOW_LEFT   21
+#define UI_BUTTON_YELLOW_RIGHT  22
 
-#define OUTPUT_LED_RIGHT          5
-#define OUTPUT_LED_LEFT           6
-#define OUTPUT_BUZZER             7 // PWM
+#define INPUT_INDICATOR_RIGHT     UI_BUTTON_YELLOW_RIGHT
+#define INPUT_INDICATOR_LEFT      UI_BUTTON_YELLOW_LEFT
+#define INPUT_ALARM               UI_BUTTON_RED
+
+#define OUTPUT_LED_RIGHT          0
+#define OUTPUT_LED_LEFT           1
+#define OUTPUT_BUZZER             12 // PWM
 
 #define SPEED_INPUT               8
 
-#define DISPLAY_SWITCH            9
+#define DISPLAY_SWITCH            UI_BUTTON_WHITE
 
 /**
  * DEFAULTS

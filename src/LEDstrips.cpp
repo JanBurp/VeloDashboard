@@ -16,8 +16,8 @@
 #define MAX_MILLIAMPS       800
 #define FRAMES_PER_SECOND   100
 
-#define PIN_RIGHT_STRIP     11
-#define PIN_LEFT_STRIP      12
+#define PIN_LEFT_STRIP      2
+#define PIN_RIGHT_STRIP     3
 
 #define LEFT    -1
 #define BOTH    0
