@@ -38,8 +38,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 #define UI_BUTTON_WHITE         23
 #define UI_BUTTON_RED           20
-#define UI_BUTTON_YELLOW_LEFT   21
-#define UI_BUTTON_YELLOW_RIGHT  22
+#define UI_BUTTON_YELLOW_LEFT   22
+#define UI_BUTTON_YELLOW_RIGHT  21
 
 #define INPUT_INDICATOR_RIGHT     14
 #define INPUT_INDICATOR_LEFT      15
@@ -51,7 +51,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 #define SPEED_INPUT               11
 
-#define DISPLAY_SWITCH            UI_BUTTON_YELLOW_LEFT
+#define DISPLAY_SWITCH_LEFT       UI_BUTTON_YELLOW_LEFT
+#define DISPLAY_SWITCH_RIGHT      UI_BUTTON_YELLOW_RIGHT
 
 /**
  * DEFAULTS
@@ -75,7 +76,9 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 Button ButtonIndicatorRight;
 Button ButtonIndicatorLeft;
 Button ButtonIndicatorAlarm;
-Button DisplayButton;
+Button ButtonLights;
+Button DisplayButtonLeft;
+Button DisplayButtonRight;
 Output LedRight;
 Output LedLeft;
 Output Buzzer;
@@ -326,7 +329,10 @@ void setup()
     LedRight.init(OUTPUT_LED_RIGHT);
     LedLeft.init(OUTPUT_LED_LEFT);
 
-    DisplayButton.init(DISPLAY_SWITCH);
+    DisplayButtonLeft.init(DISPLAY_SWITCH_LEFT);
+    DisplayButtonRight.init(DISPLAY_SWITCH_RIGHT);
+
+    ButtonLights.init(UI_BUTTON_WHITE);
 
     pinMode(OUTPUT_BUZZER, OUTPUT);
     buzzer(false);
@@ -384,11 +390,19 @@ void loop() {
     buzzer( LedRight.getState() || LedLeft.getState() );
 
     // Display page
-    if ( DisplayButton.readOnce() ) {
+    if ( DisplayButtonLeft.readOnce() ) {
+        CurrentDisplay = DISPLAY_SPEED_AND_TIME;
+    }
+    if (DisplayButtonRight.readOnce()) {
         CurrentDisplay++;
-        if (CurrentDisplay>DISPLAY_TIME) {
+        if (CurrentDisplay > DISPLAY_TIME) {
             CurrentDisplay = DISPLAY_SPEED_AND_TIME;
         }
+    }
+
+    // Animation
+    if ( ButtonLights.readLongPress(2000) ) {
+        LEDstrips.startup_animation();
     }
 
     // Loops
