@@ -14,6 +14,7 @@
 #include "Speed.cpp"
 
 #include <TimeLib.h>
+time_t RTCTime;
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -293,11 +294,15 @@ void displayShow( int type ) {
  *
  */
 
+time_t getTeensy3Time() {
+    return Teensy3Clock.get();
+}
+
 void setup()
 {
     if (DEBUG) Serial.begin(9600);
 
-    setTime(22, 5, 0, 27, 8, 2022);
+    setSyncProvider( getTeensy3Time );
 
     // Indicator inputs
     ButtonIndicatorRight.init(INPUT_INDICATOR_RIGHT);
