@@ -248,7 +248,7 @@ void displayShow( int type ) {
             display.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
             display.print(distStr);
 
-            snprintf(distStr, 8, "%5i", (int) SpeedoMeter.getDistance());
+            snprintf(distStr, 8, "%5lu", SpeedoMeter.getOdoDistance());
             display.setCursor(68, SCREEN_HALF_HEIGHT_VALUES);
             display.print(distStr);
 
@@ -288,15 +288,24 @@ void displayShow( int type ) {
     display.display();
 }
 
+
+/**
+ * @brief Get the Teensy3 Time object
+ *
+ * @return time_t
+ */
+
+time_t getTeensy3Time()
+{
+    return Teensy3Clock.get();
+}
+
+
 /**
  *
  * ==== SETUP ====
  *
  */
-
-time_t getTeensy3Time() {
-    return Teensy3Clock.get();
-}
 
 void setup()
 {

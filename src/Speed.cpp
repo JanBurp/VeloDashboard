@@ -2,6 +2,9 @@
 #define Speed_h
 
 #include "Arduino.h"
+#include <EEPROM.h>
+
+#define ODO_ADDRESS     0
 
 #define SENSOR_BUFF     8
 #define MAX_SENSOR_TIME 1000
@@ -32,6 +35,7 @@ class Speed {
         float speed = 0.0;
         float maxSpeed = 0.0;
         float avgSpeed = 0.0;
+        float odoDistance = (float) this->readODO(); // total km's
 
         float circumference = 1.450; // meters
         // 23-406 	1.420
@@ -78,7 +82,11 @@ class Speed {
         }
 
         float getDistance() {
-            return (this->distance / 1000) + 999;
+            return (this->distance / 1000);
+        }
+
+        unsigned long getOdoDistance() {
+            return this->odoDistance;
         }
 
         unsigned long getTripTime() {
@@ -144,6 +152,7 @@ class Speed {
 
                 if ( this->SpeedSensor ) {
                     this->distance += this->circumference;
+                    this->odoDistance += (this->circumference / 1000);
                     this->_add_to_sensor_buff(now - this->lastSensorTimeMs);
                     this->lastSensorTimeMs = now;
                 }
@@ -154,6 +163,22 @@ class Speed {
                 this->_add_to_sensor_buff(MAX_SENSOR_TIME*3);
             }
 
+            this->storeODO();
+        }
+
+        // Only store ODO if it has changed, so EEPROM is only written when needed
+        void storeODO() {
+            unsigned long oldOdo = this->readODO();
+            unsigned long currentOdo = (int) this->odoDistance;
+            if ( currentOdo!=oldOdo ) {
+                EEPROM.put( ODO_ADDRESS, currentOdo );
+            }
+        }
+
+        unsigned long readODO() {
+            unsigned long readOdo = 0;
+            EEPROM.get(ODO_ADDRESS, readOdo);
+            return readOdo;
         }
 
         void _add_to_sensor_buff(unsigned long sensorTime ) {
