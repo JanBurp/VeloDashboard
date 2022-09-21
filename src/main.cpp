@@ -209,7 +209,12 @@ void displayShow( int type ) {
 
         case DISPLAY_SPEED_AND_TIME:
             char timeStr[7];
-            snprintf(timeStr, 7, "%2i:%02i", hour(), minute() );
+            if ( second()%2 ==0 ) {
+                snprintf(timeStr, 7, "%2i:%02i", hour(), minute() );
+            }
+            else {
+                snprintf(timeStr, 7, "%2i %02i", hour(), minute());
+            }
             display.setTextSize(3);
             display.setCursor( displayMargin(7) , SCREEN_HALF_HEIGHT_VALUES-6);
             display.print(timeStr);
