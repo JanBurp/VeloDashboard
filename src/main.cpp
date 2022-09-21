@@ -197,12 +197,11 @@ void displayShow( int type ) {
 
 
         // Indicators
-        if ( LedLeft.getState() )
-        {
-            display.fillTriangle(SCREEN_HALF_WIDTH, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH, SCREEN_HEIGHT, WHITE);
+        if ( LedLeft.getState() ) {
+            display.fillTriangle(SCREEN_HALF_WIDTH+2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH+2, SCREEN_HEIGHT, WHITE);
         }
         if ( LedRight.getState() ) {
-            display.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH, 0, SCREEN_HALF_WIDTH, SCREEN_HEIGHT, WHITE);
+            display.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH-2, 0, SCREEN_HALF_WIDTH-2, SCREEN_HEIGHT, WHITE);
         }
 
 
