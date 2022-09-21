@@ -35,7 +35,7 @@ class Speed {
         float speed = 0.0;
         float maxSpeed = 0.0;
         float avgSpeed = 0.0;
-        float odoDistance = (float) this->readODO(); // total km's
+        float odoDistance = this->readODO(); // total meters
 
         float circumference = 1.450; // meters
         // 23-406 	1.420
@@ -82,11 +82,11 @@ class Speed {
         }
 
         float getDistance() {
-            return (this->distance / 1000);
+            return this->distance / 1000;
         }
 
         unsigned long getOdoDistance() {
-            return this->odoDistance;
+            return (int) this->odoDistance / 1000;
         }
 
         unsigned long getTripTime() {
@@ -125,7 +125,10 @@ class Speed {
                     this->speed = Speed_meter_sec * 3.6;
                     if ( this->speed < MIN_SPEED ) {
                         this->speed = 0.0;
-                        this->paused = true;
+                        if ( ! this->paused ) {
+                            this->paused = true;
+                            this->storeODO();
+                        }
                     }
                     else {
                         this->avgSpeed = this->distance / (this->tripTimeMs / 1000.0) * 3.6;
@@ -152,7 +155,7 @@ class Speed {
 
                 if ( this->SpeedSensor ) {
                     this->distance += this->circumference;
-                    this->odoDistance += (this->circumference / 1000);
+                    this->odoDistance += this->circumference;
                     this->_add_to_sensor_buff(now - this->lastSensorTimeMs);
                     this->lastSensorTimeMs = now;
                 }
@@ -163,20 +166,20 @@ class Speed {
                 this->_add_to_sensor_buff(MAX_SENSOR_TIME*3);
             }
 
-            this->storeODO();
-        }
-
-        // Only store ODO if it has changed, so EEPROM is only written when needed
-        void storeODO() {
-            unsigned long oldOdo = this->readODO();
-            unsigned long currentOdo = (int) this->odoDistance;
-            if ( currentOdo!=oldOdo ) {
-                EEPROM.put( ODO_ADDRESS, currentOdo );
+            // Only store ODO if it has changed, so EEPROM is only written when needed
+            unsigned long oldOdo = (int)this->readODO();
+            unsigned long currentOdo = (int)this->odoDistance;
+            if (currentOdo != oldOdo) {
+                this->storeODO();
             }
         }
 
-        unsigned long readODO() {
-            unsigned long readOdo = 0;
+        void storeODO() {
+            EEPROM.put( ODO_ADDRESS, this->odoDistance );
+        }
+
+        float readODO() {
+            float readOdo = 0;
             EEPROM.get(ODO_ADDRESS, readOdo);
             return readOdo;
         }
