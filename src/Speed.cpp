@@ -23,7 +23,7 @@ class Speed {
         // Speed sensor
         bool SpeedSensor = true;
         unsigned long lastSensorTimeMs = 0;
-        volatile unsigned long sensorTimesMs[SENSOR_BUFF] = {0};
+        unsigned long sensorTimesMs[SENSOR_BUFF] = {0};
 
         // Times in ms
         unsigned long startTimeMs = 0;
