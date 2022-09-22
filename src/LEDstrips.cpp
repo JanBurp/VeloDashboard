@@ -10,10 +10,11 @@
 
 #define WELCOME_LENGTH      1
 
-#define NUM_LEDS            186 // 2,85 m * 66 = 188
-#define NUM_USED_LEDS       30
-#define BRIGHTNESS          100
-#define MAX_MILLIAMPS       800
+#define NUM_LEDS            169 // 2,85 m * 66 = 188
+#define NUM_LIGHT_LEDS      36
+#define NUM_INDICATOR_LEDS  56
+#define BRIGHTNESS          120
+#define MAX_MILLIAMPS       1200
 #define FRAMES_PER_SECOND   100
 
 #define PIN_LEFT_STRIP      2
@@ -31,7 +32,7 @@ class LEDstrips {
         CRGB BLACK = CRGB(0,0,0);
         CRGB WHITE = CRGB(64,64,64);
         CRGB RED = CRGB(255,0,0);
-        CRGB ORANGE = CRGB(255,96,0);
+        CRGB ORANGE = CRGB(255,128,0);
         CRGB leds_left[NUM_LEDS], leds_right[NUM_LEDS];
         unsigned int blinkMs;
         unsigned long blinkStartedMs;
@@ -67,15 +68,42 @@ class LEDstrips {
             this->blinkState = false;
         }
 
-        void set_start_end(int strip, CRGB start_color, CRGB end_color) {
-            for(int x=0; x < NUM_USED_LEDS; x++){
-                if ( strip == LEFT || strip == BOTH) {
-                    this->leds_left[x] = start_color;
-                    this->leds_left[NUM_LEDS - x - 1] = end_color;
+        void set_start_end(int strip, CRGB start_color, CRGB end_color, int num_leds = 0, CRGB between_color = CRGB(0, 0, 0) )
+        {
+            if (num_leds==0) {
+                num_leds = NUM_LIGHT_LEDS;
+            }
+            for(int x=0; x < NUM_LEDS; x++){
+
+                if ( x<=num_leds ) {
+                    if (strip == LEFT || strip == BOTH)
+                    {
+                        this->leds_left[x] = start_color;
+                    }
+                    if (strip == RIGHT || strip == BOTH)
+                    {
+                        this->leds_right[x] = start_color;
+                    }
                 }
-                if ( strip == RIGHT || strip == BOTH) {
-                    this->leds_right[x] = start_color;
-                    this->leds_right[NUM_LEDS - x - 1] = end_color;
+
+                if ( x>num_leds && x<(NUM_LEDS-num_leds) ) {
+                    if (strip == LEFT || strip == BOTH) {
+                        this->leds_left[x] = between_color;
+                    }
+                    if (strip == RIGHT || strip == BOTH) {
+                        this->leds_right[x] = between_color;
+                    }
+                }
+
+                if ( x >= (NUM_LEDS-num_leds)) {
+                    if (strip == LEFT || strip == BOTH)
+                    {
+                        this->leds_left[x] = end_color;
+                    }
+                    if (strip == RIGHT || strip == BOTH)
+                    {
+                        this->leds_right[x] = end_color;
+                    }
                 }
             }
             FastLED.show();
@@ -96,27 +124,27 @@ class LEDstrips {
         }
 
         void _blink_start() {
-            this->set_start_end(this->blinkStrip,ORANGE,ORANGE);
+            this->set_start_end(this->blinkStrip,ORANGE,ORANGE,NUM_INDICATOR_LEDS,BLACK);
         }
         void _blink_stop() {
-            this->set_start_end(this->blinkStrip,BLACK,BLACK);
+            this->set_start_end(this->blinkStrip, BLACK, BLACK, NUM_INDICATOR_LEDS,ORANGE);
         }
 
         // This uses delay, so stops all other actions...
         void startup_animation() {
             unsigned long delayMs = 200/NUM_LEDS;
-            const int NUM_GRADIENT_LEDS = NUM_LEDS - 2*NUM_USED_LEDS;
+            const int NUM_GRADIENT_LEDS = NUM_LEDS - 2*NUM_LIGHT_LEDS;
             CRGB colors[NUM_LEDS];
             CRGB gradient_colors[NUM_GRADIENT_LEDS];
             fill_gradient_RGB( gradient_colors, 0, WHITE, NUM_GRADIENT_LEDS, RED );
             for (int i = 0; i < NUM_LEDS; ++i)
             {
-                if (i<=NUM_USED_LEDS) {
+                if (i<=NUM_LIGHT_LEDS) {
                     colors[i] = WHITE;
                 }
                 else {
-                    if (i>NUM_USED_LEDS && i<(NUM_LEDS - NUM_USED_LEDS)) {
-                        colors[i] = gradient_colors[i - NUM_USED_LEDS];
+                    if (i>NUM_LIGHT_LEDS && i<(NUM_LEDS - NUM_LIGHT_LEDS)) {
+                        colors[i] = gradient_colors[i - NUM_LIGHT_LEDS];
                     }
                     else {
                         colors[i] = RED;
@@ -131,14 +159,14 @@ class LEDstrips {
                 for (i = 0; i < NUM_LEDS; ++i) {
                     this->leds_left[i] = colors[i];
                     this->leds_right[i] = colors[i];
-                    if (i>=NUM_USED_LEDS) {
-                        this->leds_left[i - NUM_USED_LEDS] = BLACK;
-                        this->leds_right[i - NUM_USED_LEDS] = BLACK;
+                    if (i>=NUM_LIGHT_LEDS) {
+                        this->leds_left[i - NUM_LIGHT_LEDS] = BLACK;
+                        this->leds_right[i - NUM_LIGHT_LEDS] = BLACK;
                     }
                     delay(delayMs);
                     FastLED.show();
                 }
-                for (i = NUM_LEDS - NUM_USED_LEDS; i < NUM_LEDS; ++i) {
+                for (i = NUM_LEDS - NUM_LIGHT_LEDS; i < NUM_LEDS; ++i) {
                     this->leds_left[i] = BLACK;
                     this->leds_right[i] = BLACK;
                     delay(delayMs);
@@ -165,14 +193,7 @@ class LEDstrips {
 			}
 		}
 
-		// /**
-		//  * Turn on the OUTPUT, then turn it off immediately.
-		//  * A single impulse of light will be visible if OUTPUT's minDurationMs is long enough.
-		//  */
-		// void flash() {
-		// 	this->set(true);
-		// 	this->set(false);
-		// }
+
 };
 
 #endif
