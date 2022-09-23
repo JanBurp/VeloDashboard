@@ -127,7 +127,7 @@ class LEDstrips {
             this->set_start_end(this->blinkStrip,ORANGE,ORANGE,NUM_INDICATOR_LEDS,BLACK);
         }
         void _blink_stop() {
-            this->set_start_end(this->blinkStrip, BLACK, BLACK, NUM_INDICATOR_LEDS,ORANGE);
+            this->set_start_end(this->blinkStrip, BLACK, BLACK, NUM_INDICATOR_LEDS,BLACK);
         }
 
         // This uses delay, so stops all other actions...
