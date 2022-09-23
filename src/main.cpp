@@ -107,6 +107,7 @@ int read_indicators() {
 }
 
 void change_indicators(int state) {
+    LEDstrips.normal();
     switch (state) {
         case LEFT :
             LedRight.off();
