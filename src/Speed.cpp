@@ -2,6 +2,14 @@
 #define Speed_h
 
 #include "Arduino.h"
+#include <EEPROM.h>
+
+#define ODO_ADDRESS     0
+
+#define SENSOR_BUFF     8
+#define MAX_SENSOR_TIME 1000
+#define SPEED_CALC_TIME 100
+#define MIN_SPEED       2
 
 class Speed {
 
@@ -9,11 +17,17 @@ class Speed {
         byte pin;
 
         bool started = false;
-        bool SpeedSensor = false;
-        unsigned long lastSensorTimeMs = 0;
-        unsigned long SensorTimeMs = 0;
+        bool paused = true;
+        unsigned long lastCalcedTime = 0;
 
+        // Speed sensor
+        bool SpeedSensor = true;
+        unsigned long lastSensorTimeMs = 0;
+        unsigned long sensorTimesMs[SENSOR_BUFF] = {0};
+
+        // Times in ms
         unsigned long startTimeMs = 0;
+        unsigned long runningTimeMs = 0;
         unsigned long tripTimeMs = 0;
 
         // all in meters or meters/per hour
@@ -21,8 +35,16 @@ class Speed {
         float speed = 0.0;
         float maxSpeed = 0.0;
         float avgSpeed = 0.0;
+        float odoDistance = this->readODO(); // total meters
 
-        float omtrek = 1.4; // meters
+        float circumference = 1.450; // meters
+        // 23-406 	1.420
+        // 28-406 	1.450
+        // 35-406 	1.510
+        // 40-406 	1.540
+        // 47-406 	1.580
+        // 50-406 	1.600
+        // 54-406 	1.620
 
     public:
 
@@ -31,66 +53,145 @@ class Speed {
             pinMode(this->pin, INPUT_PULLUP);
 		}
 
-        String getSpeedasString(){
-            return String(this->speed,1);
+        bool isStarted() {
+            return this->started;
         }
 
-        String getAvgSpeedasString() {
-            return String(this->avgSpeed,1);
+        bool isPaused() {
+            return this->paused;
         }
 
-        String getMaxSpeedasString() {
-            return String(this->maxSpeed,1);
+        bool getSpeedSensor() {
+            return this->SpeedSensor;
         }
 
-        String getDistanceasString() {
-            return String(this->distance,1);
+        float getSpeed(){
+            return this->speed;
+        }
+
+        float getAvgSpeed() {
+            return this->avgSpeed;
+        }
+
+        bool isFaster() {
+            return this->speed > this->avgSpeed;
+        }
+
+        float getMaxSpeed() {
+            return this->maxSpeed;
+        }
+
+        float getDistance() {
+            return this->distance / 1000;
+        }
+
+        unsigned long getOdoDistance() {
+            return (int) this->odoDistance / 1000;
+        }
+
+        unsigned long getTripTime() {
+            return this->tripTimeMs;
+        }
+
+        unsigned long getTotalTime() {
+            return millis() - this->startTimeMs;
         }
 
         void loop() {
-
             bool sensor = digitalRead(this->pin);
             unsigned long now = millis();
 
-            if (sensor != this->SpeedSensor)
-            {
+            if ( this->started ) {
+                unsigned long calcedTime = now - this->lastCalcedTime;
+                if (calcedTime >= SPEED_CALC_TIME) {
+                    this->lastCalcedTime = now;
+
+                    // Calc sensor time average (only those that are larger than 0)
+                    int buffLength = SENSOR_BUFF;
+                    long totalSensorTime = 0;
+                    for (size_t i = 0; i < SENSOR_BUFF; i++)
+                    {
+                        if ( this->sensorTimesMs[i]>0 ) {
+                            totalSensorTime += this->sensorTimesMs[i];
+                        }
+                        else {
+                            buffLength--;
+                        }
+                    }
+                    long avgSensorTime = totalSensorTime / buffLength;
+
+                    // Calc speeds & times
+                    float Speed_meter_sec = this->circumference / (avgSensorTime / 1000.0);
+                    this->speed = Speed_meter_sec * 3.6;
+                    if ( this->speed < MIN_SPEED ) {
+                        this->speed = 0.0;
+                        if ( ! this->paused ) {
+                            this->paused = true;
+                            this->storeODO();
+                        }
+                    }
+                    else {
+                        this->avgSpeed = this->distance / (this->tripTimeMs / 1000.0) * 3.6;
+                        if (this->speed < 10000000 && this->speed >= this->maxSpeed) {
+                            this->maxSpeed = this->speed;
+                        }
+                        this->paused = false;
+                        this->tripTimeMs += now - this->runningTimeMs;
+                    }
+                    this->runningTimeMs = now;
+
+                }
+            }
+
+            if (sensor != this->SpeedSensor) {
                 this->SpeedSensor = sensor;
 
-                if ( ! this->started )
-                {
-                    this->lastSensorTimeMs = now;
+                if ( ! this->started ) {
                     this->startTimeMs = now;
-                }
-
-                if ( this->SpeedSensor )
-                {
-                    this->distance += this->omtrek;
-                    this->tripTimeMs = now - this->startTimeMs;
-                    this->SensorTimeMs = now - this->lastSensorTimeMs;
+                    this->runningTimeMs = now;
                     this->lastSensorTimeMs = now;
-
-                    float Speed_meter_sec = this->omtrek / (this->SensorTimeMs / 1000.0);
-                    this->speed = Speed_meter_sec * 3.6;
-
-                    if ( this->speed < 10000000 && this->speed >= this->maxSpeed )
-                    {
-                        this->maxSpeed = this->speed;
-                    }
-                    this->avgSpeed = this->distance / ( this->tripTimeMs / 1000.0) * 3.6;
-
-                    // Serial.print("Distance: \t");Serial.print(this->distance);
-                    // Serial.print("\tSpeed m: \t");Serial.print(Speed_meter_sec);
-                    // Serial.print("\tSpeed: \t");Serial.print(this->speed);
-                    // Serial.print("\tAvg Speed: \t");Serial.print(this->avgSpeed);
-                    // Serial.print("\tMax Speed: \t");Serial.print(this->maxSpeed);
-                    // Serial.print("\tTime: \t");Serial.print(this->tripTimeMs);
-                    // Serial.println();
-
+                    this->started = true;
                 }
 
-                this->started = true;
-            };
+                if ( this->SpeedSensor ) {
+                    this->distance += this->circumference;
+                    this->odoDistance += this->circumference;
+                    this->_add_to_sensor_buff(now - this->lastSensorTimeMs);
+                    this->lastSensorTimeMs = now;
+                }
+            }
+
+            // If stopped or slow...
+            if ((now - this->lastSensorTimeMs) > MAX_SENSOR_TIME) {
+                this->_add_to_sensor_buff(MAX_SENSOR_TIME*3);
+            }
+
+            // Only store ODO if it has changed, so EEPROM is only written when needed
+            unsigned long oldOdo = (int)this->readODO();
+            unsigned long currentOdo = (int)this->odoDistance;
+            if (currentOdo != oldOdo) {
+                this->storeODO();
+            }
         }
+
+        void storeODO() {
+            EEPROM.put( ODO_ADDRESS, this->odoDistance );
+        }
+
+        float readODO() {
+            float readOdo = 0;
+            EEPROM.get(ODO_ADDRESS, readOdo);
+            return readOdo;
+        }
+
+        void _add_to_sensor_buff(unsigned long sensorTime ) {
+            // Shift sensor times
+            for (size_t i = 0; i < SENSOR_BUFF - 1; i++) {
+                this->sensorTimesMs[i] = this->sensorTimesMs[i + 1];
+            }
+            this->sensorTimesMs[SENSOR_BUFF - 1] = sensorTime;
+        }
+
 };
 
 
