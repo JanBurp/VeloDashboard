@@ -6,7 +6,7 @@
  *
  */
 
-#define DEBUG false
+#define DEBUG true
 
 #include "Button.cpp"
 #include "Output.cpp"

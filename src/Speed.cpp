@@ -50,7 +50,7 @@ class Speed {
 
 		void init(byte pin) {
 			this->pin = pin;
-            pinMode(this->pin, INPUT_PULLUP);
+            // pinMode(this->pin, INPUT_PULLUP);
 		}
 
         bool isStarted() {
@@ -98,80 +98,85 @@ class Speed {
         }
 
         void loop() {
-            bool sensor = digitalRead(this->pin);
-            unsigned long now = millis();
+            // int value = analogRead(this->pin);
+            // if (value !=1017 ) {
+            //     Serial.print("\tSENSOR: \t");Serial.print(millis()); Serial.print("\t");Serial.println(value);
+            // }
 
-            if ( this->started ) {
-                unsigned long calcedTime = now - this->lastCalcedTime;
-                if (calcedTime >= SPEED_CALC_TIME) {
-                    this->lastCalcedTime = now;
+            // bool sensor = digitalRead(this->pin);
+            // unsigned long now = millis();
 
-                    // Calc sensor time average (only those that are larger than 0)
-                    int buffLength = SENSOR_BUFF;
-                    long totalSensorTime = 0;
-                    for (size_t i = 0; i < SENSOR_BUFF; i++)
-                    {
-                        if ( this->sensorTimesMs[i]>0 ) {
-                            totalSensorTime += this->sensorTimesMs[i];
-                        }
-                        else {
-                            buffLength--;
-                        }
-                    }
-                    long avgSensorTime = totalSensorTime / buffLength;
+            // if ( this->started ) {
+            //     unsigned long calcedTime = now - this->lastCalcedTime;
+            //     if (calcedTime >= SPEED_CALC_TIME) {
+            //         this->lastCalcedTime = now;
 
-                    // Calc speeds & times
-                    float Speed_meter_sec = this->circumference / (avgSensorTime / 1000.0);
-                    this->speed = Speed_meter_sec * 3.6;
-                    if ( this->speed < MIN_SPEED ) {
-                        this->speed = 0.0;
-                        if ( ! this->paused ) {
-                            this->paused = true;
-                            this->storeODO();
-                        }
-                    }
-                    else {
-                        this->avgSpeed = this->distance / (this->tripTimeMs / 1000.0) * 3.6;
-                        if (this->speed < 10000000 && this->speed >= this->maxSpeed) {
-                            this->maxSpeed = this->speed;
-                        }
-                        this->paused = false;
-                        this->tripTimeMs += now - this->runningTimeMs;
-                    }
-                    this->runningTimeMs = now;
+            //         // Calc sensor time average (only those that are larger than 0)
+            //         int buffLength = SENSOR_BUFF;
+            //         long totalSensorTime = 0;
+            //         for (size_t i = 0; i < SENSOR_BUFF; i++)
+            //         {
+            //             if ( this->sensorTimesMs[i]>0 ) {
+            //                 totalSensorTime += this->sensorTimesMs[i];
+            //             }
+            //             else {
+            //                 buffLength--;
+            //             }
+            //         }
+            //         long avgSensorTime = totalSensorTime / buffLength;
 
-                }
-            }
+            //         // Calc speeds & times
+            //         float Speed_meter_sec = this->circumference / (avgSensorTime / 1000.0);
+            //         this->speed = Speed_meter_sec * 3.6;
+            //         if ( this->speed < MIN_SPEED ) {
+            //             this->speed = 0.0;
+            //             if ( ! this->paused ) {
+            //                 this->paused = true;
+            //                 this->storeODO();
+            //             }
+            //         }
+            //         else {
+            //             this->avgSpeed = this->distance / (this->tripTimeMs / 1000.0) * 3.6;
+            //             if (this->speed < 10000000 && this->speed >= this->maxSpeed) {
+            //                 this->maxSpeed = this->speed;
+            //             }
+            //             this->paused = false;
+            //             this->tripTimeMs += now - this->runningTimeMs;
+            //         }
+            //         this->runningTimeMs = now;
 
-            if (sensor != this->SpeedSensor) {
-                this->SpeedSensor = sensor;
+            //     }
+            // }
 
-                if ( ! this->started ) {
-                    this->startTimeMs = now;
-                    this->runningTimeMs = now;
-                    this->lastSensorTimeMs = now;
-                    this->started = true;
-                }
+            // if (sensor != this->SpeedSensor) {
+            //     this->SpeedSensor = sensor;
 
-                if ( this->SpeedSensor ) {
-                    this->distance += this->circumference;
-                    this->odoDistance += this->circumference;
-                    this->_add_to_sensor_buff(now - this->lastSensorTimeMs);
-                    this->lastSensorTimeMs = now;
-                }
-            }
+            //     if ( ! this->started ) {
+            //         this->startTimeMs = now;
+            //         this->runningTimeMs = now;
+            //         this->lastSensorTimeMs = now;
+            //         this->started = true;
+            //     }
 
-            // If stopped or slow...
-            if ((now - this->lastSensorTimeMs) > MAX_SENSOR_TIME) {
-                this->_add_to_sensor_buff(MAX_SENSOR_TIME*3);
-            }
+            //     if ( this->SpeedSensor ) {
+            //         this->distance += this->circumference;
+            //         this->odoDistance += this->circumference;
+            //         this->_add_to_sensor_buff(now - this->lastSensorTimeMs);
+            //         this->lastSensorTimeMs = now;
+            //     }
+            // }
 
-            // Only store ODO if it has changed, so EEPROM is only written when needed
-            unsigned long oldOdo = (int)this->readODO();
-            unsigned long currentOdo = (int)this->odoDistance;
-            if (currentOdo != oldOdo) {
-                this->storeODO();
-            }
+            // // If stopped or slow...
+            // if ((now - this->lastSensorTimeMs) > MAX_SENSOR_TIME) {
+            //     this->_add_to_sensor_buff(MAX_SENSOR_TIME*3);
+            // }
+
+            // // Only store ODO if it has changed, so EEPROM is only written when needed
+            // unsigned long oldOdo = (int)this->readODO();
+            // unsigned long currentOdo = (int)this->odoDistance;
+            // if (currentOdo != oldOdo) {
+            //     this->storeODO();
+            // }
         }
 
         void storeODO() {
