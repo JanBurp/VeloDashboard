@@ -98,9 +98,9 @@ class Speed {
         }
 
         void loop() {
-            // int value = analogRead(this->pin);
+            int value = analogRead(this->pin);
             // if (value !=1017 ) {
-            //     Serial.print("\tSENSOR: \t");Serial.print(millis()); Serial.print("\t");Serial.println(value);
+                Serial.print("\tSENSOR: \t");Serial.print(millis()); Serial.print("\t");Serial.println(value);
             // }
 
             // bool sensor = digitalRead(this->pin);
