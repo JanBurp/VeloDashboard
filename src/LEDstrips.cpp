@@ -12,6 +12,7 @@
 
 #define NUM_LEDS            169 // 2,85 m * 66 = 188
 #define NUM_LIGHT_LEDS      36
+#define NUM_LIGHT_LEDS_BACK 56
 #define NUM_INDICATOR_LEDS  56
 #define BRIGHTNESS          120
 #define MAX_MILLIAMPS       1200
@@ -68,6 +69,20 @@ class LEDstrips {
             this->blinkState = false;
         }
 
+        void set(int strip, int start, int end, CRGB color) {
+            for (int x = start; x < end; x++)
+            {
+                if (strip == LEFT || strip == BOTH)
+                {
+                    this->leds_left[x] = color;
+                }
+                if (strip == RIGHT || strip == BOTH)
+                {
+                    this->leds_right[x] = color;
+                }
+            }
+        }
+
         void set_start_end(int strip, CRGB start_color, CRGB end_color, int num_leds = 0, CRGB between_color = CRGB(0, 0, 0) )
         {
             if (num_leds==0) {
@@ -110,9 +125,12 @@ class LEDstrips {
         }
 
         void normal(int strip = BOTH) {
-            this->set_start_end(strip,WHITE,RED);
             this->blinkMs = 0;
             this->blinkState = false;
+            this->set(strip,0,NUM_LIGHT_LEDS,WHITE);
+            this->set(strip, NUM_LIGHT_LEDS, NUM_LEDS - NUM_LIGHT_LEDS_BACK, BLACK);
+            this->set(strip, NUM_LEDS - NUM_LIGHT_LEDS_BACK, NUM_LEDS, RED);
+            FastLED.show();
         }
 
         void blink(int strip, unsigned int periodMs = 500) {
