@@ -189,7 +189,7 @@ void displayShow( int type ) {
         {
             display.setTextSize(2);
             display.setTextColor(WHITE);
-            display.setCursor(110, 10);
+            display.setCursor(116, 10);
             if (SpeedoMeter.isFaster())
                 display.print("+");
             else
