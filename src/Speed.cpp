@@ -6,8 +6,8 @@
 
 #define ODO_ADDRESS     0
 
-#define SENSOR_BUFF     10
-#define MIN_SENSOR_TIME 100
+#define SENSOR_BUFF     12
+#define MIN_SENSOR_TIME 75
 #define MAX_SENSOR_TIME 3000
 #define SPEED_CALC_TIME 1000
 #define MIN_SPEED       2
