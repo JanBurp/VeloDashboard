@@ -17,6 +17,7 @@ class Speed {
     private:
         bool started = false;
         bool paused = true;
+        unsigned long pausedTime = 0;
         unsigned long lastCalcedTime = 0;
 
         // Speed sensor
@@ -121,6 +122,10 @@ class Speed {
 
                 if (buffLength>0) {
                     this->paused = false;
+                    if ( this->pausedTime > 0 ) {
+                        this->tripTimeMs -= (now - this->pausedTime);
+                        this->pausedTime = 0;
+                    }
                     this->SpeedSensor = ! this->SpeedSensor;
                     if ( ! this->started ) {
                         this->startTimeMs = now;
@@ -149,7 +154,6 @@ class Speed {
                         // Triptimes
                         this->tripTimeMs += now - this->runningTimeMs;
                         this->runningTimeMs = now;
-
                     }
 
                     if ( buffLength==0 && ( now - this->lastSensorTimeMs > MAX_SENSOR_TIME ) )
@@ -158,6 +162,7 @@ class Speed {
                         if ( !this->paused )
                         {
                             this->paused = true;
+                            this->pausedTime = now;
                             this->storeODO();
                         }
                     }
