@@ -189,7 +189,7 @@ void displayShow( int type ) {
         {
             display.setTextSize(2);
             display.setTextColor(WHITE);
-            display.setCursor(110, 10);
+            display.setCursor(116, 10);
             if (SpeedoMeter.isFaster())
                 display.print("+");
             else
@@ -314,6 +314,10 @@ time_t getTeensy3Time()
  * ==== SETUP ====
  *
  */
+void sensorChange()
+{
+    SpeedoMeter.sensorTrigger();
+}
 
 void setup()
 {
@@ -347,11 +351,15 @@ void setup()
 
     displayShow(DISPLAY_WELCOME);
 
-    SpeedoMeter.init(SPEED_INPUT);
+    SpeedoMeter.init();
     LEDstrips.startup_animation();
 
     displayShow(CurrentDisplay);
+
+    pinMode(SPEED_INPUT, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(SPEED_INPUT), sensorChange, CHANGE);
 }
+
 
 /**
  *
@@ -412,6 +420,12 @@ void loop() {
     LEDstrips.loop();
 
     displayShow(CurrentDisplay);
+
+    // bool sensor = digitalRead(SPEED_INPUT);
+    // Serial.print("\tSENSOR: \t");
+    // Serial.print(millis());
+    // Serial.print("\t");
+    // Serial.println(sensor);
 
     // if (DEBUG) {
     //     Serial.print("\tINDICATOR: \t");  Serial.print(IndicatorState);
