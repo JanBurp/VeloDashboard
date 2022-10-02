@@ -217,9 +217,9 @@ class LEDstrips {
         {
             uint32_t left = calculate_unscaled_power_mW(this->leds_left, NUM_LEDS);
             uint32_t right = calculate_unscaled_power_mW(this->leds_right, NUM_LEDS);
-            unsigned long power = left + right;
-            unsigned int current = (int) ( (power / 5.0) * (BRIGHTNESS / 255.0) );
-            return current;
+            float current = (left + right) / 5.0;
+            current = current * (BRIGHTNESS / 255.0);
+            return (int) current;
         }
 };
 
