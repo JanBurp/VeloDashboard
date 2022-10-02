@@ -14,7 +14,7 @@
 #define NUM_LIGHT_LEDS      36
 #define NUM_LIGHT_LEDS_BACK 56
 #define NUM_INDICATOR_LEDS  56
-#define BRIGHTNESS          120
+#define BRIGHTNESS          128
 #define MAX_MILLIAMPS       1200
 #define FRAMES_PER_SECOND   100
 
@@ -31,7 +31,8 @@ class LEDstrips {
 
     private:
         CRGB BLACK = CRGB(0,0,0);
-        CRGB WHITE = CRGB(64,64,64);
+        CRGB WHITE = CRGB(52,52,52);
+        CRGB BRIGHT_WHITE = CRGB(255, 255, 255);
         CRGB RED = CRGB(255,0,0);
         CRGB ORANGE = CRGB(255,128,0);
         CRGB leds_left[NUM_LEDS], leds_right[NUM_LEDS];
@@ -127,7 +128,8 @@ class LEDstrips {
         void normal(int strip = BOTH) {
             this->blinkMs = 0;
             this->blinkState = false;
-            this->set(strip,0,NUM_LIGHT_LEDS,WHITE);
+            this->set(strip, 0, 3, BRIGHT_WHITE);
+            this->set(strip, 3, NUM_LIGHT_LEDS,WHITE);
             this->set(strip, NUM_LIGHT_LEDS, NUM_LEDS - NUM_LIGHT_LEDS_BACK, BLACK);
             this->set(strip, NUM_LEDS - NUM_LIGHT_LEDS_BACK, NUM_LEDS, RED);
             FastLED.show();
