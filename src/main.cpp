@@ -212,7 +212,7 @@ void displayShow( int type ) {
 
         case DISPLAY_SPEED_AND_TIME:
             char timeStr[7];
-            if ( second()%2 ==0 ) {
+            if ( (millis()/500) %2 == 0 ) {
                 snprintf(timeStr, 7, "%2i:%02i", hour(), minute() );
             }
             else {
