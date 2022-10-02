@@ -50,6 +50,7 @@ class Speed {
 
 		void init() {
             this->odoDistance = this->readODO();
+            // this->odoDistance = 2420000.0;
         }
 
         bool isStarted() {
