@@ -142,10 +142,12 @@ class LEDstrips {
         }
 
         void _blink_start() {
-            this->set_start_end(this->blinkStrip,ORANGE,ORANGE,NUM_INDICATOR_LEDS,BLACK);
+            this->set_all(this->blinkStrip,ORANGE);
+            // this->set_start_end(this->blinkStrip,ORANGE,ORANGE,NUM_INDICATOR_LEDS,BLACK);
         }
         void _blink_stop() {
-            this->set_start_end(this->blinkStrip, BLACK, BLACK, NUM_INDICATOR_LEDS,BLACK);
+            this->set_all(this->blinkStrip, BLACK);
+            // this->set_start_end(this->blinkStrip, BLACK, BLACK, NUM_INDICATOR_LEDS,BLACK);
         }
 
         // This uses delay, so stops all other actions...
@@ -211,7 +213,14 @@ class LEDstrips {
 			}
 		}
 
-
+        unsigned int max_used_milliamps()
+        {
+            uint32_t left = calculate_unscaled_power_mW(this->leds_left, NUM_LEDS);
+            uint32_t right = calculate_unscaled_power_mW(this->leds_right, NUM_LEDS);
+            unsigned long power = left + right;
+            unsigned int current = (int) ( (power / 5.0) * (BRIGHTNESS / 255.0) );
+            return current;
+        }
 };
 
 #endif

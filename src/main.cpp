@@ -269,24 +269,23 @@ void displayShow( int type ) {
             unsigned int minutes = tripTimeSec / 60;
             unsigned int seconds = tripTimeSec % 60;
             snprintf(timeTripStr, 7, "%2u:%02u", minutes,seconds );
-            // char totalTripTimeStr[7];
-            // unsigned long totalTimeMs = SpeedoMeter.getTotalTime();
-            // unsigned long totalTimeSec = totalTimeMs / 1000;
-            // minutes = totalTimeSec / 60;
-            // seconds = totalTimeSec % 60;
-            // snprintf(totalTripTimeStr, 7, "%2u:%02u", minutes, seconds);
+
+            char usedMilliAmps[5];
+            unsigned int milliAmps = LEDstrips.max_used_milliamps();
+            snprintf(usedMilliAmps, 5, "%4u", milliAmps );
 
             display.setTextSize(1);
             display.setCursor(0, SCREEN_HALF_HEIGHT_INFO);
             display.print("trip time");
-            // display.setCursor(SCREEN_WIDTH - 32, SCREEN_HALF_HEIGHT_INFO);
-            // display.print("total");
+
+            display.setCursor(SCREEN_WIDTH - 16, SCREEN_HALF_HEIGHT_INFO);
+            display.print("mA");
 
             display.setTextSize(2);
             display.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
             display.print(timeTripStr);
-            // display.setCursor(68, SCREEN_HALF_HEIGHT_VALUES);
-            // display.print(totalTripTimeStr);
+            display.setCursor(80, SCREEN_HALF_HEIGHT_VALUES);
+            display.print(usedMilliAmps);
 
             break;
         }
