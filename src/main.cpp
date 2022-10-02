@@ -169,12 +169,12 @@ void displayShow( int type ) {
         display.setCursor(0, 0);
         display.print(speedStr);
         snprintf(speedStr, 3, "%1i", precision);
-        display.setCursor(80, 0);
+        display.setCursor(74, 0);
         display.print(speedStr);
 
         // Sensor
-        display.setTextSize(4);
-        display.setCursor(56, 8);
+        display.setTextSize(3);
+        display.setCursor(54, 14);
         if (SpeedoMeter.getSpeedSensor())
         {
             display.print(".");
