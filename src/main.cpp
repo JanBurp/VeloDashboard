@@ -322,6 +322,13 @@ void setup()
 {
     if (DEBUG) Serial.begin(9600);
 
+    // Disable unused pins
+    int unusedPins[] = {0,1,4,5,6,9,10,13,16,17};
+    for (size_t pin = 0; pin < 10; pin++)
+    {
+        pinMode(unusedPins[pin],INPUT_DISABLE);
+    }
+
     setSyncProvider( getTeensy3Time );
 
     // Indicator inputs
@@ -419,18 +426,5 @@ void loop() {
     LEDstrips.loop();
 
     displayShow(CurrentDisplay);
-
-    // bool sensor = digitalRead(SPEED_INPUT);
-    // Serial.print("\tSENSOR: \t");
-    // Serial.print(millis());
-    // Serial.print("\t");
-    // Serial.println(sensor);
-
-    // if (DEBUG) {
-    //     Serial.print("\tINDICATOR: \t");  Serial.print(IndicatorState);
-    //     Serial.print("\tALARM: \t");      Serial.print(AlarmState);
-    //     Serial.println("");
-    // };
-
 }
 
