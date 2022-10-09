@@ -12,7 +12,7 @@
 
 #define NUM_LEDS            169 // 2,85 m * 66 = 188
 #define NUM_LIGHT_LEDS      36
-#define NUM_LIGHT_LEDS_BACK 56
+#define NUM_LIGHT_LEDS_BACK 48
 #define NUM_INDICATOR_LEDS  56
 #define BRIGHTNESS          128
 #define MAX_MILLIAMPS       1200
