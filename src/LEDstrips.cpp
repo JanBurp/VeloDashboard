@@ -10,13 +10,22 @@
 
 #define WELCOME_LENGTH      1
 
-#define NUM_LEDS            169 // 2,85 m * 66 = 188
-#define NUM_LIGHT_LEDS      36
-#define NUM_LIGHT_LEDS_BACK 48
-#define NUM_INDICATOR_LEDS  56
-#define BRIGHTNESS          128
-#define MAX_MILLIAMPS       1200
-#define FRAMES_PER_SECOND   100
+// #define NUM_LEDS            169 // 2,85 m * 66 = 188
+// #define NUM_LIGHT_LEDS      36
+// #define NUM_LIGHT_LEDS_BACK 48
+// #define NUM_INDICATOR_LEDS  56
+// #define BRIGHTNESS          128
+// #define MAX_MILLIAMPS       1200
+// #define FRAMES_PER_SECOND   100
+
+// TEST:
+#define NUM_LEDS 19
+#define NUM_LIGHT_LEDS 5
+#define NUM_LIGHT_LEDS_BACK 6
+#define NUM_INDICATOR_LEDS 8
+#define BRIGHTNESS 20
+#define MAX_MILLIAMPS 100
+#define FRAMES_PER_SECOND 100
 
 #define PIN_LEFT_STRIP      2
 #define PIN_RIGHT_STRIP     3
