@@ -7,6 +7,7 @@
  */
 
 #define DEBUG false
+#define TEST true   // Test setup @ home
 
 #include "Button.cpp"
 #include "Output.cpp"
@@ -426,5 +427,10 @@ void loop() {
     LEDstrips.loop();
 
     displayShow(CurrentDisplay);
+
+    // Fake Speed for testing
+    if (TEST) {
+        sensorChange();
+    }
 }
 
