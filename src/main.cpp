@@ -31,8 +31,6 @@ time_t RTCTime;
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-
-
 /**
  * other PINS
  */
@@ -46,10 +44,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 #define INPUT_INDICATOR_LEFT      15
 #define INPUT_ALARM               UI_BUTTON_RED
 
-#define OUTPUT_LED_RIGHT          7
-#define OUTPUT_LED_LEFT           8
 #define OUTPUT_BUZZER             12 // PWM
-
 #define SPEED_INPUT               11
 
 #define DISPLAY_SWITCH_LEFT       UI_BUTTON_YELLOW_LEFT
@@ -59,15 +54,26 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
  * DEFAULTS
  */
 
-#define BUZZER_TONE               660
-#define INDICATOR_TIME            800
-#define ALARM_TIME                400
-
 #define DISPLAY_WELCOME           0
 #define DISPLAY_SPEED_AND_TIME    1
 #define DISPLAY_SPEEDS            2
 #define DISPLAY_DISTANCE          3
 #define DISPLAY_TIME              4
+
+/**
+ * TIMERS
+ */
+#include "TeensyTimerTool.h"
+using namespace TeensyTimerTool;
+
+PeriodicTimer calculationTimer, indicatorTimer, displayTimer;
+
+#define SPEED_CALCULATION_TIMER  1000ms
+#define INDICATOR_TIMER          800ms
+
+#define BUZZER_TONE              660
+#define INDICATOR_TIME           800
+#define ALARM_TIME               400
 
 
 /**
@@ -80,8 +86,6 @@ Button ButtonIndicatorAlarm;
 Button ButtonLights;
 Button DisplayButtonLeft;
 Button DisplayButtonRight;
-Output LedRight;
-Output LedLeft;
 Output Buzzer;
 Speed SpeedoMeter;
 LEDstrips LEDstrips;
@@ -93,36 +97,37 @@ int CurrentDisplay = DISPLAY_SPEED_AND_TIME;
  */
 
 bool AlarmState = false;
-int IndicatorState = 0;
+bool IndicatorState = false;
+int IndicatorButtonState = 0;  // -1 = left, 1 = right, 0 = off
 
 
 int read_indicators() {
-    int IndicatorState = 0;
+    int IndicatorButtonState = 0;
     if ( ButtonIndicatorRight.read() ) {
-        IndicatorState = 1;
+        IndicatorButtonState = 1;
     }
     if ( ButtonIndicatorLeft.read() ) {
-        IndicatorState = -1;
+        IndicatorButtonState = -1;
     }
-    return IndicatorState;
+    return IndicatorButtonState;
 }
 
 void change_indicators(int state) {
     LEDstrips.normal();
     switch (state) {
         case LEFT :
-            LedRight.off();
-            LedLeft.blink(INDICATOR_TIME);
+            // LedRight.off();
+            // LedLeft.blink(INDICATOR_TIME);
             LEDstrips.blink(LEFT,INDICATOR_TIME);
             break;
         case RIGHT :
-            LedRight.blink(INDICATOR_TIME);
-            LedLeft.off();
+            // LedRight.blink(INDICATOR_TIME);
+            // LedLeft.off();
             LEDstrips.blink(RIGHT,INDICATOR_TIME);
             break;
         default:
-            LedRight.off();
-            LedLeft.off();
+            // LedRight.off();
+            // LedLeft.off();
             LEDstrips.normal(BOTH);
     }
 }
@@ -303,8 +308,7 @@ void displayShow( int type ) {
  * @return time_t
  */
 
-time_t getTeensy3Time()
-{
+time_t getTeensy3Time() {
     return Teensy3Clock.get();
 }
 
@@ -314,19 +318,22 @@ time_t getTeensy3Time()
  * ==== SETUP ====
  *
  */
-void sensorChange()
-{
+void sensorChange() {
     SpeedoMeter.sensorTrigger();
 }
 
-void setup()
-{
+
+void IndicatorLoop() {
+
+}
+
+
+void setup() {
     if (DEBUG) Serial.begin(9600);
 
     // Disable unused pins
-    int unusedPins[] = {0,1,4,5,6,9,10,13,16,17};
-    for (size_t pin = 0; pin < 10; pin++)
-    {
+    int unusedPins[] = {0,1,4,5,6,7,8,9,10,13,16,17};
+    for (size_t pin = 0; pin < 10; pin++) {
         pinMode(unusedPins[pin],INPUT_DISABLE);
     }
 
@@ -336,9 +343,6 @@ void setup()
     ButtonIndicatorRight.init(INPUT_INDICATOR_RIGHT);
     ButtonIndicatorLeft.init(INPUT_INDICATOR_LEFT);
     ButtonIndicatorAlarm.init(INPUT_ALARM);
-    // Indicator LEDS
-    LedRight.init(OUTPUT_LED_RIGHT);
-    LedLeft.init(OUTPUT_LED_LEFT);
 
     DisplayButtonLeft.init(DISPLAY_SWITCH_LEFT);
     DisplayButtonRight.init(DISPLAY_SWITCH_RIGHT);
@@ -355,7 +359,6 @@ void setup()
             ;
     }
 
-
     displayShow(DISPLAY_WELCOME);
 
     SpeedoMeter.init();
@@ -365,12 +368,14 @@ void setup()
 
     pinMode(SPEED_INPUT, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(SPEED_INPUT), sensorChange, CHANGE);
-}
 
+    calculationTimer.begin( [] { SpeedoMeter.loop(); }, SPEED_CALCULATION_TIMER );
+    indicatorTimer.begin( IndicatorLoop , INDICATOR_TIMER );
+}
 
 /**
  *
- * ==== MAIN LOOP ====
+ * ==== MAIN LOOP - Reading buttons ====
  *
  */
 
@@ -380,24 +385,24 @@ void loop() {
     if ( ButtonIndicatorAlarm.readOnce() ) {
         AlarmState = ! AlarmState;
         if ( AlarmState ) {
-            IndicatorState = 0; // Indicators to default state
-            LedRight.blink(ALARM_TIME);
-            LedLeft.blink(ALARM_TIME);
+            IndicatorButtonState = 0; // Indicators to default state
+            // LedRight.blink(ALARM_TIME);
+            // LedLeft.blink(ALARM_TIME);
             LEDstrips.blink(BOTH,ALARM_TIME);
         }
         else {
-            LedRight.off();
-            LedLeft.off();
+            // LedRight.off();
+            // LedLeft.off();
             LEDstrips.normal(BOTH);
         }
     }
 
     // INDICATORS (only when there is no alarm)
     if ( ! AlarmState ) {
-        int newIndicatorState = read_indicators();
-        if ( newIndicatorState != IndicatorState  ) {
-            IndicatorState = newIndicatorState;
-            change_indicators(IndicatorState);
+        int newIndicatorButtonState = read_indicators();
+        if ( newIndicatorButtonState != IndicatorButtonState  ) {
+            IndicatorButtonState = newIndicatorButtonState;
+            change_indicators(IndicatorButtonState);
         }
     }
 
@@ -421,9 +426,9 @@ void loop() {
     }
 
     // Loops
-    LedRight.loop();
-    LedLeft.loop();
-    SpeedoMeter.loop();
+    // LedRight.loop();
+    // LedLeft.loop();
+    // SpeedoMeter.loop();
     LEDstrips.loop();
 
     displayShow(CurrentDisplay);
