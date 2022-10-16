@@ -45,12 +45,8 @@ class LEDstrips {
         CRGB RED = CRGB(255,0,0);
         CRGB ORANGE = CRGB(255,128,0);
         CRGB leds_left[NUM_LEDS], leds_right[NUM_LEDS];
-        unsigned int blinkMs;
-        unsigned long blinkStartedMs;
-        int blinkStrip;
-        bool blinkState;
-        float blinkDuty;
-
+        bool blinkLeft = false;
+        bool blinkRight = false;
 
 	public:
 
@@ -62,6 +58,11 @@ class LEDstrips {
 		}
 
         void set_all(int strip, CRGB color) {
+            this->_set_all(strip,color);
+            FastLED.show();
+        }
+
+        void _set_all(int strip, CRGB color) {
             for(int x=0; x < NUM_LEDS; x++){
                 if ( strip == LEFT || strip == BOTH) {
                     this->leds_left[x] = color;
@@ -70,13 +71,14 @@ class LEDstrips {
                     this->leds_right[x] = color;
                 }
             }
-            FastLED.show();
         }
+
+
 
         void off(int strip = BOTH) {
             this->set_all(strip,BLACK);
-            this->blinkMs = 0;
-            this->blinkState = false;
+            this->blinkLeft = false;
+            this->blinkRight = false;
         }
 
         void set(int strip, int start, int end, CRGB color) {
@@ -135,8 +137,8 @@ class LEDstrips {
         }
 
         void normal(int strip = BOTH) {
-            this->blinkMs = 0;
-            this->blinkState = false;
+            this->blinkLeft = false;
+            this->blinkRight = false;
             this->set(strip, 0, 3, BRIGHT_WHITE);
             this->set(strip, 3, NUM_LIGHT_LEDS,WHITE);
             this->set(strip, NUM_LIGHT_LEDS, NUM_LEDS - NUM_LIGHT_LEDS_BACK, BLACK);
@@ -144,22 +146,51 @@ class LEDstrips {
             FastLED.show();
         }
 
-        void blink(int strip, unsigned int periodMs = 500) {
-            this->blinkStrip = strip;
-            this->blinkMs = periodMs;
-            this->blinkStartedMs = millis();
-            this->blinkState = true;
-            this->_blink_start();
-        }
+		/**
+		 * Call this in the main loop.
+		 */
+		void loop(bool active, bool leftStrip, bool rightStrip ) {
+            if ( ! active ) {
+                this->normal(BOTH);
+            }
+            else {
+                bool show = false;
 
-        void _blink_start() {
-            this->set_all(this->blinkStrip,ORANGE);
-            // this->set_start_end(this->blinkStrip,ORANGE,ORANGE,NUM_INDICATOR_LEDS,BLACK);
-        }
-        void _blink_stop() {
-            this->set_all(this->blinkStrip, BLACK);
-            // this->set_start_end(this->blinkStrip, BLACK, BLACK, NUM_INDICATOR_LEDS,BLACK);
-        }
+                if ( leftStrip ) {
+                    if ( ! this->blinkLeft ) {
+                        this->_set_all(LEFT,ORANGE);
+                        show = true;
+                    }
+                }
+                else {
+                    if ( this->blinkLeft ) {
+                        this->_set_all(LEFT,BLACK);
+                        show = true;
+                    }
+                }
+
+                if ( rightStrip ) {
+                    if ( ! this->blinkRight ) {
+                        this->_set_all(RIGHT,ORANGE);
+                        show = true;
+                    }
+                }
+                else {
+                    if ( this->blinkRight ) {
+                        this->_set_all(RIGHT,BLACK);
+                        show = true;
+                    }
+                }
+
+                if (show) {
+                    FastLED.show();
+                }
+            }
+
+            this->blinkLeft = leftStrip;
+            this->blinkRight = rightStrip;
+		}
+
 
         // This uses delay, so stops all other actions...
         void startup_animation() {
@@ -207,22 +238,6 @@ class LEDstrips {
             this->normal();
         }
 
-
-		/**
-		 * Call this in the main loop.
-		 */
-		void loop() {
-			if (this->blinkMs > 0) {
-				unsigned long t = ((millis() - this->blinkStartedMs) % this->blinkMs);
-				this->blinkState = (t < this->blinkMs/2);
-                if (this->blinkState) {
-                    this->_blink_start();
-                }
-                else {
-                    this->_blink_stop();
-                }
-			}
-		}
 
         unsigned int max_used_milliamps()
         {

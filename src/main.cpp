@@ -11,6 +11,7 @@
 
 #include "Button.cpp"
 #include "Output.cpp"
+#include "IndicatorClass.h"
 #include "LEDstrips.cpp"
 #include "Speed.cpp"
 
@@ -66,14 +67,11 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 #include "TeensyTimerTool.h"
 using namespace TeensyTimerTool;
 
-PeriodicTimer calculationTimer, indicatorTimer, displayTimer;
+PeriodicTimer calculationTimer;
 
 #define SPEED_CALCULATION_TIMER  1000ms
-#define INDICATOR_TIMER          800ms
 
 #define BUZZER_TONE              660
-#define INDICATOR_TIME           800
-#define ALARM_TIME               400
 
 
 /**
@@ -87,50 +85,14 @@ Button ButtonLights;
 Button DisplayButtonLeft;
 Button DisplayButtonRight;
 Output Buzzer;
+
+IndicatorClass Indicators;
 Speed SpeedoMeter;
 LEDstrips LEDstrips;
 
 int CurrentDisplay = DISPLAY_SPEED_AND_TIME;
 
-/**
- * VARIABLES
- */
 
-bool AlarmState = false;
-bool IndicatorState = false;
-int IndicatorButtonState = 0;  // -1 = left, 1 = right, 0 = off
-
-
-int read_indicators() {
-    int IndicatorButtonState = 0;
-    if ( ButtonIndicatorRight.read() ) {
-        IndicatorButtonState = 1;
-    }
-    if ( ButtonIndicatorLeft.read() ) {
-        IndicatorButtonState = -1;
-    }
-    return IndicatorButtonState;
-}
-
-void change_indicators(int state) {
-    LEDstrips.normal();
-    switch (state) {
-        case LEFT :
-            // LedRight.off();
-            // LedLeft.blink(INDICATOR_TIME);
-            LEDstrips.blink(LEFT,INDICATOR_TIME);
-            break;
-        case RIGHT :
-            // LedRight.blink(INDICATOR_TIME);
-            // LedLeft.off();
-            LEDstrips.blink(RIGHT,INDICATOR_TIME);
-            break;
-        default:
-            // LedRight.off();
-            // LedLeft.off();
-            LEDstrips.normal(BOTH);
-    }
-}
 
 void buzzer(bool state) {
     if (state) {
@@ -204,10 +166,10 @@ void displayShow( int type ) {
 
 
         // Indicators
-        if ( LedLeft.getState() ) {
+        if ( Indicators.getStateLeft() ) {
             display.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH-2, 0, SCREEN_HALF_WIDTH-2, SCREEN_HEIGHT, WHITE);
         }
-        if ( LedRight.getState() ) {
+        if ( Indicators.getStateRight() ) {
             display.fillTriangle(SCREEN_HALF_WIDTH+2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH+2, SCREEN_HEIGHT, WHITE);
         }
 
@@ -322,12 +284,6 @@ void sensorChange() {
     SpeedoMeter.sensorTrigger();
 }
 
-
-void IndicatorLoop() {
-
-}
-
-
 void setup() {
     if (DEBUG) Serial.begin(9600);
 
@@ -362,6 +318,7 @@ void setup() {
     displayShow(DISPLAY_WELCOME);
 
     SpeedoMeter.init();
+    Indicators.init();
     LEDstrips.startup_animation();
 
     displayShow(CurrentDisplay);
@@ -370,7 +327,6 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(SPEED_INPUT), sensorChange, CHANGE);
 
     calculationTimer.begin( [] { SpeedoMeter.loop(); }, SPEED_CALCULATION_TIMER );
-    indicatorTimer.begin( IndicatorLoop , INDICATOR_TIMER );
 }
 
 /**
@@ -383,31 +339,29 @@ void loop() {
 
     // ALARM
     if ( ButtonIndicatorAlarm.readOnce() ) {
-        AlarmState = ! AlarmState;
-        if ( AlarmState ) {
-            IndicatorButtonState = 0; // Indicators to default state
-            // LedRight.blink(ALARM_TIME);
-            // LedLeft.blink(ALARM_TIME);
-            LEDstrips.blink(BOTH,ALARM_TIME);
-        }
-        else {
-            // LedRight.off();
-            // LedLeft.off();
-            LEDstrips.normal(BOTH);
-        }
+        Indicators.toggleAlarm();
     }
 
     // INDICATORS (only when there is no alarm)
-    if ( ! AlarmState ) {
-        int newIndicatorButtonState = read_indicators();
-        if ( newIndicatorButtonState != IndicatorButtonState  ) {
-            IndicatorButtonState = newIndicatorButtonState;
-            change_indicators(IndicatorButtonState);
+    if ( ! Indicators.isAlarmSet() ) {
+        if ( ButtonIndicatorRight.read() ) {
+            Indicators.setRight();
+        }
+        else if ( ButtonIndicatorLeft.read() ) {
+            Indicators.setLeft();
+        }
+        else {
+            Indicators.reset();
         }
     }
 
     // BUZZER
-    buzzer( LedRight.getState() || LedLeft.getState() );
+    if ( Indicators.isActive() ) {
+        buzzer( Indicators.getStateLeft() || Indicators.getStateRight() );
+    }
+    else {
+        buzzer(false);
+    }
 
     // Display page
     if ( DisplayButtonLeft.readOnce() ) {
@@ -426,12 +380,12 @@ void loop() {
     }
 
     // Loops
-    // LedRight.loop();
-    // LedLeft.loop();
-    // SpeedoMeter.loop();
-    LEDstrips.loop();
+    LEDstrips.loop( Indicators.isActive(), Indicators.getStateLeft(), Indicators.getStateRight() );
 
     displayShow(CurrentDisplay);
+
+
+
 
     // Fake Speed for testing
     if (TEST) {
