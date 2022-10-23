@@ -95,19 +95,20 @@ public:
 
       OLED.setTextSize(5);
       OLED.setTextColor(WHITE);
-      OLED.setCursor(8, 0);
+      // OLED.setCursor(8, 0);
 
       char speedStr[3];
       snprintf(speedStr, 3, "%2i", decis);
-      OLED.setCursor(0, 0);
+      OLED.setCursor(40, 0);
       OLED.print(speedStr);
       snprintf(speedStr, 3, "%1i", precision);
-      OLED.setCursor(74, 0);
+      OLED.setTextSize(3);
+      OLED.setCursor(110, 14);
       OLED.print(speedStr);
 
       // Sensor
       OLED.setTextSize(3);
-      OLED.setCursor(54, 14);
+      OLED.setCursor(94, 14);
       if (this->Speed->getSpeedSensor())
       {
         OLED.print(".");
@@ -122,7 +123,7 @@ public:
       {
         OLED.setTextSize(2);
         OLED.setTextColor(WHITE);
-        OLED.setCursor(116, 10);
+        OLED.setCursor(0, 10);
         if (this->Speed->isFaster())
           OLED.print("+");
         else

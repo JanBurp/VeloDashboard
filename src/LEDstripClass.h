@@ -20,6 +20,7 @@ private:
   CRGB leds_left[NUM_LEDS], leds_right[NUM_LEDS];
   bool blinkLeft = false;
   bool blinkRight = false;
+  IndicatorClass *Indicators;
 
 public:
   LEDstripClass()
@@ -28,6 +29,11 @@ public:
     FastLED.addLeds<WS2812B, PIN_RIGHT_STRIP, GRB>(this->leds_right, NUM_LEDS);
     FastLED.setBrightness(BRIGHTNESS);
     FastLED.setMaxPowerInVoltsAndMilliamps(5, MAX_MILLIAMPS);
+  }
+
+  void init(IndicatorClass *indicators)
+  {
+    this->Indicators = indicators;
   }
 
   void set_all(int strip, CRGB color)
@@ -135,9 +141,9 @@ public:
   /**
    * Call this in the main loop.
    */
-  void loop(bool active, bool leftStrip, bool rightStrip)
+  void loop()
   {
-    if (!active)
+    if (!this->Indicators->isActive())
     {
       this->normal(BOTH);
     }
@@ -145,7 +151,7 @@ public:
     {
       bool show = false;
 
-      if (leftStrip)
+      if (this->Indicators->getStateLeft())
       {
         if (!this->blinkLeft)
         {
@@ -162,7 +168,7 @@ public:
         }
       }
 
-      if (rightStrip)
+      if (this->Indicators->getStateRight())
       {
         if (!this->blinkRight)
         {
@@ -185,8 +191,8 @@ public:
       }
     }
 
-    this->blinkLeft = leftStrip;
-    this->blinkRight = rightStrip;
+    this->blinkLeft = this->Indicators->getStateLeft();
+    this->blinkRight = this->Indicators->getStateRight();
   }
 
   // This uses delay, so stops all other actions...

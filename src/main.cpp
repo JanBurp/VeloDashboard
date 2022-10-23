@@ -23,7 +23,7 @@ using namespace TeensyTimerTool;
 time_t RTCTime;
 
 // Timers
-PeriodicTimer calculationTimer;
+PeriodicTimer speedCalculationTimer;
 
 
 // Inputs & Outputs
@@ -104,14 +104,15 @@ void setup()
   pinMode(PIN_BUZZER, OUTPUT);
   buzzer(false);
 
-  LEDstrips.startup_animation();
-
   Speed.init();
   Indicators.init();
+  LEDstrips.init( &Indicators );
 
   Display.init(&Speed, &Indicators);
   Display.setDisplayMode(DISPLAY_WELCOME);
   Display.show();
+
+  LEDstrips.startup_animation();
 
   Display.setDisplayMode(DISPLAY_SPEED_AND_TIME);
   Display.show();
@@ -119,25 +120,19 @@ void setup()
   pinMode(PIN_SPEED, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PIN_SPEED), sensorChange, CHANGE);
 
-  calculationTimer.begin( [] { Speed.loop(); }, SPEED_CALCULATION_TIMER );
+  speedCalculationTimer.begin( [] { Speed.loop(); }, SPEED_CALCULATION_TIMER );
 }
 
-/**
- *
- * ==== MAIN LOOP - Reading buttons ====
- *
- */
-
-void loop()
-{
-
-  // ALARM
+/*
+  Read Dashboard buttons & switches
+*/
+void readButtons() {
+  // Alarm
   if (ButtonIndicatorAlarm.readOnce())
   {
     Indicators.toggleAlarm();
   }
-
-  // INDICATORS (only when there is no alarm)
+  // Indicators
   if (!Indicators.isAlarmSet())
   {
     if (ButtonIndicatorRight.read())
@@ -153,18 +148,7 @@ void loop()
       Indicators.reset();
     }
   }
-
-  // BUZZER
-  if (Indicators.isActive())
-  {
-    buzzer(Indicators.getStateLeft() || Indicators.getStateRight());
-  }
-  else
-  {
-    buzzer(false);
-  }
-
-  // Display page
+  // Display pages
   if (DisplayButtonLeft.readOnce())
   {
     Display.resetDisplayMode();
@@ -173,16 +157,38 @@ void loop()
   {
     Display.nextDisplayMode();
   }
-
-  // Animation
+  // Startup animation
   if (ButtonLights.readLongPress(2000))
   {
     LEDstrips.startup_animation();
   }
+}
 
-  // Loops
-  LEDstrips.loop(Indicators.isActive(), Indicators.getStateLeft(), Indicators.getStateRight());
+/*
+  Set buzzer on or off
+*/
+void updateBuzzer() {
+  if (Indicators.isActive())
+  {
+    buzzer(Indicators.getStateLeft() || Indicators.getStateRight());
+  }
+  else
+  {
+    buzzer(false);
+  }
+}
 
+/*
+
+  ==== LOOP ====
+
+*/
+void loop()
+{
+  readButtons();
+  updateBuzzer();
+
+  LEDstrips.loop();
   Display.show();
 
   // Fake Speed for testing
