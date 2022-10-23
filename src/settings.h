@@ -1,5 +1,30 @@
+#pragma once
+
 #define DEBUG false           // [default = false] - set to true for Serial output
 #define TEST true             // [default = false] - set to true for local test environment
+
+/*
+  WHEELS
+*/
+
+typedef struct {
+  char name[8];
+  float circumference;
+} Wheel;
+
+Wheel Wheels[7] = {
+  { "23-406", 1.420 },
+  { "28-406", 1.450 }, // Schwalbe Marathon+
+  { "35-406", 1.510 },
+  { "40-406", 1.540 },
+  { "47-406", 1.580 },
+  { "50-406", 1.600 },
+  { "54-406", 1.620 },
+};
+
+// Change this for you're wheel
+unsigned int WheelNumber = 1;
+
 
 /*
   TIMERS

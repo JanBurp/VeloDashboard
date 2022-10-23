@@ -30,14 +30,7 @@ private:
   float avgSpeed = 0.0;
   float odoDistance = 0.0; // total meters
 
-  float circumference = 1.450; // meters
-                               // 23-406 	1.420
-                               // 28-406 	1.450
-                               // 35-406 	1.510
-                               // 40-406 	1.540
-                               // 47-406 	1.580
-                               // 50-406 	1.600
-                               // 54-406 	1.620
+  float circumference = Wheels[WheelNumber].circumference;
 
 public:
   void init()

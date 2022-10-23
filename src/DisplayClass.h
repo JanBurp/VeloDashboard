@@ -63,17 +63,20 @@ public:
 
   void resetDisplayMode()
   {
-    this->displayMode = this->firstMode;
+    this->displayMode = 0;
   }
 
 
   void _show_welcome() {
-    OLED.setTextSize(4);
-    OLED.setCursor(2, 2);
-    OLED.print("Quest");
-    OLED.setTextSize(3);
-    OLED.setCursor(8, 40);
-    OLED.print("- 631- ");
+    OLED.setTextSize(2);
+    OLED.setCursor(0, 0);
+    OLED.print("Quest 631");
+
+    OLED.setCursor(0, 32);
+    OLED.print( Wheels[WheelNumber].name );
+    OLED.setCursor(0, 48);
+    OLED.print( Wheels[WheelNumber].circumference );
+
   }
 
   void _show_speed() {
