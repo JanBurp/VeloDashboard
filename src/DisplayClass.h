@@ -123,11 +123,11 @@ public:
   void _show_indicators() {
     if (this->Indicators->getStateLeft())
     {
-      OLED.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH - 2, 0, SCREEN_HALF_WIDTH - 2, SCREEN_HEIGHT, WHITE);
+      OLED.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH - 2, 0, SCREEN_HALF_WIDTH - 2, SCREEN_HEIGHT, WHITE );
     }
     if (this->Indicators->getStateRight())
     {
-      OLED.fillTriangle(SCREEN_HALF_WIDTH + 2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH + 2, SCREEN_HEIGHT, WHITE);
+      OLED.fillTriangle(SCREEN_HALF_WIDTH + 2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH + 2, SCREEN_HEIGHT, WHITE );
     }
   }
 
@@ -153,6 +153,15 @@ public:
     {
       OLED.print(" ");
     }
+  }
+
+  void _show_battery() {
+    int height = SCREEN_HEIGHT-SCREEN_HALF_HEIGHT_INFO-3;
+    OLED.drawRect(3, SCREEN_HALF_HEIGHT_INFO, 10, 3, WHITE);
+    OLED.drawRect(0, SCREEN_HALF_HEIGHT_INFO+3, 16, height, WHITE);
+    float percentage = 0.0;
+    int juiceHeight = (height-4) * percentage;
+    OLED.fillRect(2, SCREEN_HALF_HEIGHT_INFO + 1 + (height - juiceHeight), 12, juiceHeight, WHITE );
   }
 
   void _show_speeds() {
@@ -233,6 +242,7 @@ public:
       switch (this->displayMode)
       {
         case DISPLAY_SPEED_AND_TIME:
+          this->_show_battery();
           this->_show_time();
           break;
         case DISPLAY_SPEEDS:
