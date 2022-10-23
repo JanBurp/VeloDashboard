@@ -4,6 +4,9 @@
 #include "settings.h"
 #include "SpeedClass.h"
 #include "IndicatorClass.h"
+#include "LightsClass.h"
+
+#include "Icons.h"
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -21,16 +24,20 @@ private:
   int lastMode = DISPLAY_TRIPTIME;
   SpeedClass *Speed;
   IndicatorClass *Indicators;
+  LightsClass *Lights;
 
 public:
-  void init(SpeedClass *speed, IndicatorClass *indicators)
+  void init(SpeedClass *speed, IndicatorClass *indicators, LightsClass *lights )
   {
     this->Speed = speed;
     this->Indicators = indicators;
+    this->Lights = lights;
     // Address 0x3D for 128x64
-    if (!OLED.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    if (!OLED.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+    {
       Serial.println(F("SSD1306 allocation failed"));
-      for (;;) {
+      for (;;)
+      {
         ;
       }
     }
@@ -66,20 +73,20 @@ public:
     this->displayMode = 0;
   }
 
-
-  void _show_welcome() {
+  void _show_welcome()
+  {
     OLED.setTextSize(2);
     OLED.setCursor(0, 0);
     OLED.print("Quest 631");
 
     OLED.setCursor(0, 32);
-    OLED.print( Wheels[WheelNumber].name );
+    OLED.print(Wheels[WheelNumber].name);
     OLED.setCursor(0, 48);
-    OLED.print( Wheels[WheelNumber].circumference );
-
+    OLED.print(Wheels[WheelNumber].circumference);
   }
 
-  void _show_speed() {
+  void _show_speed()
+  {
     float speed = this->Speed->getSpeed();
     int decis = (int)speed;
     int precision = (speed - decis) * 10;
@@ -111,27 +118,31 @@ public:
     {
       OLED.setTextSize(2);
       OLED.setCursor(0, 10);
-      if (this->Speed->isFaster()) {
-        OLED.fillTriangle(0,16, 5,6, 10,16,  WHITE);
+      if (this->Speed->isFaster())
+      {
+        OLED.fillTriangle(0, 16, 5, 6, 10, 16, WHITE);
       }
-      else {
-        OLED.fillTriangle(0,16, 5,26, 10,16,  WHITE);
+      else
+      {
+        OLED.fillTriangle(0, 16, 5, 26, 10, 16, WHITE);
       }
     }
   }
 
-  void _show_indicators() {
+  void _show_indicators()
+  {
     if (this->Indicators->getStateLeft())
     {
-      OLED.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH - 2, 0, SCREEN_HALF_WIDTH - 2, SCREEN_HEIGHT, WHITE );
+      OLED.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH - 2, 0, SCREEN_HALF_WIDTH - 2, SCREEN_HEIGHT, WHITE);
     }
     if (this->Indicators->getStateRight())
     {
-      OLED.fillTriangle(SCREEN_HALF_WIDTH + 2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH + 2, SCREEN_HEIGHT, WHITE );
+      OLED.fillTriangle(SCREEN_HALF_WIDTH + 2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH + 2, SCREEN_HEIGHT, WHITE);
     }
   }
 
-  void _show_time() {
+  void _show_time()
+  {
     char hourStr[3];
     snprintf(hourStr, 3, "%2i", hour());
     char minStr[3];
@@ -144,7 +155,7 @@ public:
     OLED.print(minStr);
 
     OLED.setTextSize(2);
-    OLED.setCursor(82, SCREEN_HALF_HEIGHT_VALUES + 3 );
+    OLED.setCursor(82, SCREEN_HALF_HEIGHT_VALUES + 3);
     if ((millis() / 500) % 2 == 0)
     {
       OLED.print(":");
@@ -155,16 +166,47 @@ public:
     }
   }
 
-  void _show_battery() {
-    int height = SCREEN_HEIGHT-SCREEN_HALF_HEIGHT_INFO-3;
+  void _show_battery()
+  {
+    int height = SCREEN_HEIGHT - SCREEN_HALF_HEIGHT_INFO - 3;
     OLED.drawRect(3, SCREEN_HALF_HEIGHT_INFO, 10, 3, WHITE);
-    OLED.drawRect(0, SCREEN_HALF_HEIGHT_INFO+3, 16, height, WHITE);
+    OLED.drawRect(0, SCREEN_HALF_HEIGHT_INFO + 3, 16, height, WHITE);
     float percentage = 0.0;
-    int juiceHeight = (height-4) * percentage;
-    OLED.fillRect(2, SCREEN_HALF_HEIGHT_INFO + 1 + (height - juiceHeight), 12, juiceHeight, WHITE );
+    int juiceHeight = (height - 4) * percentage;
+    OLED.fillRect(2, SCREEN_HALF_HEIGHT_INFO + 1 + (height - juiceHeight), 12, juiceHeight, WHITE);
   }
 
-  void _show_speeds() {
+  void _show_lights()
+  {
+    // brake
+    // OLED.drawLine(26,SCREEN_HALF_HEIGHT_INFO,24,SCREEN_HALF_HEIGHT_INFO+2,WHITE);
+    // OLED.drawLine(24,SCREEN_HALF_HEIGHT_INFO+2,24,SCREEN_HALF_HEIGHT_INFO+4,WHITE);
+    // OLED.drawLine(24,SCREEN_HALF_HEIGHT_INFO+4,26,SCREEN_HALF_HEIGHT_INFO+6,WHITE);
+    // OLED.fillCircle(32,SCREEN_HALF_HEIGHT_INFO + 3,3,WHITE);
+    // OLED.drawLine(38,SCREEN_HALF_HEIGHT_INFO,40,SCREEN_HALF_HEIGHT_INFO+2,WHITE);
+    // OLED.drawLine(40,SCREEN_HALF_HEIGHT_INFO+2,40,SCREEN_HALF_HEIGHT_INFO+4,WHITE);
+    // OLED.drawLine(40,SCREEN_HALF_HEIGHT_INFO+4,38,SCREEN_HALF_HEIGHT_INFO+6,WHITE);
+
+    // lights
+    switch ( this->Lights->getLights() )
+    {
+      case LIGHTS_OFF:
+        // OLED.drawBitmap(22, SCREEN_HALF_HEIGHT_INFO + 10, ico, 20, 14, WHITE);
+        break;
+      case LIGHTS_DIM:
+        OLED.drawBitmap(22, SCREEN_HALF_HEIGHT_INFO + 10, icoLowBeam, 20, 14, WHITE);
+        break;
+      case LIGHTS_NORMAL:
+        OLED.drawBitmap(22, SCREEN_HALF_HEIGHT_INFO + 10, icoDefaultBeam, 20, 14, WHITE);
+        break;
+      case LIGHTS_BEAM:
+        OLED.drawBitmap(22, SCREEN_HALF_HEIGHT_INFO + 10, icoHighBeam, 20, 14, WHITE);
+        break;
+    }
+  }
+
+  void _show_speeds()
+  {
     char avgSpeedStr[6];
     snprintf(avgSpeedStr, 6, "%-4.1f", this->Speed->getAvgSpeed());
     char maxSpeedStr[6];
@@ -183,7 +225,8 @@ public:
     OLED.print(maxSpeedStr);
   }
 
-  void _show_distances() {
+  void _show_distances()
+  {
     char distStr[8];
     snprintf(distStr, 8, "%-6.2f", this->Speed->getDistance());
     char odoStr[8];
@@ -202,7 +245,8 @@ public:
     OLED.print(odoStr);
   }
 
-  void _show_triptime() {
+  void _show_triptime()
+  {
     char timeTripStr[7];
     unsigned long tripTimeMs = this->Speed->getTripTime();
     unsigned long tripTimeSec = tripTimeMs / 1000;
@@ -241,20 +285,21 @@ public:
       this->_show_indicators();
       switch (this->displayMode)
       {
-        case DISPLAY_SPEED_AND_TIME:
-          this->_show_battery();
-          this->_show_time();
-          break;
-        case DISPLAY_SPEEDS:
-          this->_show_speeds();
-          break;
-        case DISPLAY_DISTANCE:
-          this->_show_distances();
-          break;
-        case DISPLAY_TRIPTIME:
-          this->_show_triptime();
-          break;
-        }
+      case DISPLAY_SPEED_AND_TIME:
+        this->_show_battery();
+        this->_show_lights();
+        this->_show_time();
+        break;
+      case DISPLAY_SPEEDS:
+        this->_show_speeds();
+        break;
+      case DISPLAY_DISTANCE:
+        this->_show_distances();
+        break;
+      case DISPLAY_TRIPTIME:
+        this->_show_triptime();
+        break;
+      }
     }
 
     OLED.display();

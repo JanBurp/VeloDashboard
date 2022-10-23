@@ -79,7 +79,7 @@ class ButtonClass {
 		/**
 		 * Detect button long press, TRUE if the pin was HIGH for longer than given duration.
 		 */
-		bool readLongPress(unsigned long durationMs) {
+		bool readLongPress(unsigned long durationMs = 1000) {
 			if (this->read()) {
 				if (millis() - this->longPressStartMs >= durationMs) {
 					return true;
@@ -91,7 +91,7 @@ class ButtonClass {
 		/**
 		 * Same as readLongPress(), but returns TRUE only once, until the button is released.
 		 */
-		bool readLongPressOnce(unsigned long durationMs) {
+		bool readLongPressOnce(unsigned long durationMs = 1000) {
 			if (this->readLongPress(durationMs)) {
 				if (!this->readLongPressOnceFlag) {
 					this->readLongPressOnceFlag = true;
@@ -109,7 +109,7 @@ class ButtonClass {
 		 * Returns 2 as soon as the button has been pressed for specified duration.
 		 * Returns 0 in subsequent calls, while idle or while being pressed.
 		 */
-		byte readShortOrLongPressOnce(unsigned long longPressDurationMs) {
+		byte readShortOrLongPressOnce(unsigned long longPressDurationMs=1000) {
 			byte r = 0;
 			if (this->read()) {
 				if (!this->readShortOrLongPressOnceFlag) {

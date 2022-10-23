@@ -15,6 +15,7 @@ using namespace TeensyTimerTool;
 #include "ButtonClass.h"
 #include "OutputClass.h"
 #include "IndicatorClass.h"
+#include "LightsClass.h"
 #include "SpeedClass.h"
 #include "LEDstripClass.h"
 #include "DisplayClass.h"
@@ -33,6 +34,7 @@ OutputClass Buzzer;
 // Classes
 DisplayClass Display;
 IndicatorClass Indicators;
+LightsClass Lights;
 SpeedClass Speed;
 LEDstripClass LEDstrips;
 
@@ -108,7 +110,7 @@ void setup()
   Indicators.init();
   LEDstrips.init( &Indicators );
 
-  Display.init(&Speed, &Indicators);
+  Display.init(&Speed, &Indicators, &Lights );
   Display.setDisplayMode(DISPLAY_WELCOME);
   Display.show();
 
@@ -157,11 +159,16 @@ void readButtons() {
   {
     Display.nextDisplayMode();
   }
-  // Startup animation
-  if (ButtonLights.readLongPress(2000))
-  {
-    LEDstrips.startup_animation();
+
+  // Lights
+  int readButtonLights = ButtonLights.readShortOrLongPressOnce();
+  if ( readButtonLights == 1) {
+    Lights.increaseLights();
   }
+  if ( readButtonLights == 2) {
+    Lights.decreaseLights();
+  }
+
 }
 
 /*
