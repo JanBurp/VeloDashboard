@@ -10,7 +10,7 @@
 #include <Adafruit_SSD1306.h>
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 class DisplayClass
 {
@@ -19,15 +19,22 @@ private:
   int displayMode = DISPLAY_SPEED_AND_TIME;
   int firstMode = DISPLAY_SPEED_AND_TIME;
   int lastMode = DISPLAY_TIME;
-  SpeedClass *Speedometer;
+  SpeedClass *Speed;
   IndicatorClass *Indicators;
 
 public:
   void init(SpeedClass *speed, IndicatorClass *indicators)
   {
-    this->Speedometer = speed;
+    this->Speed = speed;
     this->Indicators = indicators;
-    display.clearDisplay();
+    // Address 0x3D for 128x64
+    if (!OLED.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+      Serial.println(F("SSD1306 allocation failed"));
+      for (;;) {
+        ;
+      }
+    }
+    OLED.clearDisplay();
   }
 
   void setDisplayMode(int mode)
@@ -58,78 +65,78 @@ public:
     this->displayMode = this->firstMode;
   }
 
-  unsigned int _displayMargin(unsigned int textLen)
+  unsigned int _margin(unsigned int textLen)
   {
     return (SCREEN_WIDTH - textLen * 12) / 2;
   }
 
   void show()
   {
-    display.clearDisplay();
+    OLED.clearDisplay();
 
     if (this->displayMode == DISPLAY_WELCOME)
     {
-      display.setTextSize(4);
-      display.setTextColor(WHITE);
-      display.setCursor(2, 2);
-      display.print("Quest");
-      display.setTextSize(3);
-      display.setTextColor(WHITE);
-      display.setCursor(8, 40);
-      display.print("- 631- ");
+      OLED.setTextSize(4);
+      OLED.setTextColor(WHITE);
+      OLED.setCursor(2, 2);
+      OLED.print("Quest");
+      OLED.setTextSize(3);
+      OLED.setTextColor(WHITE);
+      OLED.setCursor(8, 40);
+      OLED.print("- 631- ");
     }
 
     else
     {
       // Speed
-      float speed = this->Speedometer->getSpeed();
+      float speed = this->Speed->getSpeed();
       int decis = (int)speed;
       int precision = (speed - decis) * 10;
 
-      display.setTextSize(5);
-      display.setTextColor(WHITE);
-      display.setCursor(8, 0);
+      OLED.setTextSize(5);
+      OLED.setTextColor(WHITE);
+      OLED.setCursor(8, 0);
 
       char speedStr[3];
       snprintf(speedStr, 3, "%2i", decis);
-      display.setCursor(0, 0);
-      display.print(speedStr);
+      OLED.setCursor(0, 0);
+      OLED.print(speedStr);
       snprintf(speedStr, 3, "%1i", precision);
-      display.setCursor(74, 0);
-      display.print(speedStr);
+      OLED.setCursor(74, 0);
+      OLED.print(speedStr);
 
       // Sensor
-      display.setTextSize(3);
-      display.setCursor(54, 14);
-      if (this->Speedometer->getSpeedSensor())
+      OLED.setTextSize(3);
+      OLED.setCursor(54, 14);
+      if (this->Speed->getSpeedSensor())
       {
-        display.print(".");
+        OLED.print(".");
       }
       else
       {
-        display.print(" ");
+        OLED.print(" ");
       }
 
       // Faster / Slower than average
-      if (!this->Speedometer->isPaused())
+      if (!this->Speed->isPaused())
       {
-        display.setTextSize(2);
-        display.setTextColor(WHITE);
-        display.setCursor(116, 10);
-        if (this->Speedometer->isFaster())
-          display.print("+");
+        OLED.setTextSize(2);
+        OLED.setTextColor(WHITE);
+        OLED.setCursor(116, 10);
+        if (this->Speed->isFaster())
+          OLED.print("+");
         else
-          display.print("-");
+          OLED.print("-");
       }
 
       // Indicators
       if (this->Indicators->getStateLeft())
       {
-        display.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH - 2, 0, SCREEN_HALF_WIDTH - 2, SCREEN_HEIGHT, WHITE);
+        OLED.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH - 2, 0, SCREEN_HALF_WIDTH - 2, SCREEN_HEIGHT, WHITE);
       }
       if (this->Indicators->getStateRight())
       {
-        display.fillTriangle(SCREEN_HALF_WIDTH + 2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH + 2, SCREEN_HEIGHT, WHITE);
+        OLED.fillTriangle(SCREEN_HALF_WIDTH + 2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH + 2, SCREEN_HEIGHT, WHITE);
       }
 
       // Data
@@ -146,53 +153,53 @@ public:
         {
           snprintf(timeStr, 7, "%2i %02i", hour(), minute());
         }
-        display.setTextSize(3);
-        display.setCursor(this->_displayMargin(7), SCREEN_HALF_HEIGHT_VALUES - 6);
-        display.print(timeStr);
+        OLED.setTextSize(3);
+        OLED.setCursor(this->_margin(7), SCREEN_HALF_HEIGHT_VALUES - 6);
+        OLED.print(timeStr);
         break;
 
       case DISPLAY_SPEEDS:
         char avgSpeedStr[6];
-        snprintf(avgSpeedStr, 6, "%-4.1f", this->Speedometer->getAvgSpeed());
+        snprintf(avgSpeedStr, 6, "%-4.1f", this->Speed->getAvgSpeed());
         char maxSpeedStr[6];
-        snprintf(maxSpeedStr, 6, "%4.1f", this->Speedometer->getMaxSpeed());
+        snprintf(maxSpeedStr, 6, "%4.1f", this->Speed->getMaxSpeed());
 
-        display.setTextSize(1);
-        display.setCursor(0, SCREEN_HALF_HEIGHT_INFO);
-        display.print("avg");
-        display.setCursor(SCREEN_WIDTH - 20, SCREEN_HALF_HEIGHT_INFO);
-        display.print("max");
+        OLED.setTextSize(1);
+        OLED.setCursor(0, SCREEN_HALF_HEIGHT_INFO);
+        OLED.print("avg");
+        OLED.setCursor(SCREEN_WIDTH - 20, SCREEN_HALF_HEIGHT_INFO);
+        OLED.print("max");
 
-        display.setTextSize(2);
-        display.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
-        display.print(avgSpeedStr);
-        display.setCursor(80, SCREEN_HALF_HEIGHT_VALUES);
-        display.print(maxSpeedStr);
+        OLED.setTextSize(2);
+        OLED.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
+        OLED.print(avgSpeedStr);
+        OLED.setCursor(80, SCREEN_HALF_HEIGHT_VALUES);
+        OLED.print(maxSpeedStr);
         break;
 
       case DISPLAY_DISTANCE:
         char distStr[8];
-        snprintf(distStr, 8, "%-6.2f", this->Speedometer->getDistance());
+        snprintf(distStr, 8, "%-6.2f", this->Speed->getDistance());
 
-        display.setTextSize(1);
-        display.setCursor(0, SCREEN_HALF_HEIGHT_INFO);
-        display.print("dist");
-        display.setCursor(SCREEN_WIDTH - 20, SCREEN_HALF_HEIGHT_INFO);
-        display.print("odo");
+        OLED.setTextSize(1);
+        OLED.setCursor(0, SCREEN_HALF_HEIGHT_INFO);
+        OLED.print("dist");
+        OLED.setCursor(SCREEN_WIDTH - 20, SCREEN_HALF_HEIGHT_INFO);
+        OLED.print("odo");
 
-        display.setTextSize(2);
-        display.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
-        display.print(distStr);
+        OLED.setTextSize(2);
+        OLED.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
+        OLED.print(distStr);
 
-        snprintf(distStr, 8, "%5lu", this->Speedometer->getOdoDistance());
-        display.setCursor(68, SCREEN_HALF_HEIGHT_VALUES);
-        display.print(distStr);
+        snprintf(distStr, 8, "%5lu", this->Speed->getOdoDistance());
+        OLED.setCursor(68, SCREEN_HALF_HEIGHT_VALUES);
+        OLED.print(distStr);
 
         break;
 
       case DISPLAY_TIME:
         char timeTripStr[7];
-        unsigned long tripTimeMs = this->Speedometer->getTripTime();
+        unsigned long tripTimeMs = this->Speed->getTripTime();
         unsigned long tripTimeSec = tripTimeMs / 1000;
         unsigned int minutes = tripTimeSec / 60;
         unsigned int seconds = tripTimeSec % 60;
@@ -202,23 +209,23 @@ public:
         // unsigned int milliAmps = LEDstrips.max_used_milliamps();
         // snprintf(usedMilliAmps, 5, "%4u", milliAmps );
 
-        display.setTextSize(1);
-        display.setCursor(0, SCREEN_HALF_HEIGHT_INFO);
-        display.print("trip time");
+        OLED.setTextSize(1);
+        OLED.setCursor(0, SCREEN_HALF_HEIGHT_INFO);
+        OLED.print("trip time");
 
-        // display.setCursor(SCREEN_WIDTH - 16, SCREEN_HALF_HEIGHT_INFO);
-        // display.print("mA");
+        // OLED.setCursor(SCREEN_WIDTH - 16, SCREEN_HALF_HEIGHT_INFO);
+        // OLED.print("mA");
 
-        display.setTextSize(2);
-        display.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
-        display.print(timeTripStr);
-        // display.setCursor(80, SCREEN_HALF_HEIGHT_VALUES);
-        // display.print(usedMilliAmps);
+        OLED.setTextSize(2);
+        OLED.setCursor(0, SCREEN_HALF_HEIGHT_VALUES);
+        OLED.print(timeTripStr);
+        // OLED.setCursor(80, SCREEN_HALF_HEIGHT_VALUES);
+        // OLED.print(usedMilliAmps);
 
         break;
       }
     }
 
-    display.display();
+    OLED.display();
   }
 };

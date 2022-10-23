@@ -2,7 +2,7 @@
 
 #include "Arduino.h"
 
-class Input {
+class InputClass {
 
 	public:
 

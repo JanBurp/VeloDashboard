@@ -2,7 +2,7 @@
 
 #include "Arduino.h"
 
-class Button {
+class ButtonClass {
 
 	public:
 

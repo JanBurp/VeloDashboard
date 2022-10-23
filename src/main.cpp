@@ -12,33 +12,44 @@
 #include "TeensyTimerTool.h"
 using namespace TeensyTimerTool;
 
-#include "Button.h"
-#include "Output.h"
+#include "ButtonClass.h"
+#include "OutputClass.h"
 #include "IndicatorClass.h"
 #include "SpeedClass.h"
 #include "LEDstripClass.h"
 #include "DisplayClass.h"
 
+// RTC Time for clock
 time_t RTCTime;
+
+// Timers
 PeriodicTimer calculationTimer;
 
-/**
- * INPUTS & OUTPUTS
- */
 
-Button ButtonIndicatorRight;
-Button ButtonIndicatorLeft;
-Button ButtonIndicatorAlarm;
-Button ButtonLights;
-Button DisplayButtonLeft;
-Button DisplayButtonRight;
-Output Buzzer;
+// Inputs & Outputs
+ButtonClass ButtonIndicatorRight, ButtonIndicatorLeft, ButtonIndicatorAlarm, ButtonLights, DisplayButtonLeft, DisplayButtonRight;
+OutputClass Buzzer;
 
-DisplayClass OLED;
+// Classes
+DisplayClass Display;
 IndicatorClass Indicators;
-SpeedClass SpeedoMeter;
+SpeedClass Speed;
 LEDstripClass LEDstrips;
 
+
+
+/**
+ * Get the Teensy3 Time object
+ */
+time_t getTeensy3Time()
+{
+  return Teensy3Clock.get();
+}
+
+
+/**
+ * buzzer
+ */
 void buzzer(bool state)
 {
   if (state)
@@ -52,30 +63,24 @@ void buzzer(bool state)
 }
 
 /**
- * @brief Get the Teensy3 Time object
- *
- * @return time_t
- */
-
-time_t getTeensy3Time()
-{
-  return Teensy3Clock.get();
-}
-
-/**
- *
- * ==== SETUP ====
+ * Speed sensor trigger
  *
  */
 void sensorChange()
 {
-  SpeedoMeter.sensorTrigger();
+  Speed.sensorTrigger();
 }
 
+
+
+/**
+ * ==== SETUP ====
+ */
 void setup()
 {
-  if (DEBUG)
+  if (DEBUG) {
     Serial.begin(9600);
+  }
 
   // Disable unused pins
   int unusedPins[] = {0, 1, 4, 5, 6, 7, 8, 9, 10, 13, 16, 17};
@@ -84,44 +89,37 @@ void setup()
     pinMode(unusedPins[pin], INPUT_DISABLE);
   }
 
+  // Clock
   setSyncProvider(getTeensy3Time);
 
-  // Indicator inputs
+  // Knobs & Buttons
   ButtonIndicatorRight.init(PIN_INPUT_INDICATOR_RIGHT);
   ButtonIndicatorLeft.init(PIN_INPUT_INDICATOR_LEFT);
   ButtonIndicatorAlarm.init(PIN_INPUT_ALARM);
-
   DisplayButtonLeft.init(PIN_INPUT_DISPLAY_SWITCH_LEFT);
   DisplayButtonRight.init(PIN_INPUT_DISPLAY_SWITCH_RIGHT);
-
   ButtonLights.init(PIN_BUTTON_WHITE);
 
+  // Buzzer
   pinMode(PIN_BUZZER, OUTPUT);
   buzzer(false);
 
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
-  { // Address 0x3D for 128x64
-    Serial.println(F("SSD1306 allocation failed"));
-    for (;;)
-      ;
-  }
-
   LEDstrips.startup_animation();
 
-  SpeedoMeter.init();
+  Speed.init();
   Indicators.init();
 
-  OLED.init(&SpeedoMeter, &Indicators);
-  OLED.setDisplayMode(DISPLAY_WELCOME);
-  OLED.show();
+  Display.init(&Speed, &Indicators);
+  Display.setDisplayMode(DISPLAY_WELCOME);
+  Display.show();
 
-  OLED.setDisplayMode(DISPLAY_SPEED_AND_TIME);
-  OLED.show();
+  Display.setDisplayMode(DISPLAY_SPEED_AND_TIME);
+  Display.show();
 
   pinMode(PIN_SPEED, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PIN_SPEED), sensorChange, CHANGE);
 
-  calculationTimer.begin( [] { SpeedoMeter.loop(); }, SPEED_CALCULATION_TIMER );
+  calculationTimer.begin( [] { Speed.loop(); }, SPEED_CALCULATION_TIMER );
 }
 
 /**
@@ -169,11 +167,11 @@ void loop()
   // Display page
   if (DisplayButtonLeft.readOnce())
   {
-    OLED.resetDisplayMode();
+    Display.resetDisplayMode();
   }
   if (DisplayButtonRight.readOnce())
   {
-    OLED.nextDisplayMode();
+    Display.nextDisplayMode();
   }
 
   // Animation
@@ -185,7 +183,7 @@ void loop()
   // Loops
   LEDstrips.loop(Indicators.isActive(), Indicators.getStateLeft(), Indicators.getStateRight());
 
-  OLED.show();
+  Display.show();
 
   // Fake Speed for testing
   if (TEST)
