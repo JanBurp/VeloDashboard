@@ -1,51 +1,50 @@
-#ifndef Button_h
-#define Button_h
+#pragma once
 
 #include "Arduino.h"
 
 class Button {
-	
+
 	public:
-		
-		/** 
+
+		/**
 		 * Setup the button, specifying and optional debounce delay
 		 */
 		void init(byte pin, unsigned int debounceDelayMs = 50, bool invert = true, bool internalPullup = true) {
-			
+
 			this->pin = pin;
 			this->debounceDelayMs = debounceDelayMs;
 			this->invert = invert;
-			
+
 			this->lastPressedMs = 0;
 			this->longPressStartMs = 0;
 			this->shortOrLongPressStartMs = 0;
-			
+
 			this->readOnceFlag = false;
 			this->readLongPressOnceFlag = false;
 			this->readShortOrLongPressOnceFlag = false;
-			
+
 			pinMode(this->pin, internalPullup ? INPUT_PULLUP : INPUT);
-			
+
 		}
-		
-		/** 
+
+		/**
 		 * Get the button state, TRUE if the pin is HIGH.
 		 * Immediately reads presses, but the release can be delayed according to debouncing.
 		 */
 		bool read() {
-			
+
 			bool reading = digitalRead(this->pin);
 			if (this->invert) reading = !reading;
-			
+
 			if (reading) {
-				
+
 				// Pressed: return TRUE
 				this->lastPressedMs = millis(); // Remember time for debouncing
 				if (this->longPressStartMs == 0) this->longPressStartMs = millis(); // Start long press detection
 				return true;
-				
+
 			} else {
-				
+
 				// Released: wait for debouncing and return FALSE
 				if (this->lastPressedMs > 0) {
 					if (millis() - this->lastPressedMs >= debounceDelayMs) {
@@ -55,14 +54,14 @@ class Button {
 						return true; // Waiting for debouncing...
 					}
 				}
-				
+
 			}
-			
+
 			return false;
-			
+
 		}
-		
-		/** 
+
+		/**
 		 * Same as read(), but returns TRUE only once, until the button is released.
 		 */
 		bool readOnce() {
@@ -76,8 +75,8 @@ class Button {
 			}
 			return false;
 		}
-		
-		/** 
+
+		/**
 		 * Detect button long press, TRUE if the pin was HIGH for longer than given duration.
 		 */
 		bool readLongPress(unsigned long durationMs) {
@@ -88,8 +87,8 @@ class Button {
 			}
 			return false;
 		}
-		
-		/** 
+
+		/**
 		 * Same as readLongPress(), but returns TRUE only once, until the button is released.
 		 */
 		bool readLongPressOnce(unsigned long durationMs) {
@@ -103,7 +102,7 @@ class Button {
 			}
 			return false;
 		}
-		
+
 		/*
 		 * A combined readOnce() and readLongPressOnce() for a multi-purpose button.
 		 * Returns 1 when the button is released before specified duration (short press).
@@ -134,7 +133,7 @@ class Button {
 			}
 			return r;
 		}
-		
+
 	private:
 		byte pin;
 		unsigned int debounceDelayMs;
@@ -145,7 +144,5 @@ class Button {
 		bool readOnceFlag;
 		bool readLongPressOnceFlag;
 		bool readShortOrLongPressOnceFlag;
-		
-};
 
-#endif
+};

@@ -30,15 +30,15 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
  * other PINS
  */
 
-#define INPUT_INDICATOR_RIGHT     2
-#define INPUT_INDICATOR_LEFT      3
-#define INPUT_ALARM               4
+#define PIN_INPUT_INDICATOR_RIGHT     2
+#define PIN_INPUT_INDICATOR_LEFT      3
+#define PIN_INPUT_ALARM               4
 
 #define OUTPUT_LED_RIGHT          5
 #define OUTPUT_LED_LEFT           6
-#define OUTPUT_BUZZER             9 // PWM
+#define PIN_BUZZER             9 // PWM
 
-#define SPEED_INPUT               14 // A0 // D14
+#define PIN_SPEED               14 // A0 // D14
 
 /**
  * DEFAULTS
@@ -85,14 +85,14 @@ void setup() {
     if (DEBUG) Serial.begin(9600);
 
     // Indicator inputs
-    ButtonIndicatorRight.init(INPUT_INDICATOR_RIGHT);
-    ButtonIndicatorLeft.init(INPUT_INDICATOR_LEFT);
-    ButtonIndicatorAlarm.init(INPUT_ALARM);
+    ButtonIndicatorRight.init(PIN_INPUT_INDICATOR_RIGHT);
+    ButtonIndicatorLeft.init(PIN_INPUT_INDICATOR_LEFT);
+    ButtonIndicatorAlarm.init(PIN_INPUT_ALARM);
     // Indicator LEDS
     LedRight.init(OUTPUT_LED_RIGHT);
     LedLeft.init(OUTPUT_LED_LEFT);
 
-    pinMode(OUTPUT_BUZZER, OUTPUT);
+    pinMode(PIN_BUZZER, OUTPUT);
     buzzer(false);
 
 
@@ -103,7 +103,7 @@ void setup() {
 
     // LEDstrips.startup_animation();
 
-    pinMode(SPEED_INPUT, INPUT_PULLUP);
+    pinMode(PIN_SPEED, INPUT_PULLUP);
     LastSensorTimeMs = millis();
     startTime = millis();
 
@@ -142,10 +142,10 @@ void change_indicators(int state) {
 
 void buzzer(bool state) {
     if (state) {
-        tone(OUTPUT_BUZZER, BUZZER_TONE);
+        tone(PIN_BUZZER, BUZZER_TONE);
     }
     else {
-        noTone(OUTPUT_BUZZER);
+        noTone(PIN_BUZZER);
     }
 }
 
@@ -194,7 +194,7 @@ void loop() {
     // LEDstrips.loop();
 
 
-    bool sensor = digitalRead(SPEED_INPUT);
+    bool sensor = digitalRead(PIN_SPEED);
     if (sensor != SpeedSensor) {
         SpeedSensor = sensor;
         if ( SpeedSensor ) {
