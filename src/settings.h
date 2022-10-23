@@ -1,5 +1,5 @@
-#define DEBUG false
-#define TEST true // Test setup @ home
+#define DEBUG false           // [default = false] - set to true for Serial output
+#define TEST true             // [default = false] - set to true for local test environment
 
 /*
   TIMERS
@@ -32,22 +32,25 @@
 
 #define WELCOME_LENGTH 1
 
-// #define NUM_LEDS            169 // 2,85 m * 66 = 188
-// #define NUM_LIGHT_LEDS      36
-// #define NUM_LIGHT_LEDS_BACK 48
-// #define NUM_INDICATOR_LEDS  56
-// #define BRIGHTNESS          128
-// #define MAX_MILLIAMPS       1200
-// #define FRAMES_PER_SECOND   100
+#if TEST
+  #define NUM_LEDS 12
+  #define NUM_LIGHT_LEDS 5
+  #define NUM_LIGHT_LEDS_BACK 5
+  #define NUM_INDICATOR_LEDS 7
+  #define BRIGHTNESS 10
+  #define MAX_MILLIAMPS 40
+  #define FRAMES_PER_SECOND 100
+#else
+  #define NUM_LEDS            169 // 2,85 m * 66 = 188
+  #define NUM_LIGHT_LEDS      36
+  #define NUM_LIGHT_LEDS_BACK 48
+  #define NUM_INDICATOR_LEDS  56
+  #define BRIGHTNESS          128
+  #define MAX_MILLIAMPS       1200
+  #define FRAMES_PER_SECOND   100
+#endif
 
 // TEST:
-#define NUM_LEDS 12
-#define NUM_LIGHT_LEDS 5
-#define NUM_LIGHT_LEDS_BACK 5
-#define NUM_INDICATOR_LEDS 7
-#define BRIGHTNESS 10
-#define MAX_MILLIAMPS 40
-#define FRAMES_PER_SECOND 100
 
 #define LEFT -1
 #define BOTH 0
