@@ -82,19 +82,18 @@ public:
     int precision = (speed - decis) * 10;
 
     OLED.setTextSize(5);
-
     char speedStr[3];
     snprintf(speedStr, 3, "%2i", decis);
-    OLED.setCursor(40, 0);
+    OLED.setCursor(30, 0);
     OLED.print(speedStr);
     snprintf(speedStr, 3, "%1i", precision);
-    OLED.setTextSize(3);
-    OLED.setCursor(110, 14);
+    OLED.setTextSize(4);
+    OLED.setCursor(102, 8);
     OLED.print(speedStr);
 
     // Sensor
-    OLED.setTextSize(3);
-    OLED.setCursor(94, 14);
+    OLED.setTextSize(2);
+    OLED.setCursor(88, 22);
     if (this->Speed->getSpeedSensor())
     {
       OLED.print(".");
@@ -110,10 +109,10 @@ public:
       OLED.setTextSize(2);
       OLED.setCursor(0, 10);
       if (this->Speed->isFaster()) {
-        OLED.print("+");
+        OLED.fillTriangle(0,16, 5,6, 10,16,  WHITE);
       }
       else {
-        OLED.print("-");
+        OLED.fillTriangle(0,16, 5,26, 10,16,  WHITE);
       }
     }
   }
@@ -130,18 +129,27 @@ public:
   }
 
   void _show_time() {
-    char timeStr[7];
+    char hourStr[3];
+    snprintf(hourStr, 3, "%2i", hour());
+    char minStr[3];
+    snprintf(minStr, 3, "%02i", minute());
+
+    OLED.setTextSize(3);
+    OLED.setCursor(49, SCREEN_HALF_HEIGHT_VALUES - 6);
+    OLED.print(hourStr);
+    OLED.setCursor(92, SCREEN_HALF_HEIGHT_VALUES - 6);
+    OLED.print(minStr);
+
+    OLED.setTextSize(2);
+    OLED.setCursor(82, SCREEN_HALF_HEIGHT_VALUES + 3 );
     if ((millis() / 500) % 2 == 0)
     {
-      snprintf(timeStr, 7, "%2i:%02i", hour(), minute());
+      OLED.print(":");
     }
     else
     {
-      snprintf(timeStr, 7, "%2i %02i", hour(), minute());
+      OLED.print(" ");
     }
-    OLED.setTextSize(3);
-    OLED.setCursor(36, SCREEN_HALF_HEIGHT_VALUES - 6);
-    OLED.print(timeStr);
   }
 
   void _show_speeds() {
