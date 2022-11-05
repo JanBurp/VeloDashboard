@@ -26,7 +26,6 @@ time_t RTCTime;
 // Timers
 PeriodicTimer speedCalculationTimer;
 
-
 // Inputs & Outputs
 ButtonClass ButtonIndicatorRight, ButtonIndicatorLeft, ButtonIndicatorAlarm, ButtonLights, DisplayButtonLeft, DisplayButtonRight;
 OutputClass Buzzer;
@@ -38,30 +37,27 @@ LightsClass Lights;
 SpeedClass Speed;
 LEDstripClass LEDstrips;
 
-
-
 /**
  * Get the Teensy3 Time object
  */
 time_t getTeensy3Time()
 {
-  return Teensy3Clock.get();
+    return Teensy3Clock.get();
 }
-
 
 /**
  * buzzer
  */
 void buzzer(bool state)
 {
-  if (state)
-  {
-    tone(PIN_BUZZER, BUZZER_TONE);
-  }
-  else
-  {
-    noTone(PIN_BUZZER);
-  }
+    if (state)
+    {
+        tone(PIN_BUZZER, BUZZER_TONE);
+    }
+    else
+    {
+        noTone(PIN_BUZZER);
+    }
 }
 
 /**
@@ -70,119 +66,123 @@ void buzzer(bool state)
  */
 void sensorChange()
 {
-  Speed.sensorTrigger();
+    Speed.sensorTrigger();
 }
-
-
 
 /**
  * ==== SETUP ====
  */
 void setup()
 {
-  if (DEBUG) {
-    Serial.begin(9600);
-  }
+    if (DEBUG)
+    {
+        Serial.begin(9600);
+    }
 
-  // Disable unused pins
-  int unusedPins[] = {0, 1, 4, 5, 6, 7, 8, 9, 10, 13, 16, 17};
-  for (size_t pin = 0; pin < 10; pin++)
-  {
-    pinMode(unusedPins[pin], INPUT_DISABLE);
-  }
+    // Disable unused pins
+    int unusedPins[] = {0, 1, 4, 5, 6, 7, 8, 9, 10, 13, 16, 17};
+    for (size_t pin = 0; pin < 10; pin++)
+    {
+        pinMode(unusedPins[pin], INPUT_DISABLE);
+    }
 
-  // Clock
-  setSyncProvider(getTeensy3Time);
+    // Clock
+    setSyncProvider(getTeensy3Time);
 
-  // Knobs & Buttons
-  ButtonIndicatorRight.init(PIN_INPUT_INDICATOR_RIGHT);
-  ButtonIndicatorLeft.init(PIN_INPUT_INDICATOR_LEFT);
-  ButtonIndicatorAlarm.init(PIN_INPUT_ALARM);
-  DisplayButtonLeft.init(PIN_INPUT_DISPLAY_SWITCH_LEFT);
-  DisplayButtonRight.init(PIN_INPUT_DISPLAY_SWITCH_RIGHT);
-  ButtonLights.init(PIN_BUTTON_WHITE);
+    // Knobs & Buttons
+    ButtonIndicatorRight.init(PIN_INPUT_INDICATOR_RIGHT);
+    ButtonIndicatorLeft.init(PIN_INPUT_INDICATOR_LEFT);
+    ButtonIndicatorAlarm.init(PIN_INPUT_ALARM);
+    DisplayButtonLeft.init(PIN_INPUT_DISPLAY_SWITCH_LEFT);
+    DisplayButtonRight.init(PIN_INPUT_DISPLAY_SWITCH_RIGHT);
+    ButtonLights.init(PIN_BUTTON_WHITE);
 
-  // Buzzer
-  pinMode(PIN_BUZZER, OUTPUT);
-  buzzer(false);
+    // Buzzer
+    pinMode(PIN_BUZZER, OUTPUT);
+    buzzer(false);
 
-  Speed.init();
-  Indicators.init();
-  LEDstrips.init( &Indicators );
+    Speed.init();
+    Indicators.init();
+    LEDstrips.init(&Indicators);
 
-  Display.init(&Speed, &Indicators, &Lights );
-  Display.setDisplayMode(DISPLAY_WELCOME);
-  Display.show();
+    Display.init(&Speed, &Indicators, &Lights);
+    Display.setDisplayMode(DISPLAY_WELCOME);
+    Display.show();
 
-  LEDstrips.startup_animation();
+    LEDstrips.startup_animation();
 
-  Display.setDisplayMode(DISPLAY_SPEED_AND_TIME);
-  Display.show();
+    Display.setDisplayMode(DISPLAY_SPEED_AND_TIME);
+    Display.show();
 
-  pinMode(PIN_SPEED, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(PIN_SPEED), sensorChange, CHANGE);
+    pinMode(PIN_SPEED, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(PIN_SPEED), sensorChange, CHANGE);
 
-  speedCalculationTimer.begin( [] { Speed.loop(); }, SPEED_CALCULATION_TIMER );
+    speedCalculationTimer.begin([]
+                                { Speed.loop(); },
+                                SPEED_CALCULATION_TIMER);
 }
 
 /*
   Read Dashboard buttons & switches
 */
-void readButtons() {
-  // Alarm
-  if (ButtonIndicatorAlarm.readOnce())
-  {
-    Indicators.toggleAlarm();
-  }
-  // Indicators
-  if (!Indicators.isAlarmSet())
-  {
-    if (ButtonIndicatorRight.read())
+void readButtons()
+{
+    // Alarm
+    if (ButtonIndicatorAlarm.readOnce())
     {
-      Indicators.setRight();
+        Indicators.toggleAlarm();
     }
-    else if (ButtonIndicatorLeft.read())
+    // Indicators
+    if (!Indicators.isAlarmSet())
     {
-      Indicators.setLeft();
+        if (ButtonIndicatorRight.read())
+        {
+            Indicators.setRight();
+        }
+        else if (ButtonIndicatorLeft.read())
+        {
+            Indicators.setLeft();
+        }
+        else
+        {
+            Indicators.reset();
+        }
     }
-    else
+    // Display pages
+    if (DisplayButtonLeft.readOnce())
     {
-      Indicators.reset();
+        Display.resetDisplayMode();
     }
-  }
-  // Display pages
-  if (DisplayButtonLeft.readOnce())
-  {
-    Display.resetDisplayMode();
-  }
-  if (DisplayButtonRight.readOnce())
-  {
-    Display.nextDisplayMode();
-  }
+    if (DisplayButtonRight.readOnce())
+    {
+        Display.nextDisplayMode();
+    }
 
-  // Lights
-  int readButtonLights = ButtonLights.readShortOrLongPressOnce();
-  if ( readButtonLights == 1) {
-    Lights.increaseLights();
-  }
-  if ( readButtonLights == 2) {
-    Lights.decreaseLights();
-  }
-
+    // Lights
+    int readButtonLights = ButtonLights.readShortOrLongPressOnce();
+    if (readButtonLights == 1)
+    {
+        Lights.increaseLights();
+    }
+    if (readButtonLights == 2)
+    {
+        Lights.decreaseLights();
+    }
 }
 
 /*
   Set buzzer on or off
 */
-void updateBuzzer() {
-  if (Indicators.isActive())
-  {
-    buzzer(Indicators.getStateLeft() || Indicators.getStateRight());
-  }
-  else
-  {
-    buzzer(false);
-  }
+void updateBuzzer()
+{
+    if (Indicators.isActive())
+    {
+        buzzer(Indicators.getStateLeft() || Indicators.getStateRight());
+    }
+    else
+    {
+        buzzer(false);
+    }
 }
 
 /*
@@ -192,15 +192,15 @@ void updateBuzzer() {
 */
 void loop()
 {
-  readButtons();
-  updateBuzzer();
+    readButtons();
+    updateBuzzer();
 
-  LEDstrips.loop();
-  Display.show();
+    LEDstrips.loop();
+    Display.show();
 
-  // Fake Speed for testing
-  if (TEST)
-  {
-    sensorChange();
-  }
+    // Fake Speed for testing
+    if (TEST)
+    {
+        sensorChange();
+    }
 }
