@@ -205,8 +205,6 @@ public:
       // Add new sensor time
       this->sensorTimesMs[SENSOR_BUFF - 1] = sensorTime;
 
-      // Serial.print("\nTRIGGER: \t");
-      // Serial.println(sensorTime);
     }
   }
 };

@@ -34,17 +34,22 @@ class IndicatorClass {
         }
 
 		void set(int function) {
-            if ( function != this->function ) {
+            if ( this->isActive() ) {
                 this->reset();
-                this->function = function;
-                if ( this->function == INDICATORS_BOTH ) {
-                    this->timer.setPeriod( ALARM_TIMER );
+            }
+            else {
+                if ( function != this->function ) {
+                    this->reset();
+                    this->function = function;
+                    if ( this->function == INDICATORS_BOTH ) {
+                        this->timer.setPeriod( ALARM_TIMER );
+                    }
+                    else {
+                        this->timer.setPeriod( INDICATOR_TIMER );
+                    }
+                    this->loop();
+                    this->timer.start();
                 }
-                else {
-                    this->timer.setPeriod( INDICATOR_TIMER );
-                }
-                this->loop();
-                this->timer.start();
             }
 		}
 
@@ -64,14 +69,14 @@ class IndicatorClass {
             this->setBoth();
         }
 
-        void toggleAlarm() {
-            if ( this->isAlarmSet() ) {
-                this->reset();
-            }
-            else {
-                this->setAlarm();
-            }
-        }
+        // void toggleAlarm() {
+        //     if ( this->isAlarmSet() ) {
+        //         this->reset();
+        //     }
+        //     else {
+        //         this->setAlarm();
+        //     }
+        // }
 
         bool isAlarmSet() {
             return this->function == INDICATORS_BOTH;

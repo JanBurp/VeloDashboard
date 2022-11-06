@@ -180,7 +180,7 @@ public:
         OLED.drawRect(x, y + toppad, x + w, h, WHITE);
         float percentage = 0.5;
         int juiceHeight = (h - innerpad * 2) * percentage;
-        OLED.fillRect(x+innerpad, y + innerpad + (h - juiceHeight), x + w - 2 * innerpad, juiceHeight, WHITE);
+        OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight), x + w - 2 * innerpad, juiceHeight, WHITE);
         OLED.setCursor(x + w, y + toppad);
         OLED.setTextSize(3);
         if (percentage <= 0.15)
@@ -192,7 +192,6 @@ public:
             OLED.setCursor(x + w + 4, y + toppad);
             OLED.print("!");
         }
-
     }
 
     void _show_lights()
@@ -217,33 +216,32 @@ public:
             OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
             break;
         }
-
-        // rear
-        // x = 26;
-        y = 20;
-        switch (this->Lights->getLights())
-        {
-        case LIGHTS_OFF:
-            OLED.drawBitmap(x, y, icoLowRear, w, h, WHITE);
-            break;
-        case LIGHTS_DIM:
-            OLED.drawBitmap(x, y, icoLowRear, w, h, WHITE);
-            break;
-        case LIGHTS_NORMAL:
-            OLED.drawBitmap(x, y, icoHighRear, w, h, WHITE);
-            break;
-        case LIGHTS_BEAM:
-            OLED.drawBitmap(x, y, icoBrakeRear, w, h, WHITE);
-            break;
+        if (this->Lights->getHorn()) {
+            OLED.setCursor(x + w, y);
+            OLED.setTextSize(2);
+            OLED.print("!");
         }
 
-        // OLED.drawLine(26,SCREEN_HALF_HEIGHT_INFO,24,SCREEN_HALF_HEIGHT_INFO+2,WHITE);
-        // OLED.drawLine(24,SCREEN_HALF_HEIGHT_INFO+2,24,SCREEN_HALF_HEIGHT_INFO+4,WHITE);
-        // OLED.drawLine(24,SCREEN_HALF_HEIGHT_INFO+4,26,SCREEN_HALF_HEIGHT_INFO+6,WHITE);
-        // OLED.fillCircle(32,SCREEN_HALF_HEIGHT_INFO + 3,3,WHITE);
-        // OLED.drawLine(38,SCREEN_HALF_HEIGHT_INFO,40,SCREEN_HALF_HEIGHT_INFO+2,WHITE);
-        // OLED.drawLine(40,SCREEN_HALF_HEIGHT_INFO+2,40,SCREEN_HALF_HEIGHT_INFO+4,WHITE);
-        // OLED.drawLine(40,SCREEN_HALF_HEIGHT_INFO+4,38,SCREEN_HALF_HEIGHT_INFO+6,WHITE);
+        // rear
+        y = 20;
+        if (this->Lights->getBrake())
+        {
+            OLED.drawBitmap(x, y, icoBrakeRear, w, h, WHITE);
+        }
+        else {
+            switch (this->Lights->getBackLights()) {
+            case BACKLIGHTS_DIM:
+                OLED.drawBitmap(x, y, icoLowRear, w, h, WHITE);
+                break;
+            case BACKLIGHTS_NORMAL:
+                OLED.drawBitmap(x, y, icoHighRear, w, h, WHITE);
+                break;
+            case BACKLIGHTS_FOG:
+                OLED.drawBitmap(x, y, icoFogRear, w, h, WHITE);
+                break;
+            }
+        }
+
     }
 
     void _show_speeds()
