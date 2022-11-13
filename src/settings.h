@@ -62,7 +62,7 @@ unsigned int WheelNumber = 1;
 #define NUM_LIGHT_LEDS 5
 #define NUM_LIGHT_LEDS_BACK 5
 #define NUM_INDICATOR_LEDS 7
-#define BRIGHTNESS 10
+#define BRIGHTNESS 128
 #define MAX_MILLIAMPS 40
 #define FRAMES_PER_SECOND 100
 #else

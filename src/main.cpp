@@ -100,7 +100,7 @@ void setup()
     Indicators.init();
     LEDstrips.init(&Indicators);
 
-    Display.init(&Speed, &Indicators, &Lights);
+    Display.init(&Speed, &Indicators, &Lights, &LEDstrips);
     Display.setDisplayMode(DISPLAY_WELCOME);
     Display.show();
 
