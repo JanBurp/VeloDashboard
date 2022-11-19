@@ -94,5 +94,7 @@ unsigned int WheelNumber = 1;
 #define PIN_LEFT_STRIP 2
 #define PIN_RIGHT_STRIP 3
 #define PIN_DASHBOARD 23
+#define PIN_BATTERY_METER 22
 #define PIN_BUZZER 12 // PWM
 #define PIN_SPEED 11
+

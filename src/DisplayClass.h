@@ -3,6 +3,7 @@
 #include "Arduino.h"
 #include "settings.h"
 #include "SpeedClass.h"
+#include "BatteryClass.h"
 #include "IndicatorClass.h"
 #include "LightsClass.h"
 #include "LEDstripClass.h"
@@ -24,14 +25,16 @@ private:
     int firstMode = DISPLAY_SPEED_AND_TIME;
     int lastMode = DISPLAY_TRIPTIME;
     SpeedClass *Speed;
+    BatteryClass *Battery;
     IndicatorClass *Indicators;
     LightsClass *Lights;
     LEDstripClass *LEDstrips;
 
 public:
-    void init(SpeedClass *speed, IndicatorClass *indicators, LightsClass *lights, LEDstripClass *LEDstrips)
+    void init(SpeedClass *speed, BatteryClass *battery, IndicatorClass *indicators, LightsClass *lights, LEDstripClass *LEDstrips)
     {
         this->Speed = speed;
+        this->Battery = battery;
         this->Indicators = indicators;
         this->Lights = lights;
         this->LEDstrips = LEDstrips;
@@ -171,7 +174,7 @@ public:
         }
     }
 
-    void _show_battery()
+    void _show_battery( bool off = false)
     {
         int toppad = 4;
         int innerpad = 2;
@@ -181,38 +184,42 @@ public:
         int h = 22;
         OLED.drawRect(x + toppad, y, x + w - 2 * toppad, toppad, WHITE);
         OLED.drawRect(x, y + toppad, x + w, h, WHITE);
-        float percentage = 0.25;
-        int juiceHeight = (h - innerpad * 2) * percentage;
-        OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight), x + w - 2 * innerpad, juiceHeight, WHITE);
-        OLED.setCursor(x + w + 12, y + toppad);
-        OLED.setTextSize(3);
-        if (percentage <= 0.15)
-        {
-            OLED.print("!");
-        }
-        if (percentage <= 0.1)
-        {
-            OLED.setCursor(x + w + 6, y + toppad);
-            OLED.print("!");
-        }
 
-        // LEDstrips current use
-        x = x + w + 4;
-        y = y + 4;
-        h = h;
-        w = 4;
-        int ledMilliAmps = this->LEDstrips->max_used_milliamps();
-        if (TEST) {
-            percentage = (ledMilliAmps / 1000.0);
+        if ( !off ) {
+            float percentage = this->Battery->getBatteryPercentage() / 100.0;
+            int juiceHeight = (h - innerpad * 2) * percentage;
+            OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight), x + w - 2 * innerpad, juiceHeight, WHITE);
+
+            OLED.setCursor(x + w + 12, y + toppad);
+            OLED.setTextSize(3);
+            if ( this->Battery->isLow() )
+            {
+                OLED.print("!");
+            }
+            if ( this->Battery->isVeryLow() )
+            {
+                OLED.setCursor(x + w + 6, y + toppad);
+                OLED.print("!");
+            }
+
+            // LEDstrips current use
+            x = x + w + 4;
+            y = y + 4;
+            h = h;
+            w = 4;
+            int ledMilliAmps = this->LEDstrips->max_used_milliamps();
+            if (TEST) {
+                percentage = (ledMilliAmps / 1000.0);
+            }
+            else {
+                percentage = (ledMilliAmps / 2000.0);
+            }
+            // OLED.setCursor(x + 10,y);
+            // OLED.setTextSize(1);
+            // OLED.print(ledMilliAmps);
+            OLED.drawRect(x, y, w, h,WHITE);
+            OLED.fillRect(x,y + h - (percentage*h),w,h,WHITE);
         }
-        else {
-            percentage = (ledMilliAmps / 2000.0);
-        }
-        // OLED.setCursor(x + 10,y);
-        // OLED.setTextSize(1);
-        // OLED.print(ledMilliAmps);
-        OLED.drawRect(x, y, w, h,WHITE);
-        OLED.fillRect(x,y + h - (percentage*h),w,h,WHITE);
     }
 
     void _show_lights()
@@ -329,6 +336,12 @@ public:
         OLED.print(timeTripStr);
         // OLED.setCursor(80, SCREEN_HALF_HEIGHT_VALUES);
         // OLED.print(usedMilliAmps);
+    }
+
+    void off() {
+        OLED.clearDisplay();
+        this->_show_battery(true);
+        OLED.display();
     }
 
     void show()

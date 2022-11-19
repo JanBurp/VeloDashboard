@@ -13,6 +13,7 @@
 using namespace TeensyTimerTool;
 
 #include "DashboardClass.h"
+#include "BatteryClass.h"
 #include "OutputClass.h"
 #include "IndicatorClass.h"
 #include "LightsClass.h"
@@ -32,6 +33,7 @@ OutputClass Buzzer;
 
 // Classes
 DisplayClass Display;
+BatteryClass Battery;
 IndicatorClass Indicators;
 LightsClass Lights;
 SpeedClass Speed;
@@ -80,7 +82,7 @@ void setup()
     }
 
     // Disable unused pins
-    int unusedPins[] = {0, 1, 4, 5, 6, 7, 8, 9, 10, 13, 14,15, 16,17, 20,21,22 };
+    int unusedPins[] = {0, 1, 4, 5, 6, 7, 8, 9, 10, 13, 14,15, 16,17, 20,21 };
     for (size_t pin = 0; pin < 10; pin++)
     {
         pinMode(unusedPins[pin], INPUT_DISABLE);
@@ -91,6 +93,9 @@ void setup()
 
     // Knobs & Buttons
     Dashboard.init(PIN_DASHBOARD);
+    Battery.init(PIN_BATTERY_METER);
+
+    Lights.init(&Battery);
 
     // Buzzer
     pinMode(PIN_BUZZER, OUTPUT);
@@ -98,9 +103,9 @@ void setup()
 
     Speed.init();
     Indicators.init();
-    LEDstrips.init(&Indicators);
+    LEDstrips.init(&Indicators,&Battery);
 
-    Display.init(&Speed, &Indicators, &Lights, &LEDstrips);
+    Display.init(&Speed, &Battery, &Indicators, &Lights, &LEDstrips);
     Display.setDisplayMode(DISPLAY_WELCOME);
     Display.show();
 
@@ -187,9 +192,18 @@ void loop()
 {
     readButtons();
     updateBuzzer();
+    Battery.loop();
 
-    LEDstrips.loop();
-    Display.show();
+    if (Battery.isDead()) {
+        LEDstrips.off();
+        Lights.off();
+        Display.off();
+    }
+    else {
+        LEDstrips.loop();
+        Display.show();
+    }
+
 
     // // Fake Speed for testing
     // if (TEST)
