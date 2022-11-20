@@ -47,6 +47,7 @@ public:
                 ;
             }
         }
+        this->setContrast(128);
         OLED.clearDisplay();
         OLED.setTextColor(WHITE);
     }
@@ -201,6 +202,11 @@ public:
                 OLED.setCursor(x + w + 6, y + toppad);
                 OLED.print("!");
             }
+            // print percentage
+            OLED.setCursor(x-6, y + toppad + 4);
+            OLED.setTextSize(1);
+            OLED.print(percentage);
+
 
             // LEDstrips current use
             x = x + w + 4;
@@ -341,7 +347,13 @@ public:
     void off() {
         OLED.clearDisplay();
         this->_show_battery(true);
+        this->setContrast(1);
         OLED.display();
+    }
+
+    void setContrast(byte contrast) {
+        OLED.ssd1306_command(SSD1306_SETCONTRAST);
+        OLED.ssd1306_command(contrast);
     }
 
     void show()
@@ -376,6 +388,10 @@ public:
                 this->_show_triptime();
                 break;
             }
+        }
+
+        if (this->Battery->isVeryLow()) {
+            this->setContrast(64);
         }
 
         OLED.display();
