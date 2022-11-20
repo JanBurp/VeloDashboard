@@ -27,13 +27,28 @@ Wheel Wheels[7] = {
 unsigned int WheelNumber = 1;
 
 /*
-  TIMERS
+    LED light intensities
+*/
+
+#define HEAD_LED_OFF_INTENSITY      0
+#define HEAD_LED_LOW_INTENSITY      16
+#define HEAD_LED_MEDIUM_INTENSITY   96
+#define HEAD_LED_MAX_INTENSITY      255
+
+#define REAR_LED_OFF_INTENSITY      0
+#define REAR_LED_LOW_INTENSITY      2
+#define REAR_LED_MEDIUM_INTENSITY   32
+#define REAR_LED_MAX_INTENSITY      128
+
+
+/*
+    TIMERS
 */
 #define SPEED_CALCULATION_TIMER 1000ms
 #define BUZZER_TONE 660
 
 /*
-  DISPLAY
+    DISPLAY
 */
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -97,4 +112,8 @@ unsigned int WheelNumber = 1;
 #define PIN_BATTERY_METER 22
 #define PIN_BUZZER 12 // PWM
 #define PIN_SPEED 11
+
+#define PIN_HEAD_LIGHT_LEFT 4
+// #define PIN_HEAD_LIGHT_RIGHT 5
+#define PIN_REAR_LIGHT 6
 

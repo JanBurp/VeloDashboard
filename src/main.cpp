@@ -18,6 +18,7 @@ using namespace TeensyTimerTool;
 #include "IndicatorClass.h"
 #include "LightsClass.h"
 #include "SpeedClass.h"
+#include "LEDClass.h"
 #include "LEDstripClass.h"
 #include "DisplayClass.h"
 
@@ -38,6 +39,7 @@ IndicatorClass Indicators;
 LightsClass Lights;
 SpeedClass Speed;
 LEDstripClass LEDstrips;
+LedClass LedHeadLightLeft,LedHeadLightRight,LedRearLight;
 
 /**
  * Get the Teensy3 Time object
@@ -95,7 +97,9 @@ void setup()
     Dashboard.init(PIN_DASHBOARD);
     Battery.init(PIN_BATTERY_METER);
 
-    Lights.init(&Battery);
+    LedHeadLightLeft.init(PIN_HEAD_LIGHT_LEFT);
+    LedRearLight.init(PIN_REAR_LIGHT);
+    Lights.init(&Battery,&LedHeadLightLeft,&LedRearLight);
 
     // Buzzer
     pinMode(PIN_BUZZER, OUTPUT);
@@ -104,6 +108,7 @@ void setup()
     Speed.init();
     Indicators.init();
     LEDstrips.init(&Indicators,&Battery);
+
 
     Display.init(&Speed, &Battery, &Indicators, &Lights, &LEDstrips);
     Display.setDisplayMode(DISPLAY_WELCOME);

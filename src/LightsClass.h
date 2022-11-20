@@ -2,7 +2,10 @@
 
 #include "Arduino.h"
 
+#include "settings.h"
+
 #include "BatteryClass.h"
+#include "LedClass.h"
 
 #define LIGHTS_OFF 0
 #define LIGHTS_DIM 1
@@ -19,6 +22,7 @@ class LightsClass
 
 private:
     BatteryClass *Battery;
+    LedClass *HeadLightLeft, *RearLight;
     int lights = LIGHTS_OFF;
     int backLights = BACKLIGHTS_DIM;
     bool brake = false;
@@ -26,8 +30,58 @@ private:
 
 public:
 
-    void init(BatteryClass *battery) {
+    void init(BatteryClass *battery, LedClass *left, LedClass *rear) {
         this->Battery = battery;
+        this->HeadLightLeft = left;
+        this->RearLight = rear;
+    }
+
+    void _set() {
+        if ( this->horn ) {
+            this->HeadLightLeft->setIntensity(HEAD_LED_MAX_INTENSITY);
+        }
+        else {
+            switch (this->lights)
+            {
+                case LIGHTS_OFF:
+                    this->HeadLightLeft->setIntensity(HEAD_LED_OFF_INTENSITY);
+                    break;
+                case LIGHTS_DIM:
+                    this->HeadLightLeft->setIntensity(HEAD_LED_LOW_INTENSITY);
+                    break;
+                case LIGHTS_NORMAL:
+                    this->HeadLightLeft->setIntensity(HEAD_LED_MEDIUM_INTENSITY);
+                    break;
+                case LIGHTS_BEAM:
+                    this->HeadLightLeft->setIntensity(HEAD_LED_MAX_INTENSITY);
+                    break;
+            }
+        }
+
+        if ( this->brake ) {
+            this->RearLight->setIntensity(REAR_LED_MAX_INTENSITY);
+        }
+        else {
+            switch (this->backLights)
+            {
+                case BACKLIGHTS_DIM:
+                    this->RearLight->setIntensity(REAR_LED_LOW_INTENSITY);
+                    break;
+                case BACKLIGHTS_NORMAL:
+                    this->RearLight->setIntensity(REAR_LED_MEDIUM_INTENSITY);
+                    break;
+                case BACKLIGHTS_FOG:
+                    this->RearLight->setIntensity(REAR_LED_MAX_INTENSITY);
+                    break;
+                default:
+                    this->RearLight->setIntensity(REAR_LED_OFF_INTENSITY);
+                    break;
+
+            }
+        }
+
+
+
     }
 
     void increaseLights()
@@ -39,6 +93,7 @@ public:
                 this->lights--;
             }
         }
+        this->_set();
     }
 
     void decreaseLights()
@@ -47,6 +102,7 @@ public:
         {
             this->lights--;
         }
+        this->_set();
     }
 
     void increaseBackLights()
@@ -58,6 +114,7 @@ public:
                 this->backLights--;
             }
         }
+        this->_set();
     }
 
     void decreaseBackLights()
@@ -66,6 +123,7 @@ public:
         {
             this->backLights--;
         }
+        this->_set();
     }
 
     void setBrake(bool b)
@@ -73,6 +131,7 @@ public:
         if ( !this->Battery->isVeryLow() && !this->Battery->isAlmostDead() ) {
             this->brake = b;
         }
+        this->_set();
     }
 
     bool getBrake()
@@ -82,13 +141,14 @@ public:
 
     void setHorn(bool h) {
         this->horn = h;
+        this->_set();
     }
 
-    bool getHorn()
-    {
-        return this->horn;
+    void off() {
+        this->lights = LIGHTS_OFF;
+        this->backLights = BACKLIGHTS_DIM;
+        this->_set();
     }
-
 
     int getLights()
     {
@@ -102,10 +162,9 @@ public:
         return this->backLights;
     }
 
-    void off() {
-        this->lights = LIGHTS_OFF;
-        this->backLights = BACKLIGHTS_DIM;
+    bool getHorn()
+    {
+        return this->horn;
     }
-
 
 };

@@ -48,19 +48,19 @@ public:
         }
         this->percentage = constrain(prc, 0, 99);
 
-        if ( DEBUG ) {
-            Serial.print("Value:\t");
-            Serial.print(value);
-            Serial.print("\tmV:");
-            Serial.print(battery_mv);
-            Serial.print("\tCells:");
-            Serial.print(NUM_CELLS);
-            Serial.print("\tmV:");
-            Serial.print(cell_mv);
-            Serial.print("\t%:");
-            Serial.print(this->percentage);
-            Serial.println();
-        }
+        // if ( DEBUG ) {
+        //     Serial.print("Value:\t");
+        //     Serial.print(value);
+        //     Serial.print("\tmV:");
+        //     Serial.print(battery_mv);
+        //     Serial.print("\tCells:");
+        //     Serial.print(NUM_CELLS);
+        //     Serial.print("\tmV:");
+        //     Serial.print(cell_mv);
+        //     Serial.print("\t%:");
+        //     Serial.print(this->percentage);
+        //     Serial.println();
+        // }
 
     }
 
