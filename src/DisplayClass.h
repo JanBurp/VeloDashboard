@@ -226,6 +226,11 @@ public:
             OLED.drawRect(x, y, w, h,WHITE);
             OLED.fillRect(x,y + h - (percentage*h),w,h,WHITE);
         }
+        else {
+            OLED.setCursor(x + w + 12, y + toppad);
+            OLED.setTextSize(3);
+            OLED.print(this->Battery->secondsUntilPowerOff());
+        }
     }
 
     void _show_lights()

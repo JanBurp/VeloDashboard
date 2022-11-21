@@ -117,3 +117,5 @@ unsigned int WheelNumber = 1;
 // #define PIN_HEAD_LIGHT_RIGHT 5
 #define PIN_REAR_LIGHT 6
 
+#define PIN_POWER_OFF 10
+

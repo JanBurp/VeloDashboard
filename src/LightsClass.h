@@ -11,6 +11,7 @@
 #define LIGHTS_DIM 1
 #define LIGHTS_NORMAL 2
 #define LIGHTS_BEAM 3
+#define BACKLIGHTS_OFF 0
 #define BACKLIGHTS_DIM 1
 #define BACKLIGHTS_NORMAL 2
 #define BACKLIGHTS_FOG 3
@@ -24,7 +25,7 @@ private:
     BatteryClass *Battery;
     LedClass *HeadLightLeft, *RearLight;
     int lights = LIGHTS_OFF;
-    int backLights = BACKLIGHTS_DIM;
+    int backLights = BACKLIGHTS_OFF;
     bool brake = false;
     bool horn = false;
 
@@ -64,6 +65,9 @@ public:
         else {
             switch (this->backLights)
             {
+                case BACKLIGHTS_OFF:
+                    this->RearLight->setIntensity(REAR_LED_OFF_INTENSITY);
+                    break;
                 case BACKLIGHTS_DIM:
                     this->RearLight->setIntensity(REAR_LED_LOW_INTENSITY);
                     break;
@@ -73,10 +77,6 @@ public:
                 case BACKLIGHTS_FOG:
                     this->RearLight->setIntensity(REAR_LED_MAX_INTENSITY);
                     break;
-                default:
-                    this->RearLight->setIntensity(REAR_LED_OFF_INTENSITY);
-                    break;
-
             }
         }
 
@@ -146,7 +146,7 @@ public:
 
     void off() {
         this->lights = LIGHTS_OFF;
-        this->backLights = BACKLIGHTS_DIM;
+        this->backLights = BACKLIGHTS_OFF;
         this->_set();
     }
 

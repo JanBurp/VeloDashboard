@@ -84,7 +84,7 @@ void setup()
     }
 
     // Disable unused pins
-    int unusedPins[] = {0, 1, 4, 5, 6, 7, 8, 9, 10, 13, 14,15, 16,17, 20,21 };
+    int unusedPins[] = {0, 1, 4, 5, 6, 7, 8, 9, 13, 14,15, 16,17, 20,21 };
     for (size_t pin = 0; pin < 10; pin++)
     {
         pinMode(unusedPins[pin], INPUT_DISABLE);
@@ -95,7 +95,8 @@ void setup()
 
     // Knobs & Buttons
     Dashboard.init(PIN_DASHBOARD);
-    Battery.init(PIN_BATTERY_METER);
+    Battery.init(PIN_BATTERY_METER,PIN_POWER_OFF);
+    Battery.loop();
 
     LedHeadLightLeft.init(PIN_HEAD_LIGHT_LEFT);
     LedRearLight.init(PIN_REAR_LIGHT);
@@ -114,7 +115,10 @@ void setup()
     Display.setDisplayMode(DISPLAY_WELCOME);
     Display.show();
 
-    LEDstrips.startup_animation();
+    if ( !Battery.isDead() ) {
+        LEDstrips.startup_animation();
+        Lights.increaseBackLights();
+    }
 
     Display.setDisplayMode(DISPLAY_SPEED_AND_TIME);
     Display.show();
@@ -203,8 +207,10 @@ void loop()
         LEDstrips.off();
         Lights.off();
         Display.off();
-        // Speed.storeODO();
-        // Turn off
+        if (Battery.delayedPowerOff()) {
+            Speed.storeODO();
+            Battery.powerOff();
+        }
     }
     else {
         LEDstrips.loop();

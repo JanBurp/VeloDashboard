@@ -11,18 +11,26 @@
 #define BAT_ALMOSTDEAD  7
 #define BAT_DEAD        5
 
+#define POWER_OFF_DELAY 60 // seconds
+
 class BatteryClass
 {
 
 private:
     byte pin;
+    byte pinPower;
     int percentage;
+    unsigned long timeDead;
 
 public:
-    void init(byte pin)
+    void init(byte pin, byte power)
     {
         this->pin = pin;
+        this->pinPower = power;
+        pinMode(this->pinPower, OUTPUT);
+        digitalWrite(this->pinPower,LOW);
         this->percentage = 0;
+        this->timeDead = 0;
     }
 
     void loop()
@@ -30,7 +38,7 @@ public:
         int value = analogRead(this->pin);
         static int meanValue = value;
         meanValue = (meanValue * (V_SAMPLES - 1) + value) / V_SAMPLES;
-        int battery_mv = 4.3 * (VREF / 1023) * meanValue;
+        int battery_mv = 4.325 * (VREF / 1023) * meanValue;
         int cell_mv = battery_mv / NUM_CELLS;
 
         //
@@ -59,6 +67,8 @@ public:
             Serial.print(cell_mv);
             Serial.print("\t%:");
             Serial.print(this->percentage);
+            Serial.print("\ttmDead:");
+            Serial.print(this->timeDead);
             Serial.println();
         }
 
@@ -81,9 +91,32 @@ public:
     }
 
     bool isDead() {
-        return this->percentage <= BAT_DEAD;
+        if ( this->percentage<=BAT_DEAD ) {
+            if ( this->timeDead == 0) {
+                this->timeDead = millis();
+            }
+            return true;
+        }
+        return false;
     }
 
+    int secondsUntilPowerOff() {
+        int seconds = -1;
+        if ( this->timeDead>0 ) {
+            seconds = POWER_OFF_DELAY - ((millis() - this->timeDead) / 1000);
+        }
+        return seconds;
+    }
 
+    bool delayedPowerOff() {
+        if ( this->timeDead>0 and this->secondsUntilPowerOff()==0 ) {
+            return true;
+        }
+        return false;
+    }
+
+    void powerOff() {
+        digitalWrite(this->pinPower,HIGH);
+    }
 
 };
