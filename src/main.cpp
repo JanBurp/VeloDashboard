@@ -203,16 +203,12 @@ void loop()
         LEDstrips.off();
         Lights.off();
         Display.off();
+        // Speed.storeODO();
+        // Turn off
     }
     else {
         LEDstrips.loop();
         Display.show();
     }
 
-
-    // // Fake Speed for testing
-    // if (TEST)
-    // {
-    //     sensorChange();
-    // }
 }
