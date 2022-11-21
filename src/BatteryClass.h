@@ -30,7 +30,7 @@ public:
         int value = analogRead(this->pin);
         static int meanValue = value;
         meanValue = (meanValue * (V_SAMPLES - 1) + value) / V_SAMPLES;
-        int battery_mv = 3.875 * (VREF / 1023) * meanValue;
+        int battery_mv = 4.3 * (VREF / 1023) * meanValue;
         int cell_mv = battery_mv / NUM_CELLS;
 
         //
