@@ -84,7 +84,7 @@ void setup()
     }
 
     // Disable unused pins
-    int unusedPins[] = {0, 1, 4, 5, 6, 7, 8, 9, 13, 14,15, 16,17, 20,21 };
+    int unusedPins[] = {0, 1, 4, 5, 6, 7, 8, 13, 14,15, 16,17, 20,21 };
     for (size_t pin = 0; pin < 10; pin++)
     {
         pinMode(unusedPins[pin], INPUT_DISABLE);
@@ -105,6 +105,10 @@ void setup()
     // Buzzer
     pinMode(PIN_BUZZER, OUTPUT);
     buzzer(false);
+
+    // Horn
+    pinMode(PIN_HORN, OUTPUT);
+    analogWrite(PIN_HORN, 0);
 
     Speed.init();
     Indicators.init();
@@ -193,6 +197,22 @@ void updateBuzzer()
 }
 
 /*
+  HORN on or off
+*/
+void updateHorn()
+{
+    if (Lights.getHorn())
+    {
+        analogWrite(PIN_HORN, HORN_LOUDNESS);
+    }
+    else
+    {
+        analogWrite(PIN_HORN, 0);
+    }
+}
+
+
+/*
 
   ==== LOOP ====
 
@@ -201,6 +221,7 @@ void loop()
 {
     readButtons();
     updateBuzzer();
+    updateHorn();
     Battery.loop();
 
     if (Battery.isDead()) {

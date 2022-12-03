@@ -42,6 +42,11 @@ unsigned int WheelNumber = 1;
 
 
 /*
+    HORN Loudness
+*/
+#define HORN_LOUDNESS               32 // 32 = 6.8V / 48 = 9.5V
+
+/*
     TIMERS
 */
 #define SPEED_CALCULATION_TIMER 1000ms
@@ -104,18 +109,26 @@ unsigned int WheelNumber = 1;
 #define MIN_SPEED 2
 
 /*
- * PINS
+ * PINS (south L->R)
  */
-#define PIN_LEFT_STRIP 2
-#define PIN_RIGHT_STRIP 3
-#define PIN_DASHBOARD 23
-#define PIN_BATTERY_METER 22
-#define PIN_BUZZER 12 // PWM
-#define PIN_SPEED 11
-
+#define PIN_LEFT_STRIP      2
+#define PIN_RIGHT_STRIP     3
 #define PIN_HEAD_LIGHT_LEFT 4
 // #define PIN_HEAD_LIGHT_RIGHT 5
 #define PIN_REAR_LIGHT 6
+// #define PIN_BRAK_LIGHT 7
 
-#define PIN_POWER_OFF 10
+#define PIN_POWER_OFF   10
+#define PIN_SPEED       11
+#define PIN_BUZZER      12 // PWM
+
+/*
+ * PINS (north L-R)
+ */
+#define PIN_DASHBOARD       23
+#define PIN_BATTERY_METER   22
+// DISPLAY 19 & 18
+
+#define PIN_HORN            14
+
 
