@@ -23,7 +23,7 @@ class LightsClass
 
 private:
     BatteryClass *Battery;
-    LedClass *HeadLightLeft, *RearLight;
+    LedClass *HeadLightLeft, *HeadLightRight, *RearLight, *BrakeLight;
     int lights = LIGHTS_OFF;
     int backLights = BACKLIGHTS_OFF;
     bool brake = false;
@@ -31,55 +31,64 @@ private:
 
 public:
 
-    void init(BatteryClass *battery, LedClass *left, LedClass *rear) {
+    void init(BatteryClass *battery, LedClass *left, LedClass *right, LedClass *rear, LedClass *brake) {
         this->Battery = battery;
         this->HeadLightLeft = left;
+        this->HeadLightRight = right;
         this->RearLight = rear;
+        this->BrakeLight = brake;
     }
 
     void _set() {
         if ( this->horn ) {
             this->HeadLightLeft->setIntensity(HEAD_LED_MAX_INTENSITY);
+            this->HeadLightRight->setIntensity(HEAD_LED_MAX_INTENSITY);
         }
         else {
             switch (this->lights)
             {
                 case LIGHTS_OFF:
                     this->HeadLightLeft->setIntensity(HEAD_LED_OFF_INTENSITY);
+                    this->HeadLightRight->setIntensity(HEAD_LED_OFF_INTENSITY);
                     break;
                 case LIGHTS_DIM:
                     this->HeadLightLeft->setIntensity(HEAD_LED_LOW_INTENSITY);
+                    this->HeadLightRight->setIntensity(HEAD_LED_LOW_INTENSITY);
                     break;
                 case LIGHTS_NORMAL:
                     this->HeadLightLeft->setIntensity(HEAD_LED_MEDIUM_INTENSITY);
+                    this->HeadLightRight->setIntensity(HEAD_LED_MEDIUM_INTENSITY);
                     break;
                 case LIGHTS_BEAM:
                     this->HeadLightLeft->setIntensity(HEAD_LED_MAX_INTENSITY);
+                    this->HeadLightRight->setIntensity(HEAD_LED_MAX_INTENSITY);
                     break;
             }
         }
 
         if ( this->brake ) {
-            this->RearLight->setIntensity(REAR_LED_MAX_INTENSITY);
+            this->BrakeLight->setIntensity(REAR_LED_MAX_INTENSITY);
         }
         else {
-            switch (this->backLights)
-            {
-                case BACKLIGHTS_OFF:
-                    this->RearLight->setIntensity(REAR_LED_OFF_INTENSITY);
-                    break;
-                case BACKLIGHTS_DIM:
-                    this->RearLight->setIntensity(REAR_LED_LOW_INTENSITY);
-                    break;
-                case BACKLIGHTS_NORMAL:
-                    this->RearLight->setIntensity(REAR_LED_MEDIUM_INTENSITY);
-                    break;
-                case BACKLIGHTS_FOG:
-                    this->RearLight->setIntensity(REAR_LED_MAX_INTENSITY);
-                    break;
-            }
+            this->BrakeLight->setIntensity(REAR_LED_OFF_INTENSITY);
         }
 
+        switch (this->backLights)
+        {
+            case BACKLIGHTS_OFF:
+                this->RearLight->setIntensity(REAR_LED_OFF_INTENSITY);
+                break;
+            case BACKLIGHTS_DIM:
+                this->RearLight->setIntensity(REAR_LED_LOW_INTENSITY);
+                break;
+            case BACKLIGHTS_NORMAL:
+                this->RearLight->setIntensity(REAR_LED_MEDIUM_INTENSITY);
+                break;
+            case BACKLIGHTS_FOG:
+                this->RearLight->setIntensity(REAR_LED_MAX_INTENSITY);
+                this->BrakeLight->setIntensity(REAR_LED_MAX_INTENSITY);
+                break;
+        }
 
 
     }

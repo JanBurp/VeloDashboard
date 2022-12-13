@@ -75,6 +75,14 @@ class DashboardClass {
 
 			int value = analogRead(this->pin);
 
+            // if ( DEBUG ) {
+            //     Serial.print("Pin:\t");
+            //     Serial.print(this->pin);
+            //     Serial.print("\tValue:\t");
+            //     Serial.print(value);
+            //     Serial.println();
+            // }
+
             int func = -1;
             for (int i = 0; i < 10; i++) {
                 if ( value > Buttons[i].min && value < Buttons[i].max ) {

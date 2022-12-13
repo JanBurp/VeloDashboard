@@ -39,7 +39,7 @@ IndicatorClass Indicators;
 LightsClass Lights;
 SpeedClass Speed;
 LEDstripClass LEDstrips;
-LedClass LedHeadLightLeft,LedHeadLightRight,LedRearLight;
+LedClass LedHeadLightLeft,LedHeadLightRight,LedRearLight,LedBrakeLight;
 
 /**
  * Get the Teensy3 Time object
@@ -83,9 +83,9 @@ void setup()
         Serial.begin(115200);
     }
 
-    // Disable unused pins
-    int unusedPins[] = {0, 1, 4, 5, 6, 7, 8, 13, 14,15, 16,17, 20,21 };
-    for (size_t pin = 0; pin < 10; pin++)
+    // Disable unused pins (saves a bit current)
+    int unusedPins[] = UNUSED_PINS;
+    for (size_t pin = 0; pin < NR_UNUSED_PINS; pin++)
     {
         pinMode(unusedPins[pin], INPUT_DISABLE);
     }
@@ -99,8 +99,10 @@ void setup()
     Battery.loop();
 
     LedHeadLightLeft.init(PIN_HEAD_LIGHT_LEFT);
+    LedHeadLightRight.init(PIN_HEAD_LIGHT_RIGHT);
     LedRearLight.init(PIN_REAR_LIGHT);
-    Lights.init(&Battery,&LedHeadLightLeft,&LedRearLight);
+    LedBrakeLight.init(PIN_BRAKE_LIGHT);
+    Lights.init(&Battery,&LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
 
     // Buzzer
     pinMode(PIN_BUZZER, OUTPUT);
@@ -209,6 +211,15 @@ void updateHorn()
     {
         analogWrite(PIN_HORN, 0);
     }
+
+    if ( DEBUG ) {
+        Serial.print("Pin:\t");
+        Serial.print(PIN_HORN);
+        Serial.print("\tValue:\t");
+        Serial.print(Lights.getHorn());
+        Serial.println();
+    }
+
 }
 
 
