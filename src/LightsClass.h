@@ -93,6 +93,11 @@ public:
 
     }
 
+    void resetLights() {
+        this->lights = LIGHTS_OFF;
+        this->backLights = BACKLIGHTS_DIM;
+    }
+
     void increaseLights()
     {
         if (this->lights < LIGHTS_BEAM)
@@ -102,6 +107,14 @@ public:
                 this->lights--;
             }
         }
+        this->backLights = BACKLIGHTS_DIM;
+        if ( this->lights >= LIGHTS_NORMAL ) {
+            this->backLights = BACKLIGHTS_NORMAL;
+        }
+        if ( this->lights==LIGHTS_BEAM ) {
+            this->backLights = BACKLIGHTS_FOG;
+        }
+
         this->_set();
     }
 

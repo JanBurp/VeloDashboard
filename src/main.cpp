@@ -161,18 +161,22 @@ void readButtons()
         }
 
         // Lights
-        if ( Dashboard.isLightsMore() )  {
-            Lights.increaseLights();
+        if ( Dashboard.isLights() )  {
+            if ( Dashboard.isLongPress() ) {
+                Lights.resetLights();
+            }
+            else {
+                Lights.increaseLights();
+            }
         }
-        if ( Dashboard.isLightsLess() ) {
-            Lights.decreaseLights();
-        }
-        if ( Dashboard.isBackLightsMore() )  {
-            Lights.increaseBackLights();
-        }
-        if ( Dashboard.isBackLightsLess() ) {
-            Lights.decreaseBackLights();
-        }
+        // if ( Dashboard.isBackLights() )  {
+        //     if ( Dashboard.isLongPress() ) {
+        //         Lights.resetLights();
+        //     }
+        //     else {
+        //         Lights.increaseBackLights();
+        //     }
+        // }
 
         // Display pages
         if (Dashboard.isDisplay()) {
@@ -210,14 +214,6 @@ void updateHorn()
     else
     {
         analogWrite(PIN_HORN, 0);
-    }
-
-    if ( DEBUG ) {
-        Serial.print("Pin:\t");
-        Serial.print(PIN_HORN);
-        Serial.print("\tValue:\t");
-        Serial.print(Lights.getHorn());
-        Serial.println();
     }
 
 }
