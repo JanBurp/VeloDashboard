@@ -4,6 +4,7 @@
 #include "settings.h"
 #include "SpeedClass.h"
 #include "BatteryClass.h"
+#include "IdleClass.h"
 #include "IndicatorClass.h"
 #include "LightsClass.h"
 #include "LEDstripClass.h"
@@ -26,15 +27,17 @@ private:
     int lastMode = DISPLAY_TRIPTIME;
     SpeedClass *Speed;
     BatteryClass *Battery;
+    IdleClass *IdleTimer;
     IndicatorClass *Indicators;
     LightsClass *Lights;
     LEDstripClass *LEDstrips;
 
 public:
-    void init(SpeedClass *speed, BatteryClass *battery, IndicatorClass *indicators, LightsClass *lights, LEDstripClass *LEDstrips)
+    void init(SpeedClass *speed, BatteryClass *battery, IdleClass *idle, IndicatorClass *indicators, LightsClass *lights, LEDstripClass *LEDstrips)
     {
         this->Speed = speed;
         this->Battery = battery;
+        this->IdleTimer = idle;
         this->Indicators = indicators;
         this->Lights = lights;
         this->LEDstrips = LEDstrips;
@@ -94,48 +97,73 @@ public:
 
     void _show_speed()
     {
-        float speed = this->Speed->getSpeed();
-        int decis = (int)speed;
-        int precision = (speed - decis) * 10;
+        if ( this->Speed->isStarted() ) {
 
-        OLED.setTextSize(5);
-        char speedStr[3];
-        snprintf(speedStr, 3, "%2i", decis);
-        OLED.setCursor(38, 0);
-        OLED.print(speedStr);
-        snprintf(speedStr, 3, "%1i", precision);
-        OLED.setTextSize(3);
-        OLED.setCursor(110, 14);
-        OLED.print(speedStr);
+            // Show distance & average when paused
+            if ( this->Speed->isPaused() ) {
+                char avgSpeedStr[11];
+                snprintf(avgSpeedStr, 11, "%-3.1f", this->Speed->getAvgSpeed());
+                char distStr[13];
+                snprintf(distStr, 13, "%-3.1f", this->Speed->getDistance());
 
-        // Sensor
-        OLED.setTextSize(2);
-        OLED.setCursor(96, 22);
-        if (this->Speed->getSpeedSensor())
-        {
-            OLED.print(".");
-        }
-        else
-        {
-            OLED.print(" ");
-        }
+                OLED.setTextSize(1);
+                OLED.setCursor(52, 6 );
+                OLED.print("AVG");
+                OLED.setCursor(52, 30 );
+                OLED.print("DST");
 
-        // Faster / Slower than average
-        if (!this->Speed->isPaused())
-        {
-            int x = 110;
-            int y = 0;
-            int w = 14;
-            int h = 10;
-            if (this->Speed->isFaster())
-            {
-                OLED.fillTriangle(x, y + h, x + w / 2, y, x + w, y + h, WHITE);
+                OLED.setTextSize(2);
+                OLED.setCursor(80, 0 );
+                OLED.print(avgSpeedStr);
+                OLED.setCursor(80, 24 );
+                OLED.print(distStr);
             }
-            else
-            {
-                OLED.fillTriangle(x, y, x + w / 2, y + h, x + w, y, WHITE);
+
+            // Show speeed
+            else {
+                float speed = this->Speed->getSpeed();
+                int decis = (int)speed;
+                int precision = (speed - decis) * 10;
+
+                OLED.setTextSize(5);
+                char speedStr[3];
+                snprintf(speedStr, 3, "%2i", decis);
+                OLED.setCursor(38, 0);
+                OLED.print(speedStr);
+                snprintf(speedStr, 3, "%1i", precision);
+                OLED.setTextSize(3);
+                OLED.setCursor(110, 14);
+                OLED.print(speedStr);
+
+                // Sensor
+                OLED.setTextSize(2);
+                OLED.setCursor(96, 22);
+                if (this->Speed->getSpeedSensor())
+                {
+                    OLED.print(".");
+                }
+                else
+                {
+                    OLED.print(" ");
+                }
+
+                // Faster / Slower than average
+                int x = 110;
+                int y = 0;
+                int w = 14;
+                int h = 10;
+                if (this->Speed->isFaster())
+                {
+                    OLED.fillTriangle(x, y + h, x + w / 2, y, x + w, y + h, WHITE);
+                }
+                else
+                {
+                    OLED.fillTriangle(x, y, x + w / 2, y + h, x + w, y, WHITE);
+                }
             }
+
         }
+
     }
 
     void _show_indicators()
@@ -153,25 +181,37 @@ public:
     void _show_time()
     {
         char hourStr[3];
-        snprintf(hourStr, 3, "%2i", hour());
         char minStr[3];
-        snprintf(minStr, 3, "%02i", minute());
+        if ( this->IdleTimer->warning() ) {
+            // Idle clock
+            snprintf(minStr, 3, "%02i", this->IdleTimer->remainingSeconds() );
+        }
+        else {
+            // Normal clock
+            snprintf(hourStr, 3, "%2i", hour());
+            snprintf(minStr, 3, "%02i", minute());
+        }
+
 
         OLED.setTextSize(3);
-        OLED.setCursor(49, SCREEN_HALF_HEIGHT_VALUES - 6);
-        OLED.print(hourStr);
+        if ( !this->IdleTimer->warning() ) {
+            OLED.setCursor(49, SCREEN_HALF_HEIGHT_VALUES - 6);
+            OLED.print(hourStr);
+        }
         OLED.setCursor(92, SCREEN_HALF_HEIGHT_VALUES - 6);
         OLED.print(minStr);
 
-        OLED.setTextSize(2);
-        OLED.setCursor(82, SCREEN_HALF_HEIGHT_VALUES + 3);
-        if ((millis() / 500) % 2 == 0)
-        {
-            OLED.print(":");
-        }
-        else
-        {
-            OLED.print(" ");
+        if ( !this->IdleTimer->warning() ) {
+            OLED.setTextSize(2);
+            OLED.setCursor(82, SCREEN_HALF_HEIGHT_VALUES + 3);
+            if ((millis() / 500) % 2 == 0)
+            {
+                OLED.print(":");
+            }
+            else
+            {
+                OLED.print(" ");
+            }
         }
     }
 
@@ -191,40 +231,40 @@ public:
             int juiceHeight = (h - innerpad * 2) * percentage;
             OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight), x + w - 2 * innerpad, juiceHeight, WHITE);
 
-            OLED.setCursor(x + w + 12, y + toppad);
-            OLED.setTextSize(3);
-            if ( this->Battery->isLow() )
-            {
-                OLED.print("!");
-            }
-            if ( this->Battery->isVeryLow() )
-            {
-                OLED.setCursor(x + w + 6, y + toppad);
-                OLED.print("!");
-            }
+            // print cell voltage
+            int cellMilliV = this->Battery->getCellVoltage();
+            // float cellV = cellMilliV / 1000.0;
+            int cellV = cellMilliV / 1000;
+            int cellM = (cellMilliV - (1000*cellV))/10;
+            OLED.setTextSize(2);
+            OLED.setCursor(x + w + 4, y + toppad);
+            OLED.print( cellV );
+            OLED.setTextSize(1);
+            OLED.setCursor(x + w + 4, y + toppad + 15);
+            OLED.print( cellM );
+
             // print percentage
             OLED.setCursor(x-6, y + toppad + 4);
             OLED.setTextSize(1);
             OLED.print(percentage);
 
-
-            // LEDstrips current use
-            x = x + w + 4;
-            y = y + 4;
-            h = h;
-            w = 4;
-            int ledMilliAmps = this->LEDstrips->max_used_milliamps();
-            if (TEST) {
-                percentage = (ledMilliAmps / 1000.0);
-            }
-            else {
-                percentage = (ledMilliAmps / 2000.0);
-            }
-            // OLED.setCursor(x + 10,y);
-            // OLED.setTextSize(1);
-            // OLED.print(ledMilliAmps);
-            OLED.drawRect(x, y, w, h,WHITE);
-            OLED.fillRect(x,y + h - (percentage*h),w,h,WHITE);
+            // // LEDstrips current use
+            // x = x + w + 4;
+            // y = y + 4;
+            // h = h;
+            // w = 4;
+            // int ledMilliAmps = this->LEDstrips->max_used_milliamps();
+            // if (TEST) {
+            //     percentage = (ledMilliAmps / 1000.0);
+            // }
+            // else {
+            //     percentage = (ledMilliAmps / 2000.0);
+            // }
+            // // OLED.setCursor(x + 10,y);
+            // // OLED.setTextSize(1);
+            // // OLED.print(ledMilliAmps);
+            // OLED.drawRect(x, y, w, h,WHITE);
+            // OLED.fillRect(x,y + h - (percentage*h),w,h,WHITE);
         }
         else {
             OLED.setCursor(x + w + 12, y + toppad);

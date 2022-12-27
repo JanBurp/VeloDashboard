@@ -14,6 +14,7 @@ using namespace TeensyTimerTool;
 
 #include "DashboardClass.h"
 #include "BatteryClass.h"
+#include "IdleClass.h"
 #include "OutputClass.h"
 #include "IndicatorClass.h"
 #include "LightsClass.h"
@@ -35,6 +36,7 @@ OutputClass Buzzer;
 // Classes
 DisplayClass Display;
 BatteryClass Battery;
+IdleClass IdleTimer;
 IndicatorClass Indicators;
 LightsClass Lights;
 SpeedClass Speed;
@@ -71,6 +73,7 @@ void buzzer(bool state)
 void sensorChange()
 {
     Speed.sensorTrigger();
+    IdleTimer.action();
 }
 
 /**
@@ -97,12 +100,13 @@ void setup()
     Dashboard.init(PIN_DASHBOARD);
     Battery.init(PIN_BATTERY_METER,PIN_POWER_OFF);
     Battery.loop();
+    IdleTimer.action();
 
     LedHeadLightLeft.init(PIN_HEAD_LIGHT_LEFT);
     LedHeadLightRight.init(PIN_HEAD_LIGHT_RIGHT);
     LedRearLight.init(PIN_REAR_LIGHT);
     LedBrakeLight.init(PIN_BRAKE_LIGHT);
-    Lights.init(&Battery,&LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
+    Lights.init(&Battery, &LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
 
     // Buzzer
     pinMode(PIN_BUZZER, OUTPUT);
@@ -117,7 +121,7 @@ void setup()
     LEDstrips.init(&Indicators,&Battery);
 
 
-    Display.init(&Speed, &Battery, &Indicators, &Lights, &LEDstrips);
+    Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights, &LEDstrips);
     Display.setDisplayMode(DISPLAY_WELCOME);
     Display.show();
 
@@ -147,6 +151,7 @@ void readButtons()
 
     // Others
     if ( Dashboard.read() ) {
+        IdleTimer.action();
 
         if (Dashboard.isIndicatorLeft() ) {
             Indicators.setLeft();
@@ -161,28 +166,27 @@ void readButtons()
         }
 
         // Lights
-        if ( Dashboard.isLights() )  {
-            if ( Dashboard.isLongPress() ) {
-                Lights.resetLights();
-            }
-            else {
-                Lights.increaseLights();
-            }
+        if ( Dashboard.isLightsMore() )  {
+            Lights.increaseLights();
         }
-        // if ( Dashboard.isBackLights() )  {
-        //     if ( Dashboard.isLongPress() ) {
-        //         Lights.resetLights();
-        //     }
-        //     else {
-        //         Lights.increaseBackLights();
-        //     }
-        // }
+        if ( Dashboard.isLightsLess() ) {
+            Lights.decreaseLights();
+        }
+        if ( Dashboard.isBackLightsMore() )  {
+            Lights.increaseBackLights();
+        }
+        if ( Dashboard.isBackLightsLess() ) {
+            Lights.decreaseBackLights();
+        }
 
         // Display pages
         if (Dashboard.isDisplay()) {
             Display.nextDisplayMode();
         }
+    }
 
+    if ( IdleTimer.warning() ) {
+        Lights.resetLights();
     }
 
 }
@@ -209,6 +213,7 @@ void updateHorn()
 {
     if (Lights.getHorn())
     {
+        IdleTimer.action();
         analogWrite(PIN_HORN, HORN_LOUDNESS);
     }
     else
@@ -230,6 +235,14 @@ void loop()
     updateBuzzer();
     updateHorn();
     Battery.loop();
+
+    if ( IdleTimer.ended() ) {
+        Speed.storeODO();
+        LEDstrips.off();
+        Lights.off();
+        Display.off();
+        Battery.powerOff();
+    }
 
     if (Battery.isDead()) {
         LEDstrips.off();

@@ -20,6 +20,7 @@ private:
     byte pin;
     byte pinPower;
     int percentage;
+    int cell_mv;
     unsigned long timeDead;
 
 public:
@@ -29,6 +30,7 @@ public:
         this->pinPower = power;
         pinMode(this->pinPower, OUTPUT);
         digitalWrite(this->pinPower,LOW);
+        this->cell_mv = 0;
         this->percentage = 0;
         this->timeDead = 0;
     }
@@ -39,39 +41,43 @@ public:
         static int meanValue = value;
         meanValue = (meanValue * (V_SAMPLES - 1) + value) / V_SAMPLES;
         int battery_mv = 4.325 * (VREF / 1023) * meanValue;
-        int cell_mv = battery_mv / NUM_CELLS;
+        this->cell_mv = battery_mv / NUM_CELLS;
 
         //
         // LiPo capacity
         //
-        const int V[6] = {4200, 4000, 3850, 3750, 3450, 3350};  //mV
+        const int V[6] = {4200, 4000, 3850, 3750, 3450, 3350};  // mV - 12.6 - 12.0 - 11.55 - 11.25 - 10.35 - 10.0
         const int C[6] = {100,    90,   75,   50,    7,    0};  // % capacity
 
-        int prc = 0;
+        int percent = 0;
         for (size_t i = 1; i < 5; i++)
         {
-            if ( cell_mv >= V[i] ) {
-                prc = int( (C[i-1] - C[i]) * (cell_mv - V[i]) / (V[i-1] - V[i]) + C[i] );
+            if ( this->cell_mv >= V[i] ) {
+                percent = int( (C[i-1] - C[i]) * (this->cell_mv - V[i]) / (V[i-1] - V[i]) + C[i] );
             }
         }
-        this->percentage = constrain(prc, 0, 99);
+        this->percentage = constrain(percent, 0, 99);
 
-        if ( DEBUG ) {
-            Serial.print("Value:\t");
-            Serial.print(meanValue);
-            Serial.print("\tmV:");
-            Serial.print(battery_mv);
-            Serial.print("\tCells:");
-            Serial.print(NUM_CELLS);
-            Serial.print("\tmV:");
-            Serial.print(cell_mv);
-            Serial.print("\t%:");
-            Serial.print(this->percentage);
-            Serial.print("\ttmDead:");
-            Serial.print(this->timeDead);
-            Serial.println();
-        }
+        // if ( DEBUG ) {
+        //     Serial.print("Value:\t");
+        //     Serial.print(meanValue);
+        //     Serial.print("\tmV:");
+        //     Serial.print(battery_mv);
+        //     Serial.print("\tCells:");
+        //     Serial.print(NUM_CELLS);
+        //     Serial.print("\tmV:");
+        //     Serial.print(this->cell_mv);
+        //     Serial.print("\t%:");
+        //     Serial.print(this->percentage);
+        //     Serial.print("\ttmDead:");
+        //     Serial.print(this->timeDead);
+        //     Serial.println();
+        // }
 
+    }
+
+    int getCellVoltage() {
+        return this->cell_mv;
     }
 
     int getBatteryPercentage() {
