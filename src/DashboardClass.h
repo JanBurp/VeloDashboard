@@ -79,11 +79,11 @@ class DashboardClass {
 
 			int value = analogRead(this->pin);
 
-            if ( DEBUG ) {
-                Serial.print("\tValue:\t");
-                Serial.print(value);
-                Serial.println();
-            }
+            // if ( DEBUG ) {
+            //     Serial.print("\tValue:\t");
+            //     Serial.print(value);
+            //     Serial.println();
+            // }
 
             int func = -1;
             for (int i = 0; i < 10; i++) {

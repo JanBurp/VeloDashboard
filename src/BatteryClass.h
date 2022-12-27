@@ -11,7 +11,7 @@
 #define BAT_ALMOSTDEAD  7
 #define BAT_DEAD        5
 
-#define POWER_OFF_DELAY 60 // seconds
+#define POWER_OFF_DELAY 20 // seconds
 
 class BatteryClass
 {
@@ -56,21 +56,21 @@ public:
         }
         this->percentage = constrain(prc, 0, 99);
 
-        // if ( DEBUG ) {
-        //     Serial.print("Value:\t");
-        //     Serial.print(value);
-        //     Serial.print("\tmV:");
-        //     Serial.print(battery_mv);
-        //     Serial.print("\tCells:");
-        //     Serial.print(NUM_CELLS);
-        //     Serial.print("\tmV:");
-        //     Serial.print(cell_mv);
-        //     Serial.print("\t%:");
-        //     Serial.print(this->percentage);
-        //     Serial.print("\ttmDead:");
-        //     Serial.print(this->timeDead);
-        //     Serial.println();
-        // }
+        if ( DEBUG ) {
+            Serial.print("Value:\t");
+            Serial.print(meanValue);
+            Serial.print("\tmV:");
+            Serial.print(battery_mv);
+            Serial.print("\tCells:");
+            Serial.print(NUM_CELLS);
+            Serial.print("\tmV:");
+            Serial.print(cell_mv);
+            Serial.print("\t%:");
+            Serial.print(this->percentage);
+            Serial.print("\ttmDead:");
+            Serial.print(this->timeDead);
+            Serial.println();
+        }
 
     }
 
