@@ -2,20 +2,13 @@
 
 #include "Arduino.h"
 
-#define FN_INDICATOR_LEFT 0
-#define FN_LIGHTS_MORE 1
-#define FN_LIGHTS_LESS 2
-#define FN_HORN 3
-#define FN_DISPLAY 4
-#define FN_INDICATOR_RIGHT 5
-// combinations:
-#define FN_ALARM 6             // indicator LEFT & RIGHT
-#define FN_SHIFT FN_DISPLAY    // displat button is shift button
-#define FN_BACKLIGHTS_MORE 7        // shift + more
-#define FN_BACKLIGHTS_LESS 8        // shift + more
-// important:
-#define FN_BRAKE 10
-
+#define FN_LEFT             0
+#define FN_RIGHT            1
+#define FN_FRONT            2
+#define FN_REAR             3
+#define FN_HORN             4
+#define FN_DISPLAY          5
+#define FN_BRAKE            10
 
 #define DEBOUNCE    50
 #define LONG_PRESS  1000
@@ -29,16 +22,13 @@ struct DashboardButton {
 
 
 DashboardButton Buttons[10] = {
-    { 200, 300, FN_ALARM },                     // BOTH INDICATORS = 260
-    { 305, 420, FN_INDICATOR_LEFT },            // 320
-    { 440, 470, FN_BACKLIGHTS_LESS },           // 450
-    { 475, 530, FN_INDICATOR_RIGHT },           // 490
-    { 540, 590, FN_BACKLIGHTS_MORE },           // 570
-    { 600, 680, FN_LIGHTS_LESS },               // 624
-    { 685, 720, FN_DISPLAY },                   // 697
-    { 725, 765, FN_LIGHTS_MORE },               // 742
-    { 770, 815, FN_HORN },                      // RED = 780
-    { 820, 900, FN_BRAKE },                     // 830
+    { 0,    99, FN_BRAKE },
+    { 100, 225, FN_HORN },                      // 178
+    { 250, 350, FN_DISPLAY },                   // 301
+    { 370, 470, FN_RIGHT },                     // 426
+    { 475, 600, FN_LEFT },                      // 550
+    { 625, 750, FN_REAR },                      // 707
+    { 775, 900, FN_FRONT },                     // 832
 };
 
 class DashboardClass {
@@ -49,13 +39,8 @@ class DashboardClass {
         bool longPress;
         unsigned int debounceTime;
         unsigned long lastPressed;
-
         int function;
-        bool shift;
-        bool hasUsedShift;
-
         int indicator = 0;
-        bool alarm = false;
 
 	public:
 
@@ -63,15 +48,12 @@ class DashboardClass {
 		 * Setup the button, specifying and optional debounce delay
 		 */
 		void init(byte pin, unsigned int debounceTime = DEBOUNCE) {
-
 			this->pin = pin;
             this->debouncing = false;
             this->longPress = false;
 			this->debounceTime = debounceTime;
 			this->lastPressed = 0;
             this->function = -1;
-            this->shift = false;
-            this->hasUsedShift = false;
 		}
 
 		/**
@@ -90,7 +72,7 @@ class DashboardClass {
 
             int func = -1;
             for (int i = 0; i < 10; i++) {
-                if ( value > Buttons[i].min && value < Buttons[i].max ) {
+                if ( value >= Buttons[i].min && value < Buttons[i].max ) {
                     func = Buttons[i].function;
                 }
             }
@@ -107,19 +89,14 @@ class DashboardClass {
                         }
                     }
                 }
-                // else {
-                //     if ( millis() - this->lastPressed >= LONG_PRESS ) {
-                //         this->longPress = true;
-                //         stateChanged = true;
-                //     }
-                // }
-			} else {
-                if ( this->shift && !this->hasUsedShift ) {
-                    stateChanged = this->setFunction(FN_SHIFT);
-                }
                 else {
-                    this->setFunction(-1);
+                    if ( !this->longPress && (millis() - this->lastPressed >= LONG_PRESS) ) {
+                        this->longPress = true;
+                        stateChanged = true;
+                    }
                 }
+			} else {
+                this->setFunction(-1);
 			}
 
             return stateChanged;
@@ -131,32 +108,19 @@ class DashboardClass {
                 this->longPress = false;
             }
             this->debouncing = false;
-            this->indicator = 0;
-            this->alarm = false;
-            this->shift = false;
-            this->hasUsedShift = false;
-            if ( this->function == FN_BACKLIGHTS_MORE || this->function == FN_BACKLIGHTS_LESS ) {
-                this->hasUsedShift = true;
-            }
             this->function = func;
-            if ( this->function == FN_ALARM ) {
-                this->alarm = true;
-            }
-            if ( this->function == FN_INDICATOR_LEFT ) {
+            this->indicator = 0;
+            if ( this->function == FN_LEFT ) {
                 this->indicator = -1;
             }
-            if ( this->function == FN_INDICATOR_RIGHT ) {
+            if ( this->function == FN_RIGHT ) {
                 this->indicator = 1;
             }
             return true;
         }
 
-        // bool isLongPress() {
-        //     return this->longPress;
-        // }
-
-        bool isAlarm() {
-            return this->alarm;
+        bool isLongPress() {
+            return this->longPress;
         }
 
         bool isIndicatorLeft() {
@@ -167,20 +131,16 @@ class DashboardClass {
             return ( this->indicator==1 );
         }
 
-        bool isLightsMore() {
-            return ( this->function == FN_LIGHTS_MORE );
+        bool isAlarm() {
+            return ( this->isLongPress() && (this->indicator!=0) );
         }
 
-        bool isLightsLess() {
-            return ( this->function == FN_LIGHTS_LESS );
+        bool isFrontLights() {
+            return ( this->function == FN_FRONT );
         }
 
-        bool isBackLightsMore() {
-            return ( this->function == FN_BACKLIGHTS_MORE );
-        }
-
-        bool isBackLightsLess() {
-            return ( this->function == FN_BACKLIGHTS_LESS );
+        bool isRearLights() {
+            return ( this->function == FN_REAR );
         }
 
         bool isHorn() {

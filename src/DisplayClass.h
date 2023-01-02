@@ -308,14 +308,14 @@ public:
             OLED.drawBitmap(x, y, icoBrakeRear, w, h, WHITE);
         }
         else {
-            switch (this->Lights->getBackLights()) {
-            case BACKLIGHTS_DIM:
+            switch (this->Lights->getRearLights()) {
+            case REARLIGHTS_DIM:
                 OLED.drawBitmap(x, y, icoLowRear, w, h, WHITE);
                 break;
-            case BACKLIGHTS_NORMAL:
+            case REARLIGHTS_NORMAL:
                 OLED.drawBitmap(x, y, icoHighRear, w, h, WHITE);
                 break;
-            case BACKLIGHTS_FOG:
+            case REARLIGHTS_FOG:
                 OLED.drawBitmap(x, y, icoFogRear, w, h, WHITE);
                 break;
             }

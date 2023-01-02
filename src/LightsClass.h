@@ -11,11 +11,11 @@
 #define LIGHTS_DIM 1
 #define LIGHTS_NORMAL 2
 #define LIGHTS_BEAM 3
-#define BACKLIGHTS_OFF 0
-#define BACKLIGHTS_DIM 1
-#define BACKLIGHTS_NORMAL 2
-#define BACKLIGHTS_FOG 3
-#define BACKLIGHTS_BREAK 3
+#define REARLIGHTS_OFF 0
+#define REARLIGHTS_DIM 1
+#define REARLIGHTS_NORMAL 2
+#define REARLIGHTS_FOG 3
+#define REARLIGHTS_BREAK 3
 
 
 class LightsClass
@@ -25,7 +25,7 @@ private:
     BatteryClass *Battery;
     LedClass *HeadLightLeft, *HeadLightRight, *RearLight, *BrakeLight;
     int lights = LIGHTS_OFF;
-    int backLights = BACKLIGHTS_OFF;
+    int rearLights = REARLIGHTS_OFF;
     bool brake = false;
     bool horn = false;
 
@@ -40,12 +40,23 @@ public:
     }
 
     void _set() {
+        int lights = this->lights;
+        int rear = this->rearLights;
+        if ( this->Battery->isVeryLow() or this->Battery->isAlmostDead() ) {
+            if ( lights>=LIGHTS_BEAM ) {
+                lights--;
+            }
+            if ( rear>=REARLIGHTS_FOG ) {
+                rear--;
+            }
+        }
+
         if ( this->horn ) {
             this->HeadLightLeft->setIntensity(HEAD_LED_MAX_INTENSITY);
             this->HeadLightRight->setIntensity(HEAD_LED_MAX_INTENSITY);
         }
         else {
-            switch (this->lights)
+            switch (lights)
             {
                 case LIGHTS_OFF:
                     this->HeadLightLeft->setIntensity(HEAD_LED_OFF_INTENSITY);
@@ -73,18 +84,19 @@ public:
             this->BrakeLight->setIntensity(REAR_LED_OFF_INTENSITY);
         }
 
-        switch (this->backLights)
+
+        switch (rear)
         {
-            case BACKLIGHTS_OFF:
+            case REARLIGHTS_OFF:
                 this->RearLight->setIntensity(REAR_LED_OFF_INTENSITY);
                 break;
-            case BACKLIGHTS_DIM:
+            case REARLIGHTS_DIM:
                 this->RearLight->setIntensity(REAR_LED_LOW_INTENSITY);
                 break;
-            case BACKLIGHTS_NORMAL:
+            case REARLIGHTS_NORMAL:
                 this->RearLight->setIntensity(REAR_LED_MEDIUM_INTENSITY);
                 break;
-            case BACKLIGHTS_FOG:
+            case REARLIGHTS_FOG:
                 this->RearLight->setIntensity(REAR_LED_MAX_INTENSITY);
                 this->BrakeLight->setIntensity(REAR_LED_MAX_INTENSITY);
                 break;
@@ -94,48 +106,24 @@ public:
 
     void resetLights() {
         this->lights = LIGHTS_OFF;
-        this->backLights = BACKLIGHTS_DIM;
+        this->rearLights = REARLIGHTS_DIM;
         this->_set();
     }
 
     void increaseLights()
     {
-        if (this->lights < LIGHTS_BEAM)
-        {
-            this->lights++;
-            if ( this->lights==LIGHTS_BEAM and (this->Battery->isVeryLow() or this->Battery->isAlmostDead() ) ) {
-                this->lights--;
-            }
+        this->lights++;
+        if ( this->lights>LIGHTS_BEAM ) {
+            this->lights = LIGHTS_OFF;
         }
         this->_set();
     }
 
-    void decreaseLights()
+    void increaseRearLights()
     {
-        if (this->lights > LIGHTS_OFF)
-        {
-            this->lights--;
-        }
-        this->_set();
-    }
-
-    void increaseBackLights()
-    {
-        if (this->backLights < BACKLIGHTS_FOG)
-        {
-            this->backLights++;
-            if ( this->backLights==BACKLIGHTS_FOG and (this->Battery->isVeryLow() or this->Battery->isAlmostDead() ) ) {
-                this->backLights--;
-            }
-        }
-        this->_set();
-    }
-
-    void decreaseBackLights()
-    {
-        if (this->backLights > BACKLIGHTS_DIM)
-        {
-            this->backLights--;
+        this->rearLights++;
+        if ( this->rearLights > REARLIGHTS_FOG ) {
+            this->rearLights = REARLIGHTS_DIM;
         }
         this->_set();
     }
@@ -160,7 +148,7 @@ public:
 
     void off() {
         this->lights = LIGHTS_OFF;
-        this->backLights = BACKLIGHTS_OFF;
+        this->rearLights = REARLIGHTS_OFF;
         this->_set();
     }
 
@@ -172,8 +160,8 @@ public:
         return this->lights;
     }
 
-    int getBackLights() {
-        return this->backLights;
+    int getRearLights() {
+        return this->rearLights;
     }
 
     bool getHorn()

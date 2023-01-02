@@ -127,7 +127,7 @@ void setup()
 
     if ( !Battery.isDead() ) {
         LEDstrips.startup_animation();
-        Lights.increaseBackLights();
+        Lights.increaseRearLights();
     }
 
     Display.setDisplayMode(DISPLAY_SPEED_AND_TIME);
@@ -153,10 +153,10 @@ void readButtons()
     if ( Dashboard.read() ) {
         IdleTimer.action();
 
-        if (Dashboard.isIndicatorLeft() ) {
+        if ( Dashboard.isIndicatorLeft() ) {
             Indicators.setLeft();
         }
-        if (Dashboard.isIndicatorRight()) {
+        if ( Dashboard.isIndicatorRight() ) {
             Indicators.setRight();
         }
 
@@ -166,17 +166,11 @@ void readButtons()
         }
 
         // Lights
-        if ( Dashboard.isLightsMore() )  {
+        if ( Dashboard.isFrontLights() )  {
             Lights.increaseLights();
         }
-        if ( Dashboard.isLightsLess() ) {
-            Lights.decreaseLights();
-        }
-        if ( Dashboard.isBackLightsMore() )  {
-            Lights.increaseBackLights();
-        }
-        if ( Dashboard.isBackLightsLess() ) {
-            Lights.decreaseBackLights();
+        if ( Dashboard.isRearLights() )  {
+            Lights.increaseRearLights();
         }
 
         // Display pages
