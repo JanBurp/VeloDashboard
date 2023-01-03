@@ -50,7 +50,7 @@ unsigned int WheelNumber = 1;
     TIMERS
 */
 #if TEST
-#define IDLE_TIMER 60
+#define IDLE_TIMER 120
 #define IDLE_WARNING_TIMER 20
 #else
 #define IDLE_TIMER 300           // seconds

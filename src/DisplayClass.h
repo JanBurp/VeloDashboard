@@ -221,32 +221,33 @@ public:
         int innerpad = 2;
         int x = 1;
         int y = SCREEN_HALF_HEIGHT_INFO - 2;
-        int w = 20;
+        int w = 14;
         int h = 22;
         OLED.drawRect(x + toppad, y, x + w - 2 * toppad, toppad, WHITE);
         OLED.drawRect(x, y + toppad, x + w, h, WHITE);
 
         if ( !off ) {
-            float percentage = this->Battery->getBatteryPercentage() / 100.0;
-            int juiceHeight = (h - innerpad * 2) * percentage;
+            int percentage = this->Battery->getBatteryPercentage();
+            int juiceHeight = (h - innerpad * 2) * (percentage/100.0);
             OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight), x + w - 2 * innerpad, juiceHeight, WHITE);
 
             // print cell voltage
             int cellMilliV = this->Battery->getCellVoltage();
-            // float cellV = cellMilliV / 1000.0;
             int cellV = cellMilliV / 1000;
             int cellM = (cellMilliV - (1000*cellV))/10;
             OLED.setTextSize(2);
-            OLED.setCursor(x + w + 4, y + toppad);
+            OLED.setCursor(x + w + 5, y + toppad);
             OLED.print( cellV );
             OLED.setTextSize(1);
-            OLED.setCursor(x + w + 4, y + toppad + 15);
+            OLED.setCursor(x + w + 17, y + toppad);
             OLED.print( cellM );
 
             // print percentage
-            OLED.setCursor(x-6, y + toppad + 4);
+            OLED.setCursor(x + w + 5, y + toppad + 15);
             OLED.setTextSize(1);
-            OLED.print(percentage);
+            char percStr[4];
+            snprintf(percStr, 4, "%02i%%", percentage);
+            OLED.print(percStr);
 
             // // LEDstrips current use
             // x = x + w + 4;

@@ -3,7 +3,7 @@
 #include "Arduino.h"
 
 #define VREF        3300
-#define V_SAMPLES   10
+#define V_SAMPLES   25
 #define NUM_CELLS   3
 
 #define BAT_LOW         20
@@ -40,17 +40,21 @@ public:
         int value = analogRead(this->pin);
         static int meanValue = value;
         meanValue = (meanValue * (V_SAMPLES - 1) + value) / V_SAMPLES;
-        int battery_mv = 4.325 * (VREF / 1023) * meanValue;
+        int battery_mv = 4.2 * (VREF / 1023) * meanValue;
         this->cell_mv = battery_mv / NUM_CELLS;
 
         //
         // LiPo capacity
         //
-        const int V[6] = {4200, 4000, 3850, 3750, 3450, 3350};  // mV - 12.6 - 12.0 - 11.55 - 11.25 - 10.35 - 10.0
-        const int C[6] = {100,    90,   75,   50,    7,    0};  // % capacity
+        // const int V[6] = {4200, 4000, 3850, 3750, 3450, 3350};  // mV - 12.6 - 12.0 - 11.55 - 11.25 - 10.35 - 10.0
+        // const int C[6] = {100,    90,   75,   50,    7,    0};  // % capacity
+
+        const int V[4] = {4200, 4000, 3850, 3750,};  // mV - 12.6 - 12.0 - 11.55 - 11.25 - 10.35 - 10.0
+        const int C[4] = {100,    75,   25,   0};  // % capacity
+
 
         int percent = 0;
-        for (size_t i = 1; i < 5; i++)
+        for (size_t i = 1; i < 3; i++)
         {
             if ( this->cell_mv >= V[i] ) {
                 percent = int( (C[i-1] - C[i]) * (this->cell_mv - V[i]) / (V[i-1] - V[i]) + C[i] );
