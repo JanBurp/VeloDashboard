@@ -130,7 +130,7 @@ void setup()
         Lights.increaseRearLights();
     }
 
-    Display.setDisplayMode(DISPLAY_SPEED_AND_TIME);
+    Display.setDisplayMode(DISPLAY_HOME);
     Display.show();
 
     pinMode(PIN_SPEED, INPUT_PULLUP);

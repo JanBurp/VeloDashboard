@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG true // [default = false] - set to true for Serial output
+#define DEBUG false // [default = false] - set to true for Serial output
 #define TEST true   // [default = false] - set to true for local test environment
 
 /*
@@ -25,6 +25,8 @@ Wheel Wheels[7] = {
 
 // Change this for you're wheel
 unsigned int WheelNumber = 1;
+
+#define BIKE_DISTANCE_START         8060
 
 /*
     LED light intensities
@@ -62,21 +64,23 @@ unsigned int WheelNumber = 1;
 /*
     DISPLAY
 */
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define SCREEN_HALF_HEIGHT 32
-#define SCREEN_HALF_WIDTH 64
+#define SCREEN_WIDTH        128
+#define SCREEN_HEIGHT       64
+#define SCREEN_THIRD_HEIGHT 21
+#define SCREEN_HALF_HEIGHT  32
+#define SCREEN_HALF_WIDTH   64
 #define SCREEN_HALF_HEIGHT_INFO 40
 #define SCREEN_HALF_HEIGHT_VALUES 50
 
 /*
   DISPLAY MODES
  */
-#define DISPLAY_WELCOME 0
-#define DISPLAY_SPEED_AND_TIME 1
-#define DISPLAY_SPEEDS 2
-#define DISPLAY_DISTANCE 3
-#define DISPLAY_TRIPTIME 4
+#define DISPLAY_WELCOME     0
+#define DISPLAY_HOME        1
+#define DISPLAY_DISTANCE    2
+#define DISPLAY_SPEEDS      3
+#define DISPLAY_PREV        10  // Not used yet (change to 4, and TOTALS to 5)
+#define DISPLAY_TOTALS      4
 
 /*
   LED STRIPS
