@@ -34,22 +34,20 @@ class IndicatorClass {
         }
 
 		void set(int function) {
-            if ( this->isActive() ) {
+            if ( function == this->function || this->function == INDICATORS_BOTH ) {
                 this->reset();
             }
             else {
-                if ( function != this->function ) {
-                    this->reset();
-                    this->function = function;
-                    if ( this->function == INDICATORS_BOTH ) {
-                        this->timer.setPeriod( ALARM_TIMER );
-                    }
-                    else {
-                        this->timer.setPeriod( INDICATOR_TIMER );
-                    }
-                    this->loop();
-                    this->timer.start();
+                this->reset();
+                this->function = function;
+                if ( this->function == INDICATORS_BOTH ) {
+                    this->timer.setPeriod( ALARM_TIMER );
                 }
+                else {
+                    this->timer.setPeriod( INDICATOR_TIMER );
+                }
+                this->loop();
+                this->timer.start();
             }
 		}
 
