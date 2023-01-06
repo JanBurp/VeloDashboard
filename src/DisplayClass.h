@@ -99,28 +99,28 @@ public:
     {
         if ( this->Speed->isStarted() ) {
 
-            // Show distance & average when paused
-            if ( this->Speed->isPaused() ) {
-                char avgSpeedStr[11];
-                snprintf(avgSpeedStr, 11, "%-3.1f", this->Speed->getAvgSpeed());
-                char distStr[13];
-                snprintf(distStr, 13, "%-3.1f", this->Speed->getDistance());
+            // // Show distance & average when paused
+            // if ( this->Speed->isPaused() ) {
+            //     char avgSpeedStr[11];
+            //     snprintf(avgSpeedStr, 11, "%-3.1f", this->Speed->getAvgSpeed());
+            //     char distStr[13];
+            //     snprintf(distStr, 13, "%-3.1f", this->Speed->getDistance());
 
-                OLED.setTextSize(1);
-                OLED.setCursor(52, 6 );
-                OLED.print("AVG");
-                OLED.setCursor(52, 30 );
-                OLED.print("DST");
+            //     OLED.setTextSize(1);
+            //     OLED.setCursor(52, 6 );
+            //     OLED.print("AVG");
+            //     OLED.setCursor(52, 30 );
+            //     OLED.print("DST");
 
-                OLED.setTextSize(2);
-                OLED.setCursor(80, 0 );
-                OLED.print(avgSpeedStr);
-                OLED.setCursor(80, 24 );
-                OLED.print(distStr);
-            }
+            //     OLED.setTextSize(2);
+            //     OLED.setCursor(80, 0 );
+            //     OLED.print(avgSpeedStr);
+            //     OLED.setCursor(80, 24 );
+            //     OLED.print(distStr);
+            // }
 
-            // Show speeed
-            else {
+            // // Show speeed
+            // else {
                 float speed = this->Speed->getSpeed();
                 int decis = (int)speed;
                 int precision = (speed - decis) * 10;
@@ -160,7 +160,7 @@ public:
                 {
                     OLED.fillTriangle(x, y, x + w / 2, y + h, x + w, y, WHITE);
                 }
-            }
+            // }
 
         }
 
