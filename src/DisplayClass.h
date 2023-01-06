@@ -55,6 +55,10 @@ public:
         OLED.setTextColor(WHITE);
     }
 
+    void setDisplayModeHome() {
+        this->setDisplayMode(DISPLAY_HOME);
+    }
+
     void setDisplayMode(int mode)
     {
         this->displayMode = mode;
@@ -336,6 +340,7 @@ public:
 
     void off() {
         OLED.clearDisplay();
+        this->setDisplayModeHome();
         this->show_battery(true);
         this->setContrast(1);
         OLED.display();

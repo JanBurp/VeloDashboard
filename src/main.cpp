@@ -168,18 +168,25 @@ void readButtons()
         // Lights
         if ( Dashboard.isFrontLights() )  {
             Lights.increaseLights();
+            Display.setDisplayModeHome();
         }
         if ( Dashboard.isRearLights() )  {
             Lights.increaseRearLights();
+            Display.setDisplayModeHome();
         }
 
         // Display pages
         if (Dashboard.isDisplay()) {
             Display.nextDisplayMode();
         }
+        if ( Dashboard.isDisplay() && Dashboard.isLongPress() ) {
+            Display.setDisplayModeHome();
+        }
+
     }
 
     if ( IdleTimer.warning() ) {
+        Display.setDisplayModeHome();
         Lights.resetLights();
     }
 

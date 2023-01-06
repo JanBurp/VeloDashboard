@@ -11,7 +11,7 @@
 #define FN_BRAKE            10
 
 #define DEBOUNCE    50
-#define LONG_PRESS  1000
+#define LONG_PRESS  1500
 
 
 struct DashboardButton {
