@@ -87,6 +87,8 @@ void setup()
     }
 
     // Disable unused pins (saves a bit current)
+    pinMode(LED_BUILTIN,OUTPUT);
+    digitalWrite(LED_BUILTIN,LOW);
     int unusedPins[] = UNUSED_PINS;
     for (size_t pin = 0; pin < NR_UNUSED_PINS; pin++)
     {
