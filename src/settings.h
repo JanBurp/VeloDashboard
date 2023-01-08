@@ -55,7 +55,7 @@ unsigned int WheelNumber = 1;
 #define IDLE_TIMER 120
 #define IDLE_WARNING_TIMER 20
 #else
-#define IDLE_TIMER 300           // seconds
+#define IDLE_TIMER 180           // seconds
 #define IDLE_WARNING_TIMER 60    // seconds
 #endif
 #define SPEED_CALCULATION_TIMER 1000ms
@@ -88,22 +88,20 @@ unsigned int WheelNumber = 1;
 
 #define WELCOME_LENGTH 1
 
+#define BRIGHTNESS 255
+#define FRAMES_PER_SECOND 100
 #if TEST
 #define NUM_LEDS 12
 #define NUM_LIGHT_LEDS 5
 #define NUM_LIGHT_LEDS_BACK 5
 #define NUM_INDICATOR_LEDS 7
-#define BRIGHTNESS 128
 #define MAX_MILLIAMPS 40
-#define FRAMES_PER_SECOND 100
 #else
 #define NUM_LEDS 169 // 2,85 m * 66 = 188
 #define NUM_LIGHT_LEDS 36
 #define NUM_LIGHT_LEDS_BACK 48
 #define NUM_INDICATOR_LEDS 56
-#define BRIGHTNESS 128
-#define MAX_MILLIAMPS 1200
-#define FRAMES_PER_SECOND 100
+#define MAX_MILLIAMPS 1500
 #endif
 
 #define LEFT -1

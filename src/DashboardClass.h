@@ -4,8 +4,8 @@
 
 #define FN_LEFT             0
 #define FN_RIGHT            1
-#define FN_FRONT            2
-#define FN_REAR             3
+#define FN_UP               2
+#define FN_DOWN             3
 #define FN_HORN             4
 #define FN_DISPLAY          5
 #define FN_BRAKE            10
@@ -27,8 +27,8 @@ DashboardButton Buttons[10] = {
     { 250, 350, FN_DISPLAY },                   // 301
     { 370, 470, FN_RIGHT },                     // 426
     { 475, 600, FN_LEFT },                      // 550
-    { 625, 750, FN_REAR },                      // 707
-    { 775, 900, FN_FRONT },                     // 832
+    { 625, 750, FN_DOWN },                      // 707
+    { 775, 900, FN_UP },                        // 832
 };
 
 class DashboardClass {
@@ -135,12 +135,12 @@ class DashboardClass {
             return ( this->isLongPress() && (this->indicator!=0) );
         }
 
-        bool isFrontLights() {
-            return ( this->function == FN_FRONT );
+        bool isLightsUp() {
+            return ( this->function == FN_UP );
         }
 
-        bool isRearLights() {
-            return ( this->function == FN_REAR );
+        bool isLightsDown() {
+            return ( this->function == FN_DOWN );
         }
 
         bool isHorn() {

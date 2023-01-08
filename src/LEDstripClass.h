@@ -3,6 +3,7 @@
 #include "Arduino.h"
 #include "FastLED.h"
 #include "settings.h"
+#include "LightsClass.h"
 #include "BatteryClass.h"
 
 /**
@@ -14,15 +15,19 @@ class LEDstripClass
 
 private:
     CRGB BLACK = CRGB(0, 0, 0);
+    CRGB WHITE_DIM = CRGB(12, 12, 12);
     CRGB WHITE = CRGB(52, 52, 52);
-    CRGB BRIGHT_WHITE = CRGB(255, 255, 255);
-    CRGB RED = CRGB(255, 0, 0);
+    CRGB WHITE_FULL = CRGB(128, 128, 128);
+    CRGB RED_DIM = CRGB(32, 0, 0);
+    CRGB RED = CRGB(64, 0, 0);
+    CRGB RED_FULL = CRGB(255, 0, 0);
     CRGB ORANGE = CRGB(255, 128, 0);
     CRGB leds_left[NUM_LEDS], leds_right[NUM_LEDS];
     bool blinkLeft = false;
     bool blinkRight = false;
     bool turnedOff = false;
     IndicatorClass *Indicators;
+    LightsClass *Lights;
     BatteryClass *Battery;
 
 public:
@@ -34,9 +39,10 @@ public:
         FastLED.setMaxPowerInVoltsAndMilliamps(5, MAX_MILLIAMPS);
     }
 
-    void init(IndicatorClass *indicators, BatteryClass *battery)
+    void init(IndicatorClass *indicators, LightsClass *lights, BatteryClass *battery)
     {
         this->Indicators = indicators;
+        this->Lights = lights;
         this->Battery = battery;
     }
 
@@ -137,12 +143,23 @@ public:
 
     void normal(int strip = BOTH)
     {
+        CRGB white = WHITE_DIM;
+        CRGB red = RED_DIM;
+        if ( this->Lights->getLights() >= LIGHTS_DIM ) {
+            white = WHITE;
+            red = RED;
+        }
+        if ( this->Lights->getBrake() ) {
+            red = RED_FULL;
+        }
+
         this->blinkLeft = false;
         this->blinkRight = false;
-        this->set(strip, 0, 3, BRIGHT_WHITE);
-        this->set(strip, 3, NUM_LIGHT_LEDS, WHITE);
+
+        this->set(strip, 0, NUM_LIGHT_LEDS, white);
         this->set(strip, NUM_LIGHT_LEDS, NUM_LEDS - NUM_LIGHT_LEDS_BACK, BLACK);
-        this->set(strip, NUM_LEDS - NUM_LIGHT_LEDS_BACK, NUM_LEDS, RED);
+        this->set(strip, NUM_LEDS - NUM_LIGHT_LEDS_BACK, NUM_LEDS, red);
+
         FastLED.show();
     }
 
@@ -158,7 +175,7 @@ public:
             FastLED.setBrightness(BRIGHTNESS * 0.1);
         }
 
-        if (!this->Indicators->isActive())
+        if ( !this->Indicators->isActive() )
         {
             this->normal(BOTH);
         }
@@ -170,7 +187,10 @@ public:
             {
                 if (!this->blinkLeft)
                 {
-                    this->_set_all(LEFT, ORANGE);
+                    // this->_set_all(LEFT, ORANGE);
+                    this->set(LEFT, 0, NUM_LIGHT_LEDS, ORANGE);
+                    this->set(LEFT, NUM_LIGHT_LEDS, NUM_LEDS - NUM_LIGHT_LEDS_BACK, BLACK);
+                    this->set(LEFT, NUM_LEDS - NUM_LIGHT_LEDS_BACK, NUM_LEDS, ORANGE);
                     show = true;
                 }
             }
@@ -187,7 +207,10 @@ public:
             {
                 if (!this->blinkRight)
                 {
-                    this->_set_all(RIGHT, ORANGE);
+                    // this->_set_all(RIGHT, ORANGE);
+                    this->set(RIGHT, 0, NUM_LIGHT_LEDS, ORANGE);
+                    this->set(RIGHT, NUM_LIGHT_LEDS, NUM_LEDS - NUM_LIGHT_LEDS_BACK, BLACK);
+                    this->set(RIGHT, NUM_LEDS - NUM_LIGHT_LEDS_BACK, NUM_LEDS, ORANGE);
                     show = true;
                 }
             }
