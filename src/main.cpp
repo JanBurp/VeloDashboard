@@ -27,7 +27,7 @@ using namespace TeensyTimerTool;
 time_t RTCTime;
 
 // Timers
-PeriodicTimer speedCalculationTimer;
+PeriodicTimer speedCalculationTimer(TCK);
 
 // Inputs & Outputs
 DashboardClass Dashboard;

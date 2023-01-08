@@ -2,12 +2,13 @@
 
 #include "Arduino.h"
 #include "settings.h"
-#include "TeensyTimerTool.h"
 
 #define INDICATORS_OFF      0
 #define INDICATORS_LEFT     1
 #define INDICATORS_RIGHT    2
 #define INDICATORS_BOTH     4
+
+PeriodicTimer indicatorTimer(TCK);
 
 class IndicatorClass {
 
@@ -15,12 +16,11 @@ class IndicatorClass {
         int function;
         bool stateLeft;
         bool stateRight;
-        TeensyTimerTool::PeriodicTimer timer;
 
 	public:
 
 		void init() {
-            this->timer.begin( [this] { this->loop(); } , INDICATOR_TIMER, false );
+            indicatorTimer.begin( [this] { this->loop(); } , INDICATOR_TIMER, false );
             this->reset();
 		}
 
@@ -28,7 +28,7 @@ class IndicatorClass {
             this->function = INDICATORS_OFF;
             this->stateLeft = false;
             this->stateRight = false;
-            this->timer.stop();
+            indicatorTimer.stop();
         }
 
 		void set(int function) {
@@ -39,13 +39,13 @@ class IndicatorClass {
                 this->reset();
                 this->function = function;
                 if ( this->function == INDICATORS_BOTH ) {
-                    this->timer.setPeriod( ALARM_TIMER );
+                    indicatorTimer.setPeriod( ALARM_TIMER );
                 }
                 else {
-                    this->timer.setPeriod( INDICATOR_TIMER );
+                    indicatorTimer.setPeriod( INDICATOR_TIMER );
                 }
                 this->loop();
-                this->timer.start();
+                indicatorTimer.start();
             }
 		}
 

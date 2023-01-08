@@ -2,11 +2,13 @@
 
 #include "Arduino.h"
 #include "FastLED.h"
-#include "TeensyTimerTool.h"
 #include "settings.h"
 #include "LightsClass.h"
 #include "BatteryClass.h"
 #include "IdleClass.h"
+
+
+PeriodicTimer stripTimer(TCK);
 
 /**
  * LED STRIPS
@@ -30,7 +32,6 @@ private:
     bool turnedOff = false;
     int indicatorStrip = 0;
     unsigned int indicatorTimer = 0;
-    TeensyTimerTool::PeriodicTimer timer;
     IndicatorClass *Indicators;
     LightsClass *Lights;
     BatteryClass *Battery;
@@ -152,7 +153,7 @@ public:
         this->indicatorStrip = strip;
         if (this->indicatorTimer==0) {
             this->indicatorTimer = millis();
-            this->timer.begin( [this] { this->blink_animation(); } , INDICATOR_TIMER_STEP );
+            stripTimer.begin( [this] { this->blink_animation(); } , INDICATOR_TIMER_STEP );
             this->blink_animation();
         }
     }
@@ -166,9 +167,11 @@ public:
         this->set(this->indicatorStrip, NUM_LEDS - num_leds, NUM_LEDS, ORANGE);
 
         if ( (millis() - this->indicatorTimer) >= INDICATOR_TIMER_INT ) {
-            this->timer.stop();
+            this->blink_animation_stop();
         }
-        FastLED.show();
+        else {
+            FastLED.show();
+        }
     }
 
     bool is_blink_animation_started() {
@@ -176,10 +179,10 @@ public:
     }
 
     void blink_animation_stop(int strip = BOTH) {
+        stripTimer.stop();
         this->indicatorTimer = 0;
         this->indicatorStrip = 0;
-        this->timer.stop();
-        this->_set_all(strip, BLACK);
+        this->set_all(strip, BLACK);
     }
 
     void normal(int strip = BOTH)
@@ -243,7 +246,6 @@ public:
                 if (this->blinkLeft)
                 {
                     this->blink_animation_stop(LEFT);
-                    show = true;
                 }
             }
 
@@ -259,7 +261,6 @@ public:
                 if (this->blinkRight)
                 {
                     this->blink_animation_stop(RIGHT);
-                    show = true;
                 }
             }
 
