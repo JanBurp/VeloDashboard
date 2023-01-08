@@ -2,11 +2,12 @@
 
 #include "Arduino.h"
 #include "FastLED.h"
-#include "TeensyTimerTool.h"
 #include "settings.h"
 #include "LightsClass.h"
 #include "BatteryClass.h"
 #include "IdleClass.h"
+
+PeriodicTimer stripTimer(TCK);
 
 /**
  * LED STRIPS
@@ -25,12 +26,9 @@ private:
     CRGB RED_FULL = CRGB(255, 0, 0);
     CRGB ORANGE = CRGB(255, 128, 0);
     CRGB leds_left[NUM_LEDS], leds_right[NUM_LEDS];
-    bool blinkLeft = false;
-    bool blinkRight = false;
     bool turnedOff = false;
     int indicatorStrip = 0;
     unsigned int indicatorTimer = 0;
-    TeensyTimerTool::PeriodicTimer timer;
     IndicatorClass *Indicators;
     LightsClass *Lights;
     BatteryClass *Battery;
@@ -76,10 +74,9 @@ public:
 
     void off(int strip = BOTH)
     {
-        if ( !this->turnedOff ) {
+        if (!this->turnedOff)
+        {
             this->set_all(strip, BLACK);
-            this->blinkLeft = false;
-            this->blinkRight = false;
             FastLED.show();
             this->turnedOff = true;
         }
@@ -148,58 +145,90 @@ public:
         FastLED.show();
     }
 
-    void blink_animation_start(int strip = BOTH) {
+    void blink_animation_start(int strip = BOTH)
+    {
+        if (DEBUG)
+        {
+            Serial.print("START");
+            Serial.println();
+        }
         this->indicatorStrip = strip;
-        if (this->indicatorTimer==0) {
+        if (this->indicatorTimer == 0)
+        {
             this->indicatorTimer = millis();
-            this->timer.begin( [this] { this->blink_animation(); } , INDICATOR_TIMER_STEP );
+            stripTimer.begin([this]
+                             { this->blink_animation(); },
+                             INDICATOR_TIMER_STEP);
             this->blink_animation();
         }
     }
 
-    void blink_animation() {
+    void blink_animation()
+    {
         float percentage = float(millis() - this->indicatorTimer) / float(INDICATOR_TIMER_INT);
-        int num_leds = int(NUM_LEDS / 2.0 * percentage);
+        int num_leds = int(NUM_LEDS / 2 * percentage) + 10;
+
+        if (DEBUG)
+        {
+            Serial.print("BLINK");
+            Serial.print("\tPercentage:\t");
+            Serial.print(percentage);
+            Serial.print("\tLEDS:\t");
+            Serial.print(num_leds);
+            Serial.println();
+        }
 
         this->set(this->indicatorStrip, 0, num_leds, ORANGE);
         this->set(this->indicatorStrip, num_leds, NUM_LEDS - num_leds, BLACK);
         this->set(this->indicatorStrip, NUM_LEDS - num_leds, NUM_LEDS, ORANGE);
 
-        if ( (millis() - this->indicatorTimer) >= INDICATOR_TIMER_INT ) {
-            this->timer.stop();
+        if ((millis() - this->indicatorTimer) >= INDICATOR_TIMER_INT)
+        {
+            this->blink_animation_stop();
         }
-        FastLED.show();
+        else
+        {
+            FastLED.show();
+        }
     }
 
-    bool is_blink_animation_started() {
+    bool is_blink_animation_started()
+    {
         return (this->indicatorTimer > 0);
     }
 
-    void blink_animation_stop(int strip = BOTH) {
+    void blink_animation_stop()
+    {
+        if (DEBUG)
+        {
+            Serial.print("STOP - ");
+            Serial.print(this->indicatorStrip);
+            Serial.println();
+        }
+        stripTimer.stop();
+        this->set_all(this->indicatorStrip, BLACK);
         this->indicatorTimer = 0;
         this->indicatorStrip = 0;
-        this->timer.stop();
-        this->_set_all(strip, BLACK);
     }
 
     void normal(int strip = BOTH)
     {
         CRGB white = WHITE_DIM;
         CRGB red = RED_DIM;
-        if ( this->Lights->getLights() >= LIGHTS_DIM ) {
+        if (this->Lights->getLights() >= LIGHTS_DIM)
+        {
             white = WHITE;
             red = RED;
         }
-        if ( this->Lights->getBrake() ) {
+        if (this->Lights->getBrake())
+        {
             red = RED_FULL;
         }
 
-        this->blinkLeft = false;
-        this->blinkRight = false;
-
         int num_light_leds = NUM_LIGHT_LEDS;
         int num_light_leds_back = NUM_LIGHT_LEDS_BACK;
-        if (this->IdleTimer->warning()) {
+        if (this->IdleTimer->warning())
+        {
             num_light_leds = int(num_light_leds * this->IdleTimer->remainingPercentage());
             num_light_leds_back = int(num_light_leds_back * this->IdleTimer->remainingPercentage());
         }
@@ -216,21 +245,25 @@ public:
      */
     void loop()
     {
-        if ( this->Battery->isVeryLow() ) {
+        if (this->Battery->isVeryLow())
+        {
             FastLED.setBrightness(BRIGHTNESS * 0.5);
         }
-        if ( this->Battery->isAlmostDead() ) {
+        if (this->Battery->isAlmostDead())
+        {
             FastLED.setBrightness(BRIGHTNESS * 0.1);
         }
 
         if ( !this->Indicators->isActive() )
         {
             this->normal(BOTH);
+            if (this->is_blink_animation_started())
+            {
+                this->blink_animation_stop();
+            }
         }
         else
         {
-            bool show = false;
-
             if (this->Indicators->getStateLeft())
             {
                 if (!this->is_blink_animation_started())
@@ -238,15 +271,6 @@ public:
                     this->blink_animation_start(LEFT);
                 }
             }
-            else
-            {
-                if (this->blinkLeft)
-                {
-                    this->blink_animation_stop(LEFT);
-                    show = true;
-                }
-            }
-
             if (this->Indicators->getStateRight())
             {
                 if (!this->is_blink_animation_started())
@@ -254,31 +278,12 @@ public:
                     this->blink_animation_start(RIGHT);
                 }
             }
-            else
-            {
-                if (this->blinkRight)
-                {
-                    this->blink_animation_stop(RIGHT);
-                    show = true;
-                }
-            }
-
-            if (show)
-            {
-                FastLED.show();
-            }
         }
-
-        this->blinkLeft = this->Indicators->getStateLeft();
-        this->blinkRight = this->Indicators->getStateRight();
     }
 
     // This uses delay, so stops all other actions...
     void startup_animation()
     {
-        this->blinkLeft = false;
-        this->blinkRight = false;
-
         unsigned long delayMs = 200 / NUM_LEDS;
         const int NUM_GRADIENT_LEDS = NUM_LEDS - 2 * NUM_LIGHT_LEDS;
         CRGB colors[NUM_LEDS];
@@ -305,7 +310,7 @@ public:
 
         for (int t = 0; t < WELCOME_LENGTH; ++t)
         {
-            this->set_all(BOTH,BLACK);
+            this->set_all(BOTH, BLACK);
             int i;
             for (i = 0; i < NUM_LEDS; ++i)
             {
