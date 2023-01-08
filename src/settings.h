@@ -56,7 +56,7 @@ unsigned int WheelNumber = 1;
 #define IDLE_WARNING_TIMER 20
 #else
 #define IDLE_TIMER 180           // seconds
-#define IDLE_WARNING_TIMER 60    // seconds
+#define IDLE_WARNING_TIMER 30    // seconds
 #endif
 #define SPEED_CALCULATION_TIMER 1000ms
 #define BUZZER_TONE 660
