@@ -1,7 +1,7 @@
 #pragma once
 
 #define DEBUG false // [default = false] - set to true for Serial output
-#define TEST true   // [default = false] - set to true for local test environment
+#define TEST false  // [default = false] - set to true for local test environment
 
 /*
   WHEELS
@@ -51,12 +51,18 @@ unsigned int WheelNumber = 1;
 /*
     TIMERS
 */
+#define INDICATOR_TIMER             500ms
+#define INDICATOR_TIMER_INT         500
+#define INDICATOR_TIMER_STEP        50ms
+#define ALARM_TIMER                 250ms
+
+
 #if TEST
 #define IDLE_TIMER 120
 #define IDLE_WARNING_TIMER 20
 #else
-#define IDLE_TIMER 300           // seconds
-#define IDLE_WARNING_TIMER 60    // seconds
+#define IDLE_TIMER 180           // seconds
+#define IDLE_WARNING_TIMER 30    // seconds
 #endif
 #define SPEED_CALCULATION_TIMER 1000ms
 #define BUZZER_TONE 660
@@ -88,22 +94,20 @@ unsigned int WheelNumber = 1;
 
 #define WELCOME_LENGTH 1
 
+#define BRIGHTNESS 255
+#define FRAMES_PER_SECOND 100
 #if TEST
 #define NUM_LEDS 12
 #define NUM_LIGHT_LEDS 5
 #define NUM_LIGHT_LEDS_BACK 5
 #define NUM_INDICATOR_LEDS 7
-#define BRIGHTNESS 128
 #define MAX_MILLIAMPS 40
-#define FRAMES_PER_SECOND 100
 #else
 #define NUM_LEDS 169 // 2,85 m * 66 = 188
 #define NUM_LIGHT_LEDS 36
 #define NUM_LIGHT_LEDS_BACK 48
 #define NUM_INDICATOR_LEDS 56
-#define BRIGHTNESS 128
-#define MAX_MILLIAMPS 1200
-#define FRAMES_PER_SECOND 100
+#define MAX_MILLIAMPS 1500
 #endif
 
 #define LEFT -1
@@ -150,10 +154,10 @@ unsigned int WheelNumber = 1;
 // 16 - unused
 // 15 - unused
 #define PIN_HORN            14
-// 13 - unused
+#define INTERNAL_LED        13              // 13 - unused - OFF
 
 /**
  * Unused PINS
  */
-#define UNUSED_PINS         {0,1,7,12,13,15,16,17,20,21}
-#define NR_UNUSED_PINS      10
+#define UNUSED_PINS         {0,1,7,12,15,16,17,20,21}
+#define NR_UNUSED_PINS      9

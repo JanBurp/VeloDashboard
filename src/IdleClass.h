@@ -28,6 +28,10 @@ public:
         return IDLE_TIMER - this->idleSeconds();
     }
 
+    float remainingPercentage() {
+        return float(this->remainingSeconds()) / float(IDLE_WARNING_TIMER);
+    }
+
     bool warning() {
         return this->remainingSeconds() <= IDLE_WARNING_TIMER;
     }

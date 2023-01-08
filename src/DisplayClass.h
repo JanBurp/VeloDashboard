@@ -93,10 +93,10 @@ public:
         OLED.setCursor(0, 0);
         OLED.print("Quest 631");
 
-        OLED.setCursor(0, 32);
-        OLED.print(Wheels[WheelNumber].name);
-        OLED.setCursor(0, 48);
-        OLED.print(Wheels[WheelNumber].circumference);
+        // OLED.setCursor(0, 32);
+        // OLED.print(Wheels[WheelNumber].name);
+        // OLED.setCursor(0, 48);
+        // OLED.print(Wheels[WheelNumber].circumference);
     }
 
     void show_speed()
@@ -265,6 +265,7 @@ public:
         // headlights
         int x = 0;
         int y = 0;
+        int yr = 20;
         int w = 24;
         int h = 14;
         switch (this->Lights->getLights())
@@ -274,40 +275,31 @@ public:
             break;
         case LIGHTS_DIM:
             OLED.drawBitmap(x, y, icoDefaultBeam, w, h, WHITE);
+            OLED.drawBitmap(x, yr, icoLowRear, w, h, WHITE);
             break;
         case LIGHTS_NORMAL:
             OLED.drawBitmap(x, y, icoHighBeam, w, h, WHITE);
+            OLED.drawBitmap(x, yr, icoLowRear, w, h, WHITE);
             break;
         case LIGHTS_BEAM:
             OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
+            OLED.drawBitmap(x, yr, icoHighRear, w, h, WHITE);
+            break;
+        case LIGHTS_FOG:
+            OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
+            OLED.drawBitmap(x, yr, icoFogRear, w, h, WHITE);
             break;
         }
+        if (this->Lights->getBrake())
+        {
+            OLED.drawBitmap(x, yr, icoBrakeRear, w, h, WHITE);
+        }
+
         if (this->Lights->getHorn()) {
             OLED.setCursor(x + w, y);
             OLED.setTextSize(2);
             OLED.print("!");
         }
-
-        // rear
-        y = 20;
-        if (this->Lights->getBrake())
-        {
-            OLED.drawBitmap(x, y, icoBrakeRear, w, h, WHITE);
-        }
-        else {
-            switch (this->Lights->getRearLights()) {
-            case REARLIGHTS_DIM:
-                OLED.drawBitmap(x, y, icoLowRear, w, h, WHITE);
-                break;
-            case REARLIGHTS_NORMAL:
-                OLED.drawBitmap(x, y, icoHighRear, w, h, WHITE);
-                break;
-            case REARLIGHTS_FOG:
-                OLED.drawBitmap(x, y, icoFogRear, w, h, WHITE);
-                break;
-            }
-        }
-
     }
 
     void show_distances()
@@ -431,8 +423,11 @@ public:
 
         }
 
-        if (this->Battery->isVeryLow()) {
-            this->setContrast(64);
+        if ( this->Battery->isVeryLow() || this->Lights->getLights() >= LIGHTS_NORMAL ) {
+            this->setContrast(1);
+        }
+        else {
+            this->setContrast(128);
         }
 
         OLED.display();

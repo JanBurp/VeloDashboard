@@ -2,8 +2,11 @@
 
 #include "Arduino.h"
 #include "FastLED.h"
+#include "TeensyTimerTool.h"
 #include "settings.h"
+#include "LightsClass.h"
 #include "BatteryClass.h"
+#include "IdleClass.h"
 
 /**
  * LED STRIPS
@@ -14,16 +17,24 @@ class LEDstripClass
 
 private:
     CRGB BLACK = CRGB(0, 0, 0);
+    CRGB WHITE_DIM = CRGB(12, 12, 12);
     CRGB WHITE = CRGB(52, 52, 52);
-    CRGB BRIGHT_WHITE = CRGB(255, 255, 255);
-    CRGB RED = CRGB(255, 0, 0);
+    CRGB WHITE_FULL = CRGB(128, 128, 128);
+    CRGB RED_DIM = CRGB(32, 0, 0);
+    CRGB RED = CRGB(64, 0, 0);
+    CRGB RED_FULL = CRGB(255, 0, 0);
     CRGB ORANGE = CRGB(255, 128, 0);
     CRGB leds_left[NUM_LEDS], leds_right[NUM_LEDS];
     bool blinkLeft = false;
     bool blinkRight = false;
     bool turnedOff = false;
+    int indicatorStrip = 0;
+    unsigned int indicatorTimer = 0;
+    TeensyTimerTool::PeriodicTimer timer;
     IndicatorClass *Indicators;
+    LightsClass *Lights;
     BatteryClass *Battery;
+    IdleClass *IdleTimer;
 
 public:
     LEDstripClass()
@@ -34,10 +45,12 @@ public:
         FastLED.setMaxPowerInVoltsAndMilliamps(5, MAX_MILLIAMPS);
     }
 
-    void init(IndicatorClass *indicators, BatteryClass *battery)
+    void init(IndicatorClass *indicators, LightsClass *lights, BatteryClass *battery, IdleClass *idle)
     {
         this->Indicators = indicators;
+        this->Lights = lights;
         this->Battery = battery;
+        this->IdleTimer = idle;
     }
 
     void set_all(int strip, CRGB color)
@@ -135,14 +148,66 @@ public:
         FastLED.show();
     }
 
+    void blink_animation_start(int strip = BOTH) {
+        this->indicatorStrip = strip;
+        if (this->indicatorTimer==0) {
+            this->indicatorTimer = millis();
+            this->timer.begin( [this] { this->blink_animation(); } , INDICATOR_TIMER_STEP );
+            this->blink_animation();
+        }
+    }
+
+    void blink_animation() {
+        float percentage = float(millis() - this->indicatorTimer) / float(INDICATOR_TIMER_INT);
+        int num_leds = int(NUM_LEDS / 2.0 * percentage);
+
+        this->set(this->indicatorStrip, 0, num_leds, ORANGE);
+        this->set(this->indicatorStrip, num_leds, NUM_LEDS - num_leds, BLACK);
+        this->set(this->indicatorStrip, NUM_LEDS - num_leds, NUM_LEDS, ORANGE);
+
+        if ( (millis() - this->indicatorTimer) >= INDICATOR_TIMER_INT ) {
+            this->timer.stop();
+        }
+        FastLED.show();
+    }
+
+    bool is_blink_animation_started() {
+        return (this->indicatorTimer > 0);
+    }
+
+    void blink_animation_stop(int strip = BOTH) {
+        this->indicatorTimer = 0;
+        this->indicatorStrip = 0;
+        this->timer.stop();
+        this->_set_all(strip, BLACK);
+    }
+
     void normal(int strip = BOTH)
     {
+        CRGB white = WHITE_DIM;
+        CRGB red = RED_DIM;
+        if ( this->Lights->getLights() >= LIGHTS_DIM ) {
+            white = WHITE;
+            red = RED;
+        }
+        if ( this->Lights->getBrake() ) {
+            red = RED_FULL;
+        }
+
         this->blinkLeft = false;
         this->blinkRight = false;
-        this->set(strip, 0, 3, BRIGHT_WHITE);
-        this->set(strip, 3, NUM_LIGHT_LEDS, WHITE);
-        this->set(strip, NUM_LIGHT_LEDS, NUM_LEDS - NUM_LIGHT_LEDS_BACK, BLACK);
-        this->set(strip, NUM_LEDS - NUM_LIGHT_LEDS_BACK, NUM_LEDS, RED);
+
+        int num_light_leds = NUM_LIGHT_LEDS;
+        int num_light_leds_back = NUM_LIGHT_LEDS_BACK;
+        if (this->IdleTimer->warning()) {
+            num_light_leds = int(num_light_leds * this->IdleTimer->remainingPercentage());
+            num_light_leds_back = int(num_light_leds_back * this->IdleTimer->remainingPercentage());
+        }
+
+        this->set(strip, 0, num_light_leds, white);
+        this->set(strip, num_light_leds, NUM_LEDS - num_light_leds_back, BLACK);
+        this->set(strip, NUM_LEDS - num_light_leds_back, NUM_LEDS, red);
+
         FastLED.show();
     }
 
@@ -158,7 +223,7 @@ public:
             FastLED.setBrightness(BRIGHTNESS * 0.1);
         }
 
-        if (!this->Indicators->isActive())
+        if ( !this->Indicators->isActive() )
         {
             this->normal(BOTH);
         }
@@ -168,34 +233,32 @@ public:
 
             if (this->Indicators->getStateLeft())
             {
-                if (!this->blinkLeft)
+                if (!this->is_blink_animation_started())
                 {
-                    this->_set_all(LEFT, ORANGE);
-                    show = true;
+                    this->blink_animation_start(LEFT);
                 }
             }
             else
             {
                 if (this->blinkLeft)
                 {
-                    this->_set_all(LEFT, BLACK);
+                    this->blink_animation_stop(LEFT);
                     show = true;
                 }
             }
 
             if (this->Indicators->getStateRight())
             {
-                if (!this->blinkRight)
+                if (!this->is_blink_animation_started())
                 {
-                    this->_set_all(RIGHT, ORANGE);
-                    show = true;
+                    this->blink_animation_start(RIGHT);
                 }
             }
             else
             {
                 if (this->blinkRight)
                 {
-                    this->_set_all(RIGHT, BLACK);
+                    this->blink_animation_stop(RIGHT);
                     show = true;
                 }
             }

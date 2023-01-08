@@ -87,6 +87,8 @@ void setup()
     }
 
     // Disable unused pins (saves a bit current)
+    pinMode(INTERNAL_LED,OUTPUT);
+    digitalWrite(INTERNAL_LED,LOW);
     int unusedPins[] = UNUSED_PINS;
     for (size_t pin = 0; pin < NR_UNUSED_PINS; pin++)
     {
@@ -118,7 +120,7 @@ void setup()
 
     Speed.init();
     Indicators.init();
-    LEDstrips.init(&Indicators,&Battery);
+    LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer);
 
 
     Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights, &LEDstrips);
@@ -127,7 +129,6 @@ void setup()
 
     if ( !Battery.isDead() ) {
         LEDstrips.startup_animation();
-        Lights.increaseRearLights();
     }
 
     Display.setDisplayMode(DISPLAY_HOME);
@@ -160,18 +161,13 @@ void readButtons()
             Indicators.setRight();
         }
 
-        // Alarm
-        if ( Dashboard.isAlarm() ) {
-            Indicators.setAlarm();
-        }
-
         // Lights
-        if ( Dashboard.isFrontLights() )  {
+        if ( Dashboard.isLightsUp() )  {
             Lights.increaseLights();
             Display.setDisplayModeHome();
         }
-        if ( Dashboard.isRearLights() )  {
-            Lights.increaseRearLights();
+        if ( Dashboard.isLightsDown() )  {
+            Lights.decreaseLights();
             Display.setDisplayModeHome();
         }
 
