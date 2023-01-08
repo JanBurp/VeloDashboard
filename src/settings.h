@@ -51,6 +51,12 @@ unsigned int WheelNumber = 1;
 /*
     TIMERS
 */
+#define INDICATOR_TIMER             500ms
+#define INDICATOR_TIMER_INT         500
+#define INDICATOR_TIMER_STEP        50ms
+#define ALARM_TIMER                 250ms
+
+
 #if TEST
 #define IDLE_TIMER 120
 #define IDLE_WARNING_TIMER 20

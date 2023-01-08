@@ -1,15 +1,13 @@
 #pragma once
 
 #include "Arduino.h"
+#include "settings.h"
 #include "TeensyTimerTool.h"
 
 #define INDICATORS_OFF      0
 #define INDICATORS_LEFT     1
 #define INDICATORS_RIGHT    2
 #define INDICATORS_BOTH     4
-
-#define INDICATOR_TIMER          500ms
-#define ALARM_TIMER              250ms
 
 class IndicatorClass {
 
@@ -66,15 +64,6 @@ class IndicatorClass {
         void setAlarm() {
             this->setBoth();
         }
-
-        // void toggleAlarm() {
-        //     if ( this->isAlarmSet() ) {
-        //         this->reset();
-        //     }
-        //     else {
-        //         this->setAlarm();
-        //     }
-        // }
 
         bool isAlarmSet() {
             return this->function == INDICATORS_BOTH;
