@@ -148,10 +148,10 @@ unsigned int WheelNumber = 1;
 // 16 - unused
 // 15 - unused
 #define PIN_HORN            14
-#define INTERNAL_LED        12              // 13 - unused - OFF
+#define INTERNAL_LED        13              // 13 - unused - OFF
 
 /**
  * Unused PINS
  */
 #define UNUSED_PINS         {0,1,7,12,15,16,17,20,21}
-#define NR_UNUSED_PINS      10
+#define NR_UNUSED_PINS      9
