@@ -120,7 +120,7 @@ void setup()
 
     Speed.init();
     Indicators.init();
-    LEDstrips.init(&Indicators,&Lights,&Battery);
+    LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer);
 
 
     Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights, &LEDstrips);

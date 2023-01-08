@@ -5,6 +5,7 @@
 #include "settings.h"
 #include "LightsClass.h"
 #include "BatteryClass.h"
+#include "IdleClass.h"
 
 /**
  * LED STRIPS
@@ -29,6 +30,7 @@ private:
     IndicatorClass *Indicators;
     LightsClass *Lights;
     BatteryClass *Battery;
+    IdleClass *IdleTimer;
 
 public:
     LEDstripClass()
@@ -39,11 +41,12 @@ public:
         FastLED.setMaxPowerInVoltsAndMilliamps(5, MAX_MILLIAMPS);
     }
 
-    void init(IndicatorClass *indicators, LightsClass *lights, BatteryClass *battery)
+    void init(IndicatorClass *indicators, LightsClass *lights, BatteryClass *battery, IdleClass *idle)
     {
         this->Indicators = indicators;
         this->Lights = lights;
         this->Battery = battery;
+        this->IdleTimer = idle;
     }
 
     void set_all(int strip, CRGB color)
@@ -156,9 +159,16 @@ public:
         this->blinkLeft = false;
         this->blinkRight = false;
 
-        this->set(strip, 0, NUM_LIGHT_LEDS, white);
-        this->set(strip, NUM_LIGHT_LEDS, NUM_LEDS - NUM_LIGHT_LEDS_BACK, BLACK);
-        this->set(strip, NUM_LEDS - NUM_LIGHT_LEDS_BACK, NUM_LEDS, red);
+        int num_light_leds = NUM_LIGHT_LEDS;
+        int num_light_leds_back = NUM_LIGHT_LEDS_BACK;
+        if (this->IdleTimer->warning()) {
+            num_light_leds = int(num_light_leds * this->IdleTimer->remainingPercentage());
+            num_light_leds_back = int(num_light_leds_back * this->IdleTimer->remainingPercentage());
+        }
+
+        this->set(strip, 0, num_light_leds, white);
+        this->set(strip, num_light_leds, NUM_LEDS - num_light_leds_back, BLACK);
+        this->set(strip, NUM_LEDS - num_light_leds_back, NUM_LEDS, red);
 
         FastLED.show();
     }
