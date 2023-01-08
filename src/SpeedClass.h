@@ -36,7 +36,7 @@ public:
     void init()
     {
         this->odoDistance = this->readODO();
-        // this->odoDistance = 2420000.0;
+        // this->odoDistance += 200000.0;
     }
 
     bool isStarted()
