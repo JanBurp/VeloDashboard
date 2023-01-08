@@ -93,10 +93,10 @@ public:
         OLED.setCursor(0, 0);
         OLED.print("Quest 631");
 
-        OLED.setCursor(0, 32);
-        OLED.print(Wheels[WheelNumber].name);
-        OLED.setCursor(0, 48);
-        OLED.print(Wheels[WheelNumber].circumference);
+        // OLED.setCursor(0, 32);
+        // OLED.print(Wheels[WheelNumber].name);
+        // OLED.setCursor(0, 48);
+        // OLED.print(Wheels[WheelNumber].circumference);
     }
 
     void show_speed()
