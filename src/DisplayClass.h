@@ -423,8 +423,11 @@ public:
 
         }
 
-        if (this->Battery->isVeryLow()) {
-            this->setContrast(64);
+        if ( this->Battery->isVeryLow() || this->Lights->getLights() >= LIGHTS_NORMAL ) {
+            this->setContrast(1);
+        }
+        else {
+            this->setContrast(128);
         }
 
         OLED.display();
