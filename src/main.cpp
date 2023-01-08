@@ -161,11 +161,6 @@ void readButtons()
             Indicators.setRight();
         }
 
-        // Alarm
-        if ( Dashboard.isAlarm() ) {
-            Indicators.setAlarm();
-        }
-
         // Lights
         if ( Dashboard.isLightsUp() )  {
             Lights.increaseLights();

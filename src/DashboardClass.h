@@ -131,10 +131,6 @@ class DashboardClass {
             return ( this->indicator==1 );
         }
 
-        bool isAlarm() {
-            return ( this->isLongPress() && (this->indicator!=0) );
-        }
-
         bool isLightsUp() {
             return ( this->function == FN_UP );
         }

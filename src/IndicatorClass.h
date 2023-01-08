@@ -61,14 +61,6 @@ class IndicatorClass {
             this->set(INDICATORS_BOTH);
         }
 
-        void setAlarm() {
-            this->setBoth();
-        }
-
-        bool isAlarmSet() {
-            return this->function == INDICATORS_BOTH;
-        }
-
         bool isActive() {
             return this->function > INDICATORS_OFF;
         }
