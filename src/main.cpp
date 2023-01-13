@@ -170,21 +170,27 @@ void readButtons()
 
         // Lights
         if ( Dashboard.isLightsUp() )  {
-            Lights.increaseLights();
             Display.setDisplayModeHome();
+            Lights.increaseLights();
+            if ( Dashboard.isLongPress() ) {
+                Lights.setFogLight();
+            }
         }
         if ( Dashboard.isLightsDown() )  {
-            Lights.decreaseLights();
             Display.setDisplayModeHome();
+            Lights.decreaseLights();
+            if ( Dashboard.isLongPress() ) {
+                Lights.resetLights();
+            }
         }
 
         // Display pages
         if (Dashboard.isDisplay()) {
             Display.nextDisplayMode();
         }
-        if ( Dashboard.isDisplay() && Dashboard.isLongPress() ) {
-            Display.setDisplayModeHome();
-        }
+        // if ( Dashboard.isDisplay() && Dashboard.isLongPress() ) {
+        //     Display.setDisplayModeHome();
+        // }
 
     }
 

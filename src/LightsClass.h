@@ -90,8 +90,8 @@ public:
     void increaseLights()
     {
         this->lights++;
-        if ( this->lights > LIGHTS_FOG ) {
-            this->lights = LIGHTS_FOG;
+        if ( this->lights > LIGHTS_BEAM ) {
+            this->lights = LIGHTS_BEAM;
         }
         this->_set();
     }
@@ -103,6 +103,10 @@ public:
             this->lights = LIGHTS_OFF;
         }
         this->_set();
+    }
+
+    void setFogLight() {
+        this->lights = LIGHTS_FOG;
     }
 
     void setBrake(bool b)

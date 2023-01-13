@@ -265,11 +265,11 @@ public:
             break;
         case LIGHTS_BEAM:
             OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
-            OLED.drawBitmap(x, yr, icoHighRear, w, h, WHITE);
+            OLED.drawBitmap(x, yr, icoLowRear, w, h, WHITE);
             break;
         case LIGHTS_FOG:
             OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
-            OLED.drawBitmap(x, yr, icoFogRear, w, h, WHITE);
+            OLED.drawBitmap(x, yr, icoHighRear, w, h, WHITE);
             break;
         }
         if (this->Lights->getBrake())
