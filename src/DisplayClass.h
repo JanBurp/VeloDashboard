@@ -103,7 +103,7 @@ public:
             int precision = (speed - decis) * 10;
 
             int x = SCREEN_HALF_WIDTH + 4;
-            if ( this->displayMode = DISPLAY_HOME ) {
+            if ( this->displayMode == DISPLAY_HOME ) {
                 x = 38;
             }
 
@@ -113,7 +113,7 @@ public:
             OLED.setCursor(x, 0);
             OLED.print(speedStr);
 
-            if ( this->displayMode = DISPLAY_HOME ) {
+            if ( this->displayMode == DISPLAY_HOME ) {
                 snprintf(speedStr, 3, "%1i", precision);
                 OLED.setTextSize(3);
                 OLED.setCursor(110, 14);
