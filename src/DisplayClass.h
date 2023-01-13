@@ -102,19 +102,27 @@ public:
             int decis = (int)speed;
             int precision = (speed - decis) * 10;
 
+            int x = SCREEN_HALF_WIDTH + 4;
+            if ( this->displayMode = DISPLAY_HOME ) {
+                x = 38;
+            }
+
             OLED.setTextSize(5);
             char speedStr[3];
             snprintf(speedStr, 3, "%2i", decis);
-            OLED.setCursor(38, 0);
+            OLED.setCursor(x, 0);
             OLED.print(speedStr);
-            snprintf(speedStr, 3, "%1i", precision);
-            OLED.setTextSize(3);
-            OLED.setCursor(110, 14);
-            OLED.print(speedStr);
+
+            if ( this->displayMode = DISPLAY_HOME ) {
+                snprintf(speedStr, 3, "%1i", precision);
+                OLED.setTextSize(3);
+                OLED.setCursor(110, 14);
+                OLED.print(speedStr);
+            }
 
             // Sensor
             OLED.setTextSize(2);
-            OLED.setCursor(96, 22);
+            OLED.setCursor( x+58, 22 );
             if (this->Speed->getSpeedSensor())
             {
                 OLED.print(".");
@@ -124,8 +132,8 @@ public:
                 OLED.print(" ");
             }
 
-            if ( !this->Speed->isPaused() ) {
-                // Faster / Slower than average
+            // Faster / Slower than average
+            if ( !this->Speed->isPaused() && this->displayMode == DISPLAY_HOME) {
                 int x = 110;
                 int y = 0;
                 int w = 14;
