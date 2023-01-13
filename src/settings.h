@@ -129,11 +129,11 @@ unsigned int WheelNumber = 1;
 
 // 0 - unused
 // 1 - unused
-#define PIN_LEFT_STRIP      2
-#define PIN_RIGHT_STRIP     3
-#define PIN_SPEED           4              // LET OP VERHUIST !!!!
-#define PIN_POWER_OFF       5              // VERHUIST
-#define PIN_BUZZER          6              // VERHUIST PWM
+#define PIN_LEFT_STRIP          2
+#define PIN_RIGHT_STRIP         3
+#define PIN_SPEED               4
+#define PIN_POWER_OFF           5
+#define PIN_BUZZER              6
 // 7 - unused
 #define PIN_HEAD_LIGHT_LEFT     8
 #define PIN_HEAD_LIGHT_RIGHT    9
@@ -144,8 +144,8 @@ unsigned int WheelNumber = 1;
 /*
  * PINS (north L-R)
  */
-#define PIN_BATTERY_METER   23             // VERHUISD
-#define PIN_DASHBOARD       22             // VERHUISD
+#define PIN_BATTERY_METER       23
+#define PIN_DASHBOARD           22
 // 21 - unused
 // 20 - unused
 // 19 - DISPLAY SCL
@@ -153,8 +153,8 @@ unsigned int WheelNumber = 1;
 // 17 - unused
 // 16 - unused
 // 15 - unused
-#define PIN_HORN            14
-#define INTERNAL_LED        13              // 13 - unused - OFF
+#define PIN_HORN                14
+#define INTERNAL_LED            13              // 13 - unused - OFF
 
 /**
  * Unused PINS
