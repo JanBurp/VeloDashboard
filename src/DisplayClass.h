@@ -220,13 +220,16 @@ public:
             // print cell voltage
             int cellMilliV = this->Battery->getCellVoltage();
             int cellV = cellMilliV / 1000;
-            int cellM = (cellMilliV - (1000*cellV))/10;
+            int cellM = (cellMilliV - (1000*cellV)) / 10;
+            char cellMstr[4];
+            snprintf(cellMstr, 3, "%02i%", cellM);
+
             OLED.setTextSize(2);
             OLED.setCursor(x + w + 5, y + toppad);
             OLED.print( cellV );
             OLED.setTextSize(1);
             OLED.setCursor(x + w + 17, y + toppad);
-            OLED.print( cellM );
+            OLED.print( cellMstr );
 
             // print percentage
             OLED.setCursor(x + w + 5, y + toppad + 15);
