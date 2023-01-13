@@ -267,6 +267,7 @@ public:
         {
             if (this->Indicators->getStateLeft())
             {
+                this->normal(RIGHT);
                 if (!this->is_blink_animation_started())
                 {
                     this->blink_animation_start(LEFT);
@@ -274,6 +275,7 @@ public:
             }
             if (this->Indicators->getStateRight())
             {
+                this->normal(LEFT);
                 if (!this->is_blink_animation_started())
                 {
                     this->blink_animation_start(RIGHT);
