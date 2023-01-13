@@ -34,7 +34,7 @@ unsigned int WheelNumber = 1;
 
 #define HEAD_LED_OFF_INTENSITY      0
 #define HEAD_LED_LOW_INTENSITY      16
-#define HEAD_LED_MEDIUM_INTENSITY   96
+#define HEAD_LED_MEDIUM_INTENSITY   92
 #define HEAD_LED_MAX_INTENSITY      255
 
 #define REAR_LED_OFF_INTENSITY      0
