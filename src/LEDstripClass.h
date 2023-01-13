@@ -156,9 +156,7 @@ public:
         if (this->indicatorTimer == 0)
         {
             this->indicatorTimer = millis();
-            stripTimer.begin([this]
-                             { this->blink_animation(); },
-                             INDICATOR_TIMER_STEP);
+            stripTimer.begin([this] { this->blink_animation(); }, INDICATOR_TIMER_STEP);
             this->blink_animation();
         }
     }
@@ -167,6 +165,9 @@ public:
     {
         float percentage = float(millis() - this->indicatorTimer) / float(INDICATOR_TIMER_INT);
         int num_leds = int(NUM_LEDS / 2 * percentage) + 10;
+        if (TEST) {
+            num_leds -= 10;
+        }
 
         if (DEBUG)
         {

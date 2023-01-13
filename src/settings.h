@@ -1,7 +1,7 @@
 #pragma once
 
 #define DEBUG false // [default = false] - set to true for Serial output
-#define TEST false  // [default = false] - set to true for local test environment
+#define TEST true  // [default = false] - set to true for local test environment
 
 /*
   WHEELS
@@ -98,10 +98,10 @@ unsigned int WheelNumber = 1;
 #define FRAMES_PER_SECOND 100
 #if TEST
 #define NUM_LEDS 12
-#define NUM_LIGHT_LEDS 5
-#define NUM_LIGHT_LEDS_BACK 5
-#define NUM_INDICATOR_LEDS 7
-#define MAX_MILLIAMPS 40
+#define NUM_LIGHT_LEDS 3
+#define NUM_LIGHT_LEDS_BACK 3
+#define NUM_INDICATOR_LEDS 3
+#define MAX_MILLIAMPS 400
 #else
 #define NUM_LEDS 169 // 2,85 m * 66 = 188
 #define NUM_LIGHT_LEDS 36
