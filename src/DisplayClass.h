@@ -222,7 +222,7 @@ public:
             int cellV = cellMilliV / 1000;
             int cellM = (cellMilliV - (1000*cellV)) / 10;
             char cellMstr[4];
-            snprintf(cellMstr, 3, "%02i%", cellM);
+            snprintf(cellMstr, 3, "%02i", cellM);
 
             OLED.setTextSize(2);
             OLED.setCursor(x + w + 5, y + toppad);
