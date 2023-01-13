@@ -92,65 +92,39 @@ public:
         OLED.setTextSize(2);
         OLED.setCursor(0, 0);
         OLED.print("Quest 631");
-
-        // OLED.setCursor(0, 32);
-        // OLED.print(Wheels[WheelNumber].name);
-        // OLED.setCursor(0, 48);
-        // OLED.print(Wheels[WheelNumber].circumference);
     }
 
     void show_speed()
     {
         if ( this->Speed->isStarted() ) {
 
-            // // Show distance & average when paused
-            // if ( this->Speed->isPaused() ) {
-            //     char avgSpeedStr[11];
-            //     snprintf(avgSpeedStr, 11, "%-3.1f", this->Speed->getAvgSpeed());
-            //     char distStr[13];
-            //     snprintf(distStr, 13, "%-3.1f", this->Speed->getDistance());
+            float speed = this->Speed->getSpeed();
+            int decis = (int)speed;
+            int precision = (speed - decis) * 10;
 
-            //     OLED.setTextSize(1);
-            //     OLED.setCursor(52, 6 );
-            //     OLED.print("AVG");
-            //     OLED.setCursor(52, 30 );
-            //     OLED.print("DST");
+            OLED.setTextSize(5);
+            char speedStr[3];
+            snprintf(speedStr, 3, "%2i", decis);
+            OLED.setCursor(38, 0);
+            OLED.print(speedStr);
+            snprintf(speedStr, 3, "%1i", precision);
+            OLED.setTextSize(3);
+            OLED.setCursor(110, 14);
+            OLED.print(speedStr);
 
-            //     OLED.setTextSize(2);
-            //     OLED.setCursor(80, 0 );
-            //     OLED.print(avgSpeedStr);
-            //     OLED.setCursor(80, 24 );
-            //     OLED.print(distStr);
-            // }
+            // Sensor
+            OLED.setTextSize(2);
+            OLED.setCursor(96, 22);
+            if (this->Speed->getSpeedSensor())
+            {
+                OLED.print(".");
+            }
+            else
+            {
+                OLED.print(" ");
+            }
 
-            // // Show speeed
-            // else {
-                float speed = this->Speed->getSpeed();
-                int decis = (int)speed;
-                int precision = (speed - decis) * 10;
-
-                OLED.setTextSize(5);
-                char speedStr[3];
-                snprintf(speedStr, 3, "%2i", decis);
-                OLED.setCursor(38, 0);
-                OLED.print(speedStr);
-                snprintf(speedStr, 3, "%1i", precision);
-                OLED.setTextSize(3);
-                OLED.setCursor(110, 14);
-                OLED.print(speedStr);
-
-                // Sensor
-                OLED.setTextSize(2);
-                OLED.setCursor(96, 22);
-                if (this->Speed->getSpeedSensor())
-                {
-                    OLED.print(".");
-                }
-                else
-                {
-                    OLED.print(" ");
-                }
-
+            if ( !this->Speed->isPaused() ) {
                 // Faster / Slower than average
                 int x = 110;
                 int y = 0;
@@ -164,7 +138,7 @@ public:
                 {
                     OLED.fillTriangle(x, y, x + w / 2, y + h, x + w, y, WHITE);
                 }
-            // }
+            }
 
         }
 
