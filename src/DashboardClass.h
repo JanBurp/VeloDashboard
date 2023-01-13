@@ -116,7 +116,18 @@ class DashboardClass {
             if ( this->function == FN_RIGHT ) {
                 this->indicator = 1;
             }
+
+            if ( DEBUG && this->function!=-1 ) {
+                Serial.print("\tFUNCTION:\t");
+                Serial.print(this->function);
+                Serial.println();
+            }
+
             return true;
+        }
+
+        int getFunction() {
+            return this->function;
         }
 
         bool isLongPress() {

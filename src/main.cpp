@@ -154,6 +154,13 @@ void readButtons()
     if ( Dashboard.read() ) {
         IdleTimer.action();
 
+        if ( DEBUG ) {
+            Serial.print("\tDashboard:\t");
+            Serial.print(Dashboard.getFunction());
+            Serial.println();
+        }
+
+
         if ( Dashboard.isIndicatorLeft() ) {
             Indicators.setLeft();
         }

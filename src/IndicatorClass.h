@@ -44,8 +44,14 @@ class IndicatorClass {
                 else {
                     indicatorTimer.setPeriod( INDICATOR_TIMER );
                 }
-                this->loop();
+                if ( this->function == INDICATORS_LEFT || this->function == INDICATORS_BOTH ) {
+                    this->stateLeft = true;
+                }
+                if ( this->function == INDICATORS_RIGHT || this->function == INDICATORS_BOTH ) {
+                    this->stateRight = true;
+                }
                 indicatorTimer.start();
+                // this->loop();
             }
 		}
 

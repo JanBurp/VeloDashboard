@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG false // [default = false] - set to true for Serial output
+#define DEBUG true // [default = false] - set to true for Serial output
 #define TEST true  // [default = false] - set to true for local test environment
 
 /*
