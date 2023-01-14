@@ -28,6 +28,21 @@ unsigned int WheelNumber = 1;
 
 #define BIKE_DISTANCE_START         8060
 
+typedef struct {
+    unsigned long   timestamp;
+    unsigned long   totalDistance;
+    float           tripDistance;
+    float           dayDistance;
+    unsigned long   dayTimeMovedSecs;
+    float           dayAverageSpeed;
+    float           dayMaxSpeed;
+    float           prevDayDistance;
+    float           prevDayAverage;
+    float           prevDayMaxSpeed;
+    float           wheelCircumference;
+} MemoryStruct;
+
+
 /*
     LED light intensities
 */
@@ -85,8 +100,8 @@ unsigned int WheelNumber = 1;
 #define DISPLAY_HOME        1
 #define DISPLAY_DISTANCE    2
 #define DISPLAY_SPEEDS      3
-#define DISPLAY_PREV        10  // Not used yet (change to 4, and TOTALS to 5)
-#define DISPLAY_TOTALS      4
+#define DISPLAY_PREV        4  // Not used yet (change to 4, and TOTALS to 5)
+#define DISPLAY_TOTALS      5
 
 /*
   LED STRIPS
@@ -152,12 +167,20 @@ unsigned int WheelNumber = 1;
 // 18 - DISPLAY SDA
 // 17 - unused
 // 16 - unused
-// 15 - unused
+#define PIN_TEST_SPEED          15              // 15 - unused, but used for testing
 #define PIN_HORN                14
 #define INTERNAL_LED            13              // 13 - unused - OFF
 
 /**
  * Unused PINS
  */
+#if TEST
+#define UNUSED_PINS         {0,1,7,12,16,17,20,21}
+#define NR_UNUSED_PINS      8
+#else
 #define UNUSED_PINS         {0,1,7,12,15,16,17,20,21}
 #define NR_UNUSED_PINS      9
+#endif
+
+
+
