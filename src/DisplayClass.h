@@ -118,19 +118,19 @@ public:
                 OLED.setTextSize(3);
                 OLED.setCursor(110, 14);
                 OLED.print(speedStr);
+                // Sensor
+                OLED.setTextSize(2);
+                OLED.setCursor( x+58, 22 );
+                if (this->Speed->getSpeedSensor())
+                {
+                    OLED.print(".");
+                }
+                else
+                {
+                    OLED.print(" ");
+                }
             }
 
-            // Sensor
-            OLED.setTextSize(2);
-            OLED.setCursor( x+58, 22 );
-            if (this->Speed->getSpeedSensor())
-            {
-                OLED.print(".");
-            }
-            else
-            {
-                OLED.print(" ");
-            }
 
             // Faster / Slower than average
             if ( !this->Speed->isPaused() && this->displayMode == DISPLAY_HOME) {
