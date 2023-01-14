@@ -147,11 +147,11 @@ public:
 
     void blink_animation_start(int strip = BOTH)
     {
-        if (DEBUG)
-        {
-            Serial.print("START");
-            Serial.println();
-        }
+        // if (DEBUG)
+        // {
+        //     Serial.print("START");
+        //     Serial.println();
+        // }
         this->indicatorStrip = strip;
         if (this->indicatorTimer == 0)
         {
@@ -169,15 +169,15 @@ public:
             num_leds -= 10;
         }
 
-        if (DEBUG)
-        {
-            Serial.print("BLINK");
-            Serial.print("\tPercentage:\t");
-            Serial.print(percentage);
-            Serial.print("\tLEDS:\t");
-            Serial.print(num_leds);
-            Serial.println();
-        }
+        // if (DEBUG)
+        // {
+        //     Serial.print("BLINK");
+        //     Serial.print("\tPercentage:\t");
+        //     Serial.print(percentage);
+        //     Serial.print("\tLEDS:\t");
+        //     Serial.print(num_leds);
+        //     Serial.println();
+        // }
 
         this->set(this->indicatorStrip, 0, num_leds, ORANGE);
         this->set(this->indicatorStrip, num_leds, NUM_LEDS - num_leds, BLACK);
@@ -200,12 +200,12 @@ public:
 
     void blink_animation_stop()
     {
-        if (DEBUG)
-        {
-            Serial.print("STOP - ");
-            Serial.print(this->indicatorStrip);
-            Serial.println();
-        }
+        // if (DEBUG)
+        // {
+        //     Serial.print("STOP - ");
+        //     Serial.print(this->indicatorStrip);
+        //     Serial.println();
+        // }
         stripTimer.stop();
         this->set_all(this->indicatorStrip, BLACK);
         this->indicatorTimer = 0;
