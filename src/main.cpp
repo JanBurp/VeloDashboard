@@ -247,7 +247,7 @@ void loop()
     Battery.loop();
 
     if ( IdleTimer.ended() ) {
-        Speed.storeODO();
+        Speed.storeMemory();
         LEDstrips.off();
         Lights.off();
         Display.off();
@@ -259,7 +259,7 @@ void loop()
         Lights.off();
         Display.off();
         if (Battery.delayedPowerOff()) {
-            Speed.storeODO();
+            Speed.storeMemory();
             Battery.powerOff();
         }
     }

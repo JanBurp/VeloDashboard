@@ -118,19 +118,19 @@ public:
                 OLED.setTextSize(3);
                 OLED.setCursor(110, 14);
                 OLED.print(speedStr);
+                // Sensor
+                OLED.setTextSize(2);
+                OLED.setCursor( x+58, 22 );
+                if (this->Speed->getSpeedSensor())
+                {
+                    OLED.print(".");
+                }
+                else
+                {
+                    OLED.print(" ");
+                }
             }
 
-            // Sensor
-            OLED.setTextSize(2);
-            OLED.setCursor( x+58, 22 );
-            if (this->Speed->getSpeedSensor())
-            {
-                OLED.print(".");
-            }
-            else
-            {
-                OLED.print(" ");
-            }
 
             // Faster / Slower than average
             if ( !this->Speed->isPaused() && this->displayMode == DISPLAY_HOME) {
@@ -289,9 +289,9 @@ public:
 
     void show_distances()
     {
-        this->show_item_float(1,"dist","%-6.2f",this->Speed->getDistance());
-        this->show_item_string(2,"day","0");
-        this->show_item_string(3,"trip","0");
+        this->show_item_float(1,"dist","%-6.2f",this->Speed->getDistance() );
+        this->show_item_float(2,"day","%-6.2f",this->Speed->getDayDistance() );
+        this->show_item_float(3,"trip","%-6.2f",this->Speed->getTripDistance() );
     }
 
     void show_speeds()
@@ -302,13 +302,13 @@ public:
     }
 
     void show_prev() {
-        this->show_item_string(1,"prev avg","-");
-        this->show_item_string(2,"prev max","-");
-        this->show_item_string(3,"prev dst","-");
+        this->show_item_float(1,"prev avg","%-4.1f", this->Speed->getPrevAvgSpeed());
+        this->show_item_float(2,"prev max","%-4.1f", this->Speed->getPrevMaxSpeed());
+        this->show_item_float(3,"prev dist","%-6.2f",this->Speed->getPrevDistance() );
     }
 
     void show_totals() {
-        int Odo = this->Speed->getOdoDistance();
+        int Odo = this->Speed->getTotalDistance();
         int Quest = Odo + BIKE_DISTANCE_START;
         this->show_item_float(1,"me","%-6.0f",Odo);
         this->show_item_float(2,"quest","%-6.0f",Quest);
