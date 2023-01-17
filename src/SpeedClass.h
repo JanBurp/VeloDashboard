@@ -59,7 +59,7 @@ public:
         }
         // this->Memory.tripDistance = 0.0;
         // this->Memory.dayDistance = 0.0;
-        // this->Memory.totalDistance += 200000.0;
+        // this->Memory.totalDistance = 3297000.0;
     }
 
     bool isStarted()
