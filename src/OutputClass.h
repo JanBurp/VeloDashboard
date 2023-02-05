@@ -1,9 +1,8 @@
-#ifndef Output_h
-#define Output_h
+#pragma once
 
 #include "Arduino.h"
 
-class Output {
+class OutputClass {
 
 	public:
 
@@ -129,5 +128,3 @@ class Output {
 		unsigned long lastOnMs;
 
 };
-
-#endif
