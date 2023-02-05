@@ -180,29 +180,17 @@ public:
         }
 
         // Add moved to all distances
+        if ( movedDistance > 0 && !this->started )
+        {
+            this->startTimeMs = now;
+            this->runningTimeMs = now;
+            this->started = true;
+            this->paused = false;
+        }
         this->distance += movedDistance;
         this->Memory.dayDistance += movedDistance;
         this->Memory.tripDistance += movedDistance;
         this->Memory.totalDistance += movedDistance;
-
-        // Pause & TrimTime & SpeedSensor
-        if ( this->speed > 1.0 )
-        {
-            if ( !this->started )
-            {
-                this->startTimeMs = now;
-                this->runningTimeMs = now;
-                this->started = true;
-                this->paused = false;
-            }
-            if ( this->paused ) {
-                this->paused = false;
-                this->runningTimeMs = now;
-            }
-            this->tripTimeMs += (now - this->runningTimeMs);
-            this->runningTimeMs = now;
-            this->SpeedSensor = !this->SpeedSensor;
-        }
 
         if ( this->started )
         {
@@ -210,12 +198,21 @@ public:
             // Calc speed
             if ( !TEST ) {
                 unsigned long avgSensorTime = 0;
+                this->speed = 0.0;
                 if (buffLength > 0 && totalSensorTime > 0)
                 {
                     avgSensorTime = totalSensorTime / buffLength;
                     float Speed_meter_sec = this->circumference / (avgSensorTime / 1000.0);
                     this->speed = Speed_meter_sec * 3.6;
                 }
+            }
+
+            if ( DEBUG ) {
+                Serial.print("\Speed:\t");
+                Serial.print(this->speed);
+                Serial.print("\tBuffer");
+                Serial.print(buffLength);
+                Serial.println();
             }
 
             // Calc AVG & MAX
@@ -226,7 +223,7 @@ public:
             }
 
             // Paused??
-            if ( this->speed < 1.0 )
+            if ( this->speed <= 2.0 )
             {
                 if ( !this->paused )
                 {
@@ -237,24 +234,17 @@ public:
 
         }
 
-        // if ( DEBUG ) {
-        //     Serial.print("\tStarted:\t");
-        //     Serial.print(this->started);
-        //     Serial.print("\tPaused:\t");
-        //     Serial.print(this->paused);
-        //     Serial.print("\tSpeed:\t");
-        //     Serial.print(this->speed);
-
-        //     Serial.print("\tDist:\t");
-        //     Serial.print(this->distance);
-        //     Serial.print("\tDay:\t");
-        //     Serial.print(this->Memory.dayDistance);
-        //     Serial.print("\tTrip:\t");
-        //     Serial.print(this->Memory.tripDistance);
-        //     Serial.print("\tTotal:\t");
-        //     Serial.print(this->Memory.totalDistance);
-        //     Serial.println();
-        // }
+        // Pause & TrimTime & SpeedSensor
+        if ( this->speed > 2.0 )
+        {
+            if ( this->paused ) {
+                this->paused = false;
+                this->runningTimeMs = now;
+            }
+            this->tripTimeMs += (now - this->runningTimeMs);
+            this->runningTimeMs = now;
+            this->SpeedSensor = !this->SpeedSensor;
+        }
 
         // Only store ODO if it has changed, so EEPROM is only written when needed
         unsigned long oldOdo = (int)this->readMemory().totalDistance;
