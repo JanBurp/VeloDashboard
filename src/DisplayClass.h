@@ -287,32 +287,49 @@ public:
         }
     }
 
-    void show_distances()
+    void show_today_distances()
     {
-        this->show_item_float(1,"dist","%-6.2f",this->Speed->getDistance() );
-        this->show_item_float(2,"day","%-6.2f",this->Speed->getDayDistance() );
-        this->show_item_float(3,"trip","%-6.2f",this->Speed->getTripDistance() );
+        std::string format = "% 6.2f";
+        if ( this->Speed->getDayDistance() >= 100 ) {
+            format = "% 6.1f";
+        }
+        this->show_item_float(1,"DIST",format,this->Speed->getDistance() );
+        this->show_item_float(2,"TODAY",format,this->Speed->getDayDistance() );
     }
 
-    void show_speeds()
+    void show_today_speeds()
     {
-        this->show_item_float(1,"avg","%-4.1f", this->Speed->getAvgSpeed());
-        this->show_item_float(2,"max","%-4.1f", this->Speed->getMaxSpeed());
-        this->show_item_time(3,"time", this->Speed->getTripTime());
+        this->show_item_float(1,"AVG km/u","% 6.1f", this->Speed->getAvgSpeed());
+        this->show_item_float(2,"MAX km/u","% 6.1f", this->Speed->getMaxSpeed());
     }
 
-    void show_prev() {
-        this->show_item_float(1,"prev avg","%-4.1f", this->Speed->getPrevAvgSpeed());
-        this->show_item_float(2,"prev max","%-4.1f", this->Speed->getPrevMaxSpeed());
-        this->show_item_float(3,"prev dist","%-6.2f",this->Speed->getPrevDistance() );
+    void show_today_time()
+    {
+        this->show_item_time(1,"DRIVE", this->Speed->getTripTime());
+        this->show_item_time(2,"TOTAL", this->Speed->getTotalTime());
     }
+
+    void show_prev_dist() {
+        std::string format = "% 6.2f";
+        if ( this->Speed->getTripDistance() >= 100 ) {
+            format = "% 6.1f";
+        }
+        this->show_item_float(1,"PREV",format,this->Speed->getPrevDistance() );
+        this->show_item_float(2,"TRIP",format,this->Speed->getTripDistance() );
+    }
+
+    void show_prev_speed() {
+        this->show_item_float(1,"AVG km/u","% 6.1f", this->Speed->getPrevAvgSpeed());
+        this->show_item_float(2,"MAX km/u","% 6.1f", this->Speed->getPrevMaxSpeed());
+    }
+
 
     void show_totals() {
         int Odo = this->Speed->getTotalDistance();
         int Quest = Odo + BIKE_DISTANCE_START;
-        this->show_item_float(1,"me","%-6.0f",Odo);
-        this->show_item_float(2,"quest","%-6.0f",Quest);
-        this->show_item_float(3,"tyre", "%-1.4f", Wheels[WheelNumber].circumference);
+        this->show_item_float(1,"ME","% 6.0f",Odo);
+        this->show_item_float(2,"BIKE","% 6.0f",Quest);
+        // this->show_item_float(3,"Tyre mm", "% 6.4f", Wheels[WheelNumber].circumference);
     }
 
     void off() {
@@ -329,23 +346,20 @@ public:
     }
 
     void show_item_string(int row, const char label[], const char value[] ) {
-        int x = 0;
-        int y = (row-1) * SCREEN_HALF_HEIGHT + 6;
-        if (row==3) {
-            x = SCREEN_HALF_WIDTH + 4;
-            y = SCREEN_HALF_HEIGHT + 6;
-        }
+        int xl = 0;
+        int xv = SCREEN_HALF_WIDTH - 44;
+        int y = 14 + (row-1) * (SCREEN_HALF_HEIGHT-3);
         OLED.setTextSize(1);
-        OLED.setCursor(x, y);
+        OLED.setCursor(xl, y+13);
         OLED.print(label);
-        OLED.setTextSize(2);
-        OLED.setCursor(x, y+12);
+        OLED.setTextSize(3);
+        OLED.setCursor(xv, y);
         OLED.print(value);
     }
 
-    void show_item_float(int row, const char label[], const char format[], float value ) {
+    void show_item_float(int row, const char label[], std::string format, float value ) {
         char valueStr[6];
-        snprintf(valueStr, 7, format, value);
+        snprintf(valueStr, 7, format.c_str(), value);
         this->show_item_string(row,label,valueStr);
     }
 
@@ -354,58 +368,67 @@ public:
         unsigned long secs = millis / 1000;
         unsigned int minutes = secs / 60;
         unsigned int seconds = secs % 60;
-        snprintf(timeStr, 7, "%u:%02u", minutes, seconds);
+        snprintf(timeStr, 7, "  %u:%02u", minutes, seconds);
         this->show_item_string(row,label,timeStr);
     }
 
-    // void show_mode() {
-    //     int currentMode = this->displayMode - 2;
-    //     int x = 0;
-    //     int y = currentMode * (SCREEN_HEIGHT / 4);
-    //     int w = 1;
-    //     int h = SCREEN_HEIGHT / 4;
-    //     OLED.drawRect(x,y,w,h,WHITE);
-    // }
+    void show_mode(const char mode[]) {
+        int currentMode = this->displayMode - 2;
+        int x = currentMode * (SCREEN_WIDTH / 6);
+        int y = 0;
+        int w = SCREEN_WIDTH / 6 + 5;
+        int h = 9;
+        int tx = x+2;
+
+        OLED.fillRect(x,y,w,h,WHITE);
+        OLED.drawLine(0,y+h-1,SCREEN_WIDTH,y+h-1,WHITE);
+        OLED.setCursor(tx,y+1);
+        OLED.setTextSize(1);
+        OLED.setTextColor(BLACK);
+        OLED.print(mode);
+        OLED.setTextColor(WHITE);
+    }
 
     void show()
     {
         OLED.clearDisplay();
+        this->show_indicators();
 
-        if (this->displayMode == DISPLAY_WELCOME)
+        switch (this->displayMode)
         {
-            this->show_welcome();
-        }
-        else
-        {
-
-            this->show_speed();
-            this->show_indicators();
-
-            switch (this->displayMode)
-            {
-                case DISPLAY_HOME:
-                    this->show_time();
-                    this->show_lights();
-                    this->show_battery();
-                    break;
-                case DISPLAY_DISTANCE:
-                    // this->show_mode();
-                    this->show_distances();
-                    break;
-                case DISPLAY_SPEEDS:
-                    // this->show_mode();
-                    this->show_speeds();
-                    break;
-                case DISPLAY_PREV:
-                    // this->show_mode();
-                    this->show_prev();
-                    break;
-                case DISPLAY_TOTALS:
-                    // this->show_mode();
-                    this->show_totals();
-                    break;
-            }
-
+            case DISPLAY_WELCOME :
+                this->show_welcome();
+                break;
+            case DISPLAY_HOME:
+                this->show_speed();
+                this->show_time();
+                this->show_lights();
+                this->show_battery();
+                break;
+            case DISPLAY_TODAY:
+                this->show_mode("DIST");
+                this->show_today_distances();
+                break;
+            case DISPLAY_SPEEDS:
+                this->show_mode("SPED");
+                this->show_today_speeds();
+                break;
+            case DISPLAY_TIME:
+                this->show_mode("TIME");
+                this->show_today_time();
+                break;
+            case DISPLAY_PREV_DIST:
+                this->show_mode("DST<");
+                this->show_prev_dist();
+                break;
+            case DISPLAY_PREV_SPEED:
+                this->show_mode("SPD<");
+                this->show_prev_speed();
+                break;
+            case DISPLAY_TOTALS:
+                this->show_mode("ALL");
+                this->show_totals();
+                break;
         }
 
         if ( this->Battery->isVeryLow() || this->Lights->getLights() >= LIGHTS_NORMAL ) {

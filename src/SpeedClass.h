@@ -208,7 +208,7 @@ public:
             }
 
             if ( DEBUG ) {
-                Serial.print("\Speed:\t");
+                Serial.print("Speed:\t");
                 Serial.print(this->speed);
                 Serial.print("\tBuffer");
                 Serial.print(buffLength);

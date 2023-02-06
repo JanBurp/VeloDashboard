@@ -98,10 +98,12 @@ typedef struct {
  */
 #define DISPLAY_WELCOME     0
 #define DISPLAY_HOME        1
-#define DISPLAY_DISTANCE    2
+#define DISPLAY_TODAY       2
 #define DISPLAY_SPEEDS      3
-#define DISPLAY_PREV        4  // Not used yet (change to 4, and TOTALS to 5)
-#define DISPLAY_TOTALS      5
+#define DISPLAY_TIME        4
+#define DISPLAY_PREV_DIST   5
+#define DISPLAY_PREV_SPEED  6
+#define DISPLAY_TOTALS      7
 
 /*
   LED STRIPS
