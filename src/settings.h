@@ -105,6 +105,10 @@ typedef struct {
 #define DISPLAY_PREV_SPEED  6
 #define DISPLAY_TOTALS      7
 
+#define DISPLAY_SETTINGS_TRIP   10
+#define DISPLAY_SETTINGS_TYRE   11
+#define DISPLAY_SETTINGS_TOTAL  12
+
 /*
   LED STRIPS
 */

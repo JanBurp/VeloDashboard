@@ -25,6 +25,11 @@ private:
     int displayMode = DISPLAY_HOME;
     int firstMode = DISPLAY_HOME;
     int lastMode = DISPLAY_TOTALS;
+    int firstSettingsMode = DISPLAY_SETTINGS_TRIP;
+    int lastSettingsMode = DISPLAY_SETTINGS_TOTAL;
+    bool settingsMenu = false;
+    int cursorPosition = 0;
+
     SpeedClass *Speed;
     BatteryClass *Battery;
     IdleClass *IdleTimer;
@@ -67,9 +72,17 @@ public:
     void nextDisplayMode()
     {
         this->displayMode++;
-        if (this->displayMode > this->lastMode)
-        {
-            this->displayMode = this->firstMode;
+        if ( this->settingsMenu ) {
+            if ( this->displayMode > this->lastSettingsMode )
+            {
+                this->displayMode = this->firstSettingsMode;
+            }
+        }
+        else {
+            if (this->displayMode > this->lastMode)
+            {
+                this->displayMode = this->firstMode;
+            }
         }
     }
 
@@ -96,6 +109,7 @@ public:
 
     void show_speed()
     {
+        OLED.setTextColor(WHITE);
         if ( this->Speed->isStarted() ) {
 
             float speed = this->Speed->getSpeed();
@@ -166,6 +180,7 @@ public:
 
     void show_time()
     {
+        OLED.setTextColor(WHITE);
         char hourStr[3];
         char minStr[3];
         if ( this->IdleTimer->warning() ) {
@@ -203,6 +218,7 @@ public:
 
     void show_battery( bool off = false)
     {
+        OLED.setTextColor(WHITE);
         int toppad = 4;
         int innerpad = 2;
         int x = 1;
@@ -329,7 +345,6 @@ public:
         int Quest = Odo + BIKE_DISTANCE_START;
         this->show_item_float(1,"ME","% 6.0f",Odo);
         this->show_item_float(2,"BIKE","% 6.0f",Quest);
-        // this->show_item_float(3,"Tyre mm", "% 6.4f", Wheels[WheelNumber].circumference);
     }
 
     void off() {
@@ -372,21 +387,94 @@ public:
         this->show_item_string(row,label,timeStr);
     }
 
-    void show_mode(const char mode[]) {
+    void show_mode(const char mode[], int width = 6, bool inverse = false ) {
+        CRGB menuColor = WHITE;
+        CRGB menuTextColor = BLACK;
+        CRGB textColor = WHITE;
+        if ( inverse ) {
+            OLED.fillScreen(WHITE);
+            menuColor = BLACK;
+            menuTextColor = WHITE;
+            textColor = BLACK;
+        }
         int currentMode = this->displayMode - 2;
-        int x = currentMode * (SCREEN_WIDTH / 6);
+        if ( this->settingsMenu ) {
+            currentMode = this->displayMode - 10;
+        }
+        int x = currentMode * (SCREEN_WIDTH / width);
         int y = 0;
-        int w = SCREEN_WIDTH / 6 + 5;
+        int w = SCREEN_WIDTH / width + 5;
         int h = 9;
         int tx = x+2;
 
-        OLED.fillRect(x,y,w,h,WHITE);
-        OLED.drawLine(0,y+h-1,SCREEN_WIDTH,y+h-1,WHITE);
+        OLED.fillRect(x,y,w,h,menuColor);
+        OLED.drawLine(0,y+h-1,SCREEN_WIDTH,y+h-1,menuColor);
         OLED.setCursor(tx,y+1);
         OLED.setTextSize(1);
-        OLED.setTextColor(BLACK);
+        OLED.setTextColor(menuTextColor);
         OLED.print(mode);
-        OLED.setTextColor(WHITE);
+        OLED.setTextColor(textColor);
+    }
+
+    void showSettingsMode(const char mode[]) {
+        this->show_mode( mode, 3, true);
+    }
+
+    void move_cursor( int inc ) {
+        this->cursorPosition += inc;
+        if ( this->cursorPosition < 0 ) this->cursorPosition = 0;
+        if ( this->cursorPosition > 5 ) this->cursorPosition = 5;
+    }
+
+    int cursorAmount() {
+        int amount = 1;
+        switch (cursorPosition)
+        {
+            case 1:
+                amount = 10;
+                break;
+            case 2:
+                amount = 100;
+                break;
+            case 3:
+                amount = 1000;
+                break;
+            case 4:
+                amount = 10000;
+                break;
+            case 5:
+                amount = 100000;
+                break;
+        }
+        return amount;
+    }
+
+    void show_cursor() {
+        int w = 18;
+        int h = 4;
+        int x = SCREEN_WIDTH - 1 - this->cursorPosition * w;
+        int y = SCREEN_HALF_HEIGHT + 6;
+        OLED.fillRect( x-w, y, w,h, BLACK);
+    }
+
+    void showResetTrip() {
+        std::string format = "% 6.2f";
+        if ( this->Speed->getTripDistance() >= 100 ) {
+            format = "% 6.1f";
+        }
+        this->show_item_float(1,"TRIP",format,this->Speed->getTripDistance() );
+        this->show_item_string(2,"RESET => Press UP","");
+    }
+
+    void showTotalEdit() {
+        int Odo = this->Speed->getTotalDistance();
+        this->show_item_float(1,"ME","% 6.0f",Odo);
+        this->show_cursor();
+        this->show_item_string(2,"LEFT/RIGHT - UP/DOWN","");
+    }
+
+    void showTyreEdit() {
+        this->show_item_float(1,"Tyre mm", "% 6.0f", Wheels[WheelNumber].circumference * 1000 );
     }
 
     void show()
@@ -394,42 +482,62 @@ public:
         OLED.clearDisplay();
         this->show_indicators();
 
-        switch (this->displayMode)
-        {
-            case DISPLAY_WELCOME :
-                this->show_welcome();
-                break;
-            case DISPLAY_HOME:
-                this->show_speed();
-                this->show_time();
-                this->show_lights();
-                this->show_battery();
-                break;
-            case DISPLAY_TODAY:
-                this->show_mode("DIST");
-                this->show_today_distances();
-                break;
-            case DISPLAY_SPEEDS:
-                this->show_mode("SPED");
-                this->show_today_speeds();
-                break;
-            case DISPLAY_TIME:
-                this->show_mode("TIME");
-                this->show_today_time();
-                break;
-            case DISPLAY_PREV_DIST:
-                this->show_mode("DST<");
-                this->show_prev_dist();
-                break;
-            case DISPLAY_PREV_SPEED:
-                this->show_mode("SPD<");
-                this->show_prev_speed();
-                break;
-            case DISPLAY_TOTALS:
-                this->show_mode("ALL");
-                this->show_totals();
-                break;
+        if ( this->settingsMenu ) {
+            switch (this->displayMode)
+            {
+                case DISPLAY_SETTINGS_TRIP:
+                    this->showSettingsMode("TRIP");
+                    this->showResetTrip();
+                    break;
+                case DISPLAY_SETTINGS_TYRE:
+                    this->showSettingsMode("TYRE");
+                    this->showTyreEdit();
+                    break;
+                case DISPLAY_SETTINGS_TOTAL:
+                    this->showSettingsMode("TOTAL");
+                    this->showTotalEdit();
+                    break;
+            }
         }
+        else {
+            switch (this->displayMode)
+            {
+                case DISPLAY_WELCOME :
+                    this->show_welcome();
+                    break;
+                case DISPLAY_HOME:
+                    this->show_speed();
+                    this->show_time();
+                    this->show_lights();
+                    this->show_battery();
+                    break;
+                case DISPLAY_TODAY:
+                    this->show_mode("DIST");
+                    this->show_today_distances();
+                    break;
+                case DISPLAY_SPEEDS:
+                    this->show_mode("SPED");
+                    this->show_today_speeds();
+                    break;
+                case DISPLAY_TIME:
+                    this->show_mode("TIME");
+                    this->show_today_time();
+                    break;
+                case DISPLAY_PREV_DIST:
+                    this->show_mode("DST<");
+                    this->show_prev_dist();
+                    break;
+                case DISPLAY_PREV_SPEED:
+                    this->show_mode("SPD<");
+                    this->show_prev_speed();
+                    break;
+                case DISPLAY_TOTALS:
+                    this->show_mode("ALL");
+                    this->show_totals();
+                    break;
+            }
+        }
+
 
         if ( this->Battery->isVeryLow() || this->Lights->getLights() >= LIGHTS_NORMAL ) {
             this->setContrast(1);
@@ -440,4 +548,26 @@ public:
 
         OLED.display();
     }
+
+    void toggleSettings() {
+        this->settingsMenu = ! this->settingsMenu;
+        if ( this->settingsMenu ) {
+            this->displayMode = DISPLAY_SETTINGS_TRIP;
+            this->cursorPosition = 0;
+        }
+        else {
+            this->Speed->storeMemory();
+            this->resetDisplayMode();
+        }
+    }
+
+    bool isResetTripMenu() {
+        return this->displayMode == DISPLAY_SETTINGS_TRIP;
+    }
+
+    bool isSetTotalMenu() {
+        return this->displayMode == DISPLAY_SETTINGS_TOTAL;
+    }
+
+
 };

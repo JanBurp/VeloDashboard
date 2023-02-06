@@ -117,10 +117,23 @@ public:
         return this->Memory.tripDistance / 1000;
     }
 
+    void resetTripDistance() {
+        this->Memory.tripDistance = 0;
+    }
+
     unsigned long getTotalDistance()
     {
         return (int)this->Memory.totalDistance / 1000;
     }
+
+    void increaseTotal( int inc = 1 ) {
+        this->Memory.totalDistance += (inc * 1000.0);
+    }
+
+    void decreaseTotal(int inc = 1) {
+        this->increaseTotal( - inc );
+    }
+
 
     float getPrevDistance() {
         return this->Memory.prevDayDistance / 1000;
