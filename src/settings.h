@@ -13,18 +13,24 @@ typedef struct
     float circumference;
 } Wheel;
 
-Wheel Wheels[7] = {
-    {"23-406", 1.420},
-    {"28-406", 1.450}, // Schwalbe Marathon+
-    {"35-406", 1.510},
-    {"40-406", 1.540},
-    {"47-406", 1.580},
-    {"50-406", 1.600},
-    {"54-406", 1.620},
+// https://www.cateyeamerica.com/tire-size-calculator/
+Wheel Wheels[12] = {
+    {"23-406", 1.418},
+    {"25-406", 1.431},
+    {"26-406", 1.437},
+    {"28-406", 1.450},
+    {"30-406", 1.462},
+    {"32-406", 1.475}, // CCU
+    {"35-406", 1.494}, // Schwalbe Marathon+
+    {"38-406", 1.512},
+    {"40-406", 1.525},
+    {"44-406", 1.550},
+    {"50-406", 1.588},
+    {"56-406", 1.625},
 };
 
 // Change this for you're wheel
-unsigned int WheelNumber = 1;
+unsigned int WheelNumber = 6;
 
 #define BIKE_DISTANCE_START         8060
 
