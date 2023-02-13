@@ -154,44 +154,55 @@ void readButtons()
     if ( Dashboard.read() ) {
         IdleTimer.action();
 
-        if ( Dashboard.isIndicatorLeft() ) {
-            if ( Display.isSetTotalMenu() ) {
-                Display.move_cursor( 1 );
+        // LEFT - RIGHT
+        if ( Display.isSettingsMenu() ) {
+            if ( Dashboard.isIndicatorLeft() ) {
+                Display.moveCursor( 1 );
             }
-            else {
-                Indicators.setLeft();
+            if ( Dashboard.isIndicatorRight() ) {
+                Display.moveCursor( -1 );
             }
         }
-        if ( Dashboard.isIndicatorRight() ) {
-            if ( Display.isSetTotalMenu() ) {
-                Display.move_cursor( -1 );
+        else {
+            if ( Dashboard.isIndicatorLeft() ) {
+                Indicators.setLeft();
             }
-            else {
+            if ( Dashboard.isIndicatorRight() ) {
                 Indicators.setRight();
             }
         }
 
-        // Lights
-        if ( Dashboard.isLightsUp() )  {
-            if ( Display.isResetTripMenu() ) {
+        // UP - DOWN
+        if ( Display.isResetTripMenu() ) {
+            if ( Dashboard.isLightsUp() )  {
                 Speed.resetTripDistance();
             }
-            else if ( Display.isSetTotalMenu() ) {
+        }
+        else if ( Display.isSetTyreMenu() ) {
+            if ( Dashboard.isLightsUp() )  {
+                Speed.increaseCircumference( Display.cursorAmount() );
+            }
+            if ( Dashboard.isLightsDown() )  {
+                Speed.decreaseCircumference( Display.cursorAmount() );
+            }
+        }
+        else if ( Display.isSetTotalMenu() ) {
+            if ( Dashboard.isLightsUp() )  {
                 Speed.increaseTotal( Display.cursorAmount() );
             }
-            else {
+            if ( Dashboard.isLightsDown() )  {
+                Speed.decreaseTotal( Display.cursorAmount() );
+            }
+        }
+        else {
+            if ( Dashboard.isLightsUp() )  {
                 Display.setDisplayModeHome();
                 Lights.increaseLights();
                 if ( Dashboard.isLongPress() ) {
                     Lights.setFogLight();
                 }
             }
-        }
-        if ( Dashboard.isLightsDown() )  {
-            if ( Display.isSetTotalMenu() ) {
-                Speed.decreaseTotal( Display.cursorAmount() );
-            }
-            else {
+            if ( Dashboard.isLightsDown() )  {
                 Display.setDisplayModeHome();
                 Lights.decreaseLights();
                 if ( Dashboard.isLongPress() ) {

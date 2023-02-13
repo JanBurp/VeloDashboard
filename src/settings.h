@@ -14,7 +14,8 @@ typedef struct
 } Wheel;
 
 // https://www.cateyeamerica.com/tire-size-calculator/
-Wheel Wheels[12] = {
+#define NR_ETRTO_WHEELS 12
+Wheel Wheels[NR_ETRTO_WHEELS] = {
     {"23-406", 1.418},
     {"25-406", 1.431},
     {"26-406", 1.437},
@@ -28,9 +29,6 @@ Wheel Wheels[12] = {
     {"50-406", 1.588},
     {"56-406", 1.625},
 };
-
-// Change this for you're wheel
-unsigned int WheelNumber = 6;
 
 #define BIKE_DISTANCE_START         8060
 

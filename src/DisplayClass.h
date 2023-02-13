@@ -71,6 +71,7 @@ public:
 
     void nextDisplayMode()
     {
+        this->resetCursor();
         this->displayMode++;
         if ( this->settingsMenu ) {
             if ( this->displayMode > this->lastSettingsMode )
@@ -83,15 +84,6 @@ public:
             {
                 this->displayMode = this->firstMode;
             }
-        }
-    }
-
-    void prevDisplayMode()
-    {
-        this->displayMode--;
-        if (this->displayMode < this->firstMode)
-        {
-            this->displayMode = this->firstMode;
         }
     }
 
@@ -420,10 +412,26 @@ public:
         this->show_mode( mode, 3, true);
     }
 
-    void move_cursor( int inc ) {
+    void moveCursor( int inc ) {
         this->cursorPosition += inc;
+        int maxCursorPosition = 4;
+        if ( this->displayMode == DISPLAY_SETTINGS_TOTAL ) {
+            if ( Speed->getTotalDistance() > 10000 ) {
+                maxCursorPosition = 5;
+            }
+            if ( Speed->getTotalDistance() > 100000 ) {
+                maxCursorPosition = 6;
+            }
+            if ( Speed->getTotalDistance() > 1000000 ) {
+                maxCursorPosition = 7;
+            }
+        }
         if ( this->cursorPosition < 0 ) this->cursorPosition = 0;
-        if ( this->cursorPosition > 5 ) this->cursorPosition = 5;
+        if ( this->cursorPosition > maxCursorPosition ) this->cursorPosition = maxCursorPosition;
+    }
+
+    void resetCursor() {
+        this->cursorPosition = 0;
     }
 
     int cursorAmount() {
@@ -449,7 +457,7 @@ public:
         return amount;
     }
 
-    void show_cursor() {
+    void showCursor() {
         int w = 18;
         int h = 4;
         int x = SCREEN_WIDTH - 1 - this->cursorPosition * w;
@@ -469,12 +477,15 @@ public:
     void showTotalEdit() {
         int Odo = this->Speed->getTotalDistance();
         this->show_item_float(1,"ME","% 6.0f",Odo);
-        this->show_cursor();
+        this->showCursor();
         this->show_item_string(2,"LEFT/RIGHT - UP/DOWN","");
     }
 
     void showTyreEdit() {
-        this->show_item_float(1,"Tyre mm", "% 6.0f", Wheels[WheelNumber].circumference * 1000 );
+        int wheelNr = this->Speed->getClosestETRTO();
+        this->show_item_float(1,Wheels[wheelNr].name, "% 6.0f", this->Speed->getWheelCircumference() * 1000 );
+        this->showCursor();
+        this->show_item_string(2,"LEFT/RIGHT - UP/DOWN","");
     }
 
     void show()
@@ -561,8 +572,16 @@ public:
         }
     }
 
+    bool isSettingsMenu() {
+        return this->displayMode >= DISPLAY_SETTINGS_TRIP;
+    }
+
     bool isResetTripMenu() {
         return this->displayMode == DISPLAY_SETTINGS_TRIP;
+    }
+
+    bool isSetTyreMenu() {
+        return this->displayMode == DISPLAY_SETTINGS_TYRE;
     }
 
     bool isSetTotalMenu() {
