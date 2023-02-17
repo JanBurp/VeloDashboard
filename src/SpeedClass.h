@@ -31,8 +31,6 @@ private:
     float maxSpeed = 0.0;
     float avgSpeed = 0.0;
 
-    float circumference = Wheels[WheelNumber].circumference;
-
 public:
     void init()
     {
@@ -82,6 +80,76 @@ public:
         return this->SpeedSensor;
     }
 
+    void setWheelCircumference(float circumference) {
+        this->Memory.wheelCircumference = circumference;
+    }
+
+    float getWheelCircumference() {
+        return this->Memory.wheelCircumference;
+    }
+
+    unsigned int getClosestETRTO() {
+        int closest = 0;
+        for (size_t i = 1; i < NR_ETRTO_WHEELS; i++)
+        {
+            float diffLower = Wheels[i-1].circumference - this->Memory.wheelCircumference;
+            float diffHigher = Wheels[i].circumference - this->Memory.wheelCircumference;
+            if (diffLower <= 0 && diffHigher >= 0) {
+                if ( -diffLower < diffHigher ) {
+                    closest = i-1;
+                }
+                else {
+                    closest = i;
+                }
+            }
+            // if ( DEBUG ) {
+            //     Serial.print("i:\t");
+            //     Serial.print(i);
+            //     Serial.print("\tSet = ");
+            //     Serial.print(this->Memory.wheelCircumference);
+            //     Serial.print("\tWheel< : ");
+            //     Serial.print(Wheels[i-1].circumference);
+            //     Serial.print("\tWheel> : ");
+            //     Serial.print(Wheels[i].circumference);
+            //     Serial.print("\tdiffL : ");
+            //     Serial.print(diffLower);
+            //     Serial.print("\tdiffH : ");
+            //     Serial.print(diffHigher);
+            //     Serial.print("\t= : ");
+            //     Serial.print(closest);
+            //     Serial.println();
+            // }
+        }
+        return closest;
+    }
+
+    void increaseCircumference( int inc = 1 ) {
+        if ( inc > 1000 || inc < -1000 ) {
+            int wheelnr =  this->getClosestETRTO();
+            if ( inc > 1000 ) {
+                wheelnr++;
+            }
+            if ( inc < -1000 ) {
+                wheelnr--;
+            }
+            if ( wheelnr > NR_ETRTO_WHEELS ) {
+                wheelnr = NR_ETRTO_WHEELS;
+            }
+            if ( wheelnr < 0 ) {
+                wheelnr = 0;
+            }
+            this->Memory.wheelCircumference = Wheels[wheelnr].circumference;
+        }
+        else {
+            this->Memory.wheelCircumference += (inc / 1000.0);
+        }
+    }
+
+    void decreaseCircumference(int inc = 1) {
+        this->increaseCircumference( - inc );
+    }
+
+
     float getSpeed()
     {
         return this->speed;
@@ -117,9 +185,21 @@ public:
         return this->Memory.tripDistance / 1000;
     }
 
+    void resetTripDistance() {
+        this->Memory.tripDistance = 0;
+    }
+
     unsigned long getTotalDistance()
     {
         return (int)this->Memory.totalDistance / 1000;
+    }
+
+    void increaseTotal( int inc = 1 ) {
+        this->Memory.totalDistance += (inc * 1000.0);
+    }
+
+    void decreaseTotal(int inc = 1) {
+        this->increaseTotal( - inc );
     }
 
     float getPrevDistance() {
@@ -133,8 +213,6 @@ public:
     float getPrevMaxSpeed() {
         return this->Memory.prevDayMaxSpeed;
     }
-
-
 
     unsigned long getTripTime()
     {
@@ -168,7 +246,7 @@ public:
             {
                 totalSensorTime += this->sensorTimesMs[i];
                 this->sensorTimesMs[i] = 0;
-                movedDistance += this->circumference;
+                movedDistance += this->Memory.wheelCircumference;
             }
             else
             {
@@ -202,13 +280,13 @@ public:
                 if (buffLength > 0 && totalSensorTime > 0)
                 {
                     avgSensorTime = totalSensorTime / buffLength;
-                    float Speed_meter_sec = this->circumference / (avgSensorTime / 1000.0);
+                    float Speed_meter_sec = this->Memory.wheelCircumference / (avgSensorTime / 1000.0);
                     this->speed = Speed_meter_sec * 3.6;
                 }
             }
 
             if ( DEBUG ) {
-                Serial.print("\Speed:\t");
+                Serial.print("Speed:\t");
                 Serial.print(this->speed);
                 Serial.print("\tBuffer");
                 Serial.print(buffLength);
@@ -261,7 +339,6 @@ public:
         this->Memory.dayTimeMovedSecs = this->startTimeMs / 1000;
         this->Memory.dayAverageSpeed = this->avgSpeed;
         this->Memory.dayMaxSpeed = this->maxSpeed;
-        this->Memory.wheelCircumference = this->circumference;
         EEPROM.put(MEM_ADDRESS, this->Memory);
         EEPROM.put(ODO_ADDRESS, this->Memory.totalDistance);
     }

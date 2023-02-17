@@ -13,18 +13,22 @@ typedef struct
     float circumference;
 } Wheel;
 
-Wheel Wheels[7] = {
-    {"23-406", 1.420},
-    {"28-406", 1.450}, // Schwalbe Marathon+
-    {"35-406", 1.510},
-    {"40-406", 1.540},
-    {"47-406", 1.580},
-    {"50-406", 1.600},
-    {"54-406", 1.620},
+// https://www.cateyeamerica.com/tire-size-calculator/
+#define NR_ETRTO_WHEELS 12
+Wheel Wheels[NR_ETRTO_WHEELS] = {
+    {"23-406", 1.418},
+    {"25-406", 1.431},
+    {"26-406", 1.437},
+    {"28-406", 1.450},
+    {"30-406", 1.462},
+    {"32-406", 1.475}, // CCU
+    {"35-406", 1.494}, // Schwalbe Marathon+
+    {"38-406", 1.512},
+    {"40-406", 1.525},
+    {"44-406", 1.550},
+    {"50-406", 1.588},
+    {"56-406", 1.625},
 };
-
-// Change this for you're wheel
-unsigned int WheelNumber = 1;
 
 #define BIKE_DISTANCE_START         8060
 
@@ -98,10 +102,16 @@ typedef struct {
  */
 #define DISPLAY_WELCOME     0
 #define DISPLAY_HOME        1
-#define DISPLAY_DISTANCE    2
+#define DISPLAY_TODAY       2
 #define DISPLAY_SPEEDS      3
-#define DISPLAY_PREV        4  // Not used yet (change to 4, and TOTALS to 5)
-#define DISPLAY_TOTALS      5
+#define DISPLAY_TIME        4
+#define DISPLAY_PREV_DIST   5
+#define DISPLAY_PREV_SPEED  6
+#define DISPLAY_TOTALS      7
+
+#define DISPLAY_SETTINGS_TRIP   10
+#define DISPLAY_SETTINGS_TYRE   11
+#define DISPLAY_SETTINGS_TOTAL  12
 
 /*
   LED STRIPS

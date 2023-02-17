@@ -154,33 +154,60 @@ void readButtons()
     if ( Dashboard.read() ) {
         IdleTimer.action();
 
-        // if ( DEBUG ) {
-        //     Serial.print("\tDashboard:\t");
-        //     Serial.print(Dashboard.getFunction());
-        //     Serial.println();
-        // }
-
-
-        if ( Dashboard.isIndicatorLeft() ) {
-            Indicators.setLeft();
-        }
-        if ( Dashboard.isIndicatorRight() ) {
-            Indicators.setRight();
-        }
-
-        // Lights
-        if ( Dashboard.isLightsUp() )  {
-            Display.setDisplayModeHome();
-            Lights.increaseLights();
-            if ( Dashboard.isLongPress() ) {
-                Lights.setFogLight();
+        // LEFT - RIGHT
+        if ( Display.isSettingsMenu() ) {
+            if ( Dashboard.isIndicatorLeft() ) {
+                Display.moveCursor( 1 );
+            }
+            if ( Dashboard.isIndicatorRight() ) {
+                Display.moveCursor( -1 );
             }
         }
-        if ( Dashboard.isLightsDown() )  {
-            Display.setDisplayModeHome();
-            Lights.decreaseLights();
-            if ( Dashboard.isLongPress() ) {
-                Lights.resetLights();
+        else {
+            if ( Dashboard.isIndicatorLeft() ) {
+                Indicators.setLeft();
+            }
+            if ( Dashboard.isIndicatorRight() ) {
+                Indicators.setRight();
+            }
+        }
+
+        // UP - DOWN
+        if ( Display.isResetTripMenu() ) {
+            if ( Dashboard.isLightsUp() )  {
+                Speed.resetTripDistance();
+            }
+        }
+        else if ( Display.isSetTyreMenu() ) {
+            if ( Dashboard.isLightsUp() )  {
+                Speed.increaseCircumference( Display.cursorAmount() );
+            }
+            if ( Dashboard.isLightsDown() )  {
+                Speed.decreaseCircumference( Display.cursorAmount() );
+            }
+        }
+        else if ( Display.isSetTotalMenu() ) {
+            if ( Dashboard.isLightsUp() )  {
+                Speed.increaseTotal( Display.cursorAmount() );
+            }
+            if ( Dashboard.isLightsDown() )  {
+                Speed.decreaseTotal( Display.cursorAmount() );
+            }
+        }
+        else {
+            if ( Dashboard.isLightsUp() )  {
+                Display.setDisplayModeHome();
+                Lights.increaseLights();
+                if ( Dashboard.isLongPress() ) {
+                    Lights.setFogLight();
+                }
+            }
+            if ( Dashboard.isLightsDown() )  {
+                Display.setDisplayModeHome();
+                Lights.decreaseLights();
+                if ( Dashboard.isLongPress() ) {
+                    Lights.resetLights();
+                }
             }
         }
 
@@ -188,9 +215,9 @@ void readButtons()
         if (Dashboard.isDisplay()) {
             Display.nextDisplayMode();
         }
-        // if ( Dashboard.isDisplay() && Dashboard.isLongPress() ) {
-        //     Display.setDisplayModeHome();
-        // }
+        if ( Dashboard.isDisplay() && Dashboard.isLongPress() ) {
+            Display.toggleSettings();
+        }
 
     }
 

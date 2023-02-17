@@ -117,12 +117,6 @@ class DashboardClass {
                 this->indicator = 1;
             }
 
-            // if ( DEBUG && this->function!=-1 ) {
-            //     Serial.print("\tFUNCTION:\t");
-            //     Serial.print(this->function);
-            //     Serial.println();
-            // }
-
             return true;
         }
 
