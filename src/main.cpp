@@ -116,7 +116,8 @@ void setup()
 
     // Horn
     pinMode(PIN_HORN, OUTPUT);
-    analogWrite(PIN_HORN, 0);
+    digitalWrite(PIN_HORN,LOW);
+    // analogWrite(PIN_HORN, 0);
 
     Speed.init();
     Indicators.init();
@@ -251,11 +252,13 @@ void updateHorn()
     if (Lights.getHorn())
     {
         IdleTimer.action();
-        analogWrite(PIN_HORN, HORN_LOUDNESS);
+        digitalWrite(PIN_HORN,HIGH);
+        // analogWrite(PIN_HORN, HORN_LOUDNESS);
     }
     else
     {
-        analogWrite(PIN_HORN, 0);
+        digitalWrite(PIN_HORN,LOW);
+        // analogWrite(PIN_HORN, 0);
     }
 
 }
