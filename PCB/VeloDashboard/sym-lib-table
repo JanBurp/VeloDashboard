@@ -3,4 +3,5 @@
   (lib (name "VeloDashboard-rescue")(type "KiCad")(uri "${KIPRJMOD}/VeloDashboard-rescue.kicad_sym")(options "")(descr ""))
   (lib (name "LDD-700L")(type "Legacy")(uri "/Users/jan/Desktop/Quest/BurPuter/Arduino/VeloDashboard/PCB/Libraries/LDD-700L/LDD-700L.lib")(options "")(descr ""))
   (lib (name "dk_Display-Modules-LCD-OLED-Graphic")(type "Legacy")(uri "/Users/jan/Desktop/Quest/BurPuter/Arduino/VeloDashboard/PCB/Libraries/digikey-kicad-library-master/digikey-symbols/dk_Display-Modules-LCD-OLED-Graphic.lib")(options "")(descr ""))
+  (lib (name "IRF520")(type "Legacy")(uri "/Users/jan/Desktop/Quest/BurPuter/Arduino/VeloDashboard/PCB/Libraries/IRF520/KiCad/IRF520.lib")(options "")(descr ""))
 )

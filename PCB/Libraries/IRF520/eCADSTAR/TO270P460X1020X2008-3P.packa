@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "IRF520"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2018-06-06-11:10:45)
+    (mountForm default
+        (footprintRef "TO270P460X1020X2008-3P")
+        (spec "System")
+    )
+)
