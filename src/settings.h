@@ -106,8 +106,8 @@ typedef struct {
 #define DISPLAY_SPEEDS      3
 #define DISPLAY_TIME        4
 #define DISPLAY_PREV_DIST   5
-#define DISPLAY_PREV_SPEED  6
-#define DISPLAY_TOTALS      7
+// #define DISPLAY_PREV_SPEED  6
+#define DISPLAY_TOTALS      6
 
 #define DISPLAY_SETTINGS_TRIP   10
 #define DISPLAY_SETTINGS_TYRE   11
