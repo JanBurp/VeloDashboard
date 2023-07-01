@@ -371,17 +371,17 @@ public:
     }
 
     void show_item_time(int row, const char label[], unsigned long millis ) {
-        char timeStr[7];
+        char timeStr[8];
         unsigned long secs = millis / 1000;
         unsigned int minutes = secs / 60;
         if (minutes > 59) {
             unsigned int hours = secs / 3600;
-            minutes = secs % 3600;
-            snprintf(timeStr, 7, " % 2u.%02u", hours, minutes);
+            minutes = minutes % 60;
+            snprintf(timeStr, 8, " %2dh%02d", hours, minutes);
         }
         else {
             unsigned int seconds = secs % 60;
-            snprintf(timeStr, 7, " % 2u:%02u", minutes, seconds);
+            snprintf(timeStr, 8, " %2d:%02d", minutes, seconds);
         }
         this->show_item_string(row,label,timeStr);
     }
