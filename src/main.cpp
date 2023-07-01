@@ -274,7 +274,6 @@ void loop()
     readButtons();
     updateBuzzer();
     updateHorn();
-    Battery.loop();
 
     if ( IdleTimer.ended() ) {
         Speed.storeMemory();
@@ -296,6 +295,10 @@ void loop()
     else {
         LEDstrips.loop();
         Display.show();
+    }
+
+    if ( ! Lights.getHorn() ) {
+        Battery.loop();
     }
 
 }

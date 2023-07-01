@@ -64,11 +64,11 @@ class DashboardClass {
 
 			int value = analogRead(this->pin);
 
-            if ( DEBUG && value<1000 ) {
-                Serial.print("\tValue:\t");
-                Serial.print(value);
-                Serial.println();
-            }
+            // if ( DEBUG && value<1000 ) {
+            //     Serial.print("\tValue:\t");
+            //     Serial.print(value);
+            //     Serial.println();
+            // }
 
             int func = -1;
             for (int i = 0; i < 10; i++) {
@@ -117,11 +117,11 @@ class DashboardClass {
                 this->indicator = 1;
             }
 
-            if ( DEBUG && this->function>=0 ) {
-                Serial.print("\tFuntion:\t");
-                Serial.print(this->function);
-                Serial.println();
-            }
+            // if ( DEBUG && this->function>=0 ) {
+            //     Serial.print("\tFuntion:\t");
+            //     Serial.print(this->function);
+            //     Serial.println();
+            // }
 
             return true;
         }
