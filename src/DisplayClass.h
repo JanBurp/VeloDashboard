@@ -55,7 +55,6 @@ public:
                 ;
             }
         }
-        this->setContrast(128);
         OLED.clearDisplay();
         OLED.setTextColor(WHITE);
     }
@@ -343,13 +342,7 @@ public:
         OLED.clearDisplay();
         this->setDisplayModeHome();
         this->show_battery(true);
-        this->setContrast(1);
         OLED.display();
-    }
-
-    void setContrast(byte contrast) {
-        OLED.ssd1306_command(SSD1306_SETCONTRAST);
-        OLED.ssd1306_command(contrast);
     }
 
     void show_item_string(int row, const char label[], const char value[] ) {
@@ -554,14 +547,6 @@ public:
                     this->show_totals();
                     break;
             }
-        }
-
-
-        if ( this->Battery->isVeryLow() || this->Lights->getLights() >= LIGHTS_NORMAL ) {
-            this->setContrast(1);
-        }
-        else {
-            this->setContrast(128);
         }
 
         OLED.display();
