@@ -48,21 +48,21 @@ public:
         // this->Memory.tripDistance = 0.0;
         // this->Memory.dayDistance = 0.0;
 
-        if ( DEBUG ) {
-            Serial.print("\tDay:\t");
-            Serial.print(time.Day);
-            Serial.print("\tMonth:\t");
-            Serial.print(time.Month);
-            // Serial.print("\tYear:\t");
-            // Serial.print(time.Year);
-            Serial.print("\t\tToday:\t");
-            Serial.print(day());
-            Serial.print("\tMonth:\t");
-            Serial.print(month());
-            // Serial.print("\tYear:\t");
-            // Serial.print(year());
-            Serial.println();
-        }
+        // if ( DEBUG ) {
+        //     Serial.print("\tDay:\t");
+        //     Serial.print(time.Day);
+        //     Serial.print("\tMonth:\t");
+        //     Serial.print(time.Month);
+        //     // Serial.print("\tYear:\t");
+        //     // Serial.print(time.Year);
+        //     Serial.print("\t\tToday:\t");
+        //     Serial.print(day());
+        //     Serial.print("\tMonth:\t");
+        //     Serial.print(month());
+        //     // Serial.print("\tYear:\t");
+        //     // Serial.print(year());
+        //     Serial.println();
+        // }
     }
 
     bool isStarted()
@@ -285,13 +285,13 @@ public:
                 }
             }
 
-            if ( DEBUG ) {
-                Serial.print("Speed:\t");
-                Serial.print(this->speed);
-                Serial.print("\tBuffer");
-                Serial.print(buffLength);
-                Serial.println();
-            }
+            // if ( DEBUG ) {
+            //     Serial.print("Speed:\t");
+            //     Serial.print(this->speed);
+            //     Serial.print("\tBuffer");
+            //     Serial.print(buffLength);
+            //     Serial.println();
+            // }
 
             // Calc AVG & MAX
             this->avgSpeed = this->distance / (this->tripTimeMs / 1000.0) * 3.6;
