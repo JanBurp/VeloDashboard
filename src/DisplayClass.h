@@ -302,19 +302,19 @@ public:
             format = "% 6.1f";
         }
         this->show_item_float(1,"DIST",format,this->Speed->getDistance() );
-        this->show_item_float(2,"TODAY",format,this->Speed->getDayDistance() );
+        this->show_item_float(2,"DAY",format,this->Speed->getDayDistance() );
     }
 
     void show_today_speeds()
     {
-        this->show_item_float(1,"AVG km/u","% 6.1f", this->Speed->getAvgSpeed());
-        this->show_item_float(2,"MAX km/u","% 6.1f", this->Speed->getMaxSpeed());
+        this->show_item_float(1,"AVG","% 6.1f", this->Speed->getAvgSpeed());
+        this->show_item_float(2,"MAX","% 6.1f", this->Speed->getMaxSpeed());
     }
 
     void show_today_time()
     {
-        this->show_item_time(1,"DRIVE", this->Speed->getTripTime());
-        this->show_item_time(2,"TOTAL", this->Speed->getTotalTime());
+        this->show_item_time(1,"TIME", this->Speed->getTripTime());
+        this->show_item_time(2,"PLUS", this->Speed->getTotalTime());
     }
 
     void show_prev_dist() {
@@ -327,8 +327,8 @@ public:
     }
 
     void show_prev_speed() {
-        this->show_item_float(1,"AVG km/u","% 6.1f", this->Speed->getPrevAvgSpeed());
-        this->show_item_float(2,"MAX km/u","% 6.1f", this->Speed->getPrevMaxSpeed());
+        this->show_item_float(1,"AVG","% 6.1f", this->Speed->getPrevAvgSpeed());
+        this->show_item_float(2,"MAX","% 6.1f", this->Speed->getPrevMaxSpeed());
     }
 
 
@@ -336,7 +336,7 @@ public:
         int Odo = this->Speed->getTotalDistance();
         int Quest = Odo + BIKE_DISTANCE_START;
         this->show_item_float(1,"ME","% 6.0f",Odo);
-        this->show_item_float(2,"BIKE","% 6.0f",Quest);
+        this->show_item_float(2,"Q","% 6.0f",Quest);
     }
 
     void off() {
@@ -355,7 +355,7 @@ public:
     void show_item_string(int row, const char label[], const char value[] ) {
         int xl = 0;
         int xv = SCREEN_HALF_WIDTH - 44;
-        int y = 14 + (row-1) * (SCREEN_HALF_HEIGHT-3);
+        int y = 16 + (row-1) * (SCREEN_HALF_HEIGHT-5);
         OLED.setTextSize(1);
         OLED.setCursor(xl, y+13);
         OLED.print(label);
@@ -403,12 +403,12 @@ public:
         int x = currentMode * (SCREEN_WIDTH / width);
         int y = 0;
         int w = SCREEN_WIDTH / width + 5;
-        int h = 9;
-        int tx = x+2;
+        int h = 14;
+        int tx = x+3;
 
         OLED.fillRect(x,y,w,h,menuColor);
         OLED.drawLine(0,y+h-1,SCREEN_WIDTH,y+h-1,menuColor);
-        OLED.setCursor(tx,y+1);
+        OLED.setCursor(tx,y+3);
         OLED.setTextSize(1);
         OLED.setTextColor(menuTextColor);
         OLED.print(mode);
