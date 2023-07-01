@@ -116,7 +116,8 @@ void setup()
 
     // Horn
     pinMode(PIN_HORN, OUTPUT);
-    analogWrite(PIN_HORN, 0);
+    digitalWrite(PIN_HORN,LOW);
+    // analogWrite(PIN_HORN, 0);
 
     Speed.init();
     Indicators.init();
@@ -251,11 +252,13 @@ void updateHorn()
     if (Lights.getHorn())
     {
         IdleTimer.action();
-        analogWrite(PIN_HORN, HORN_LOUDNESS);
+        digitalWrite(PIN_HORN,HIGH);
+        // analogWrite(PIN_HORN, HORN_LOUDNESS);
     }
     else
     {
-        analogWrite(PIN_HORN, 0);
+        digitalWrite(PIN_HORN,LOW);
+        // analogWrite(PIN_HORN, 0);
     }
 
 }
@@ -271,7 +274,6 @@ void loop()
     readButtons();
     updateBuzzer();
     updateHorn();
-    Battery.loop();
 
     if ( IdleTimer.ended() ) {
         Speed.storeMemory();
@@ -293,6 +295,10 @@ void loop()
     else {
         LEDstrips.loop();
         Display.show();
+    }
+
+    if ( ! Lights.getHorn() ) {
+        Battery.loop();
     }
 
 }

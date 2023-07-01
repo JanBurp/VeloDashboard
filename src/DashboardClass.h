@@ -23,8 +23,8 @@ struct DashboardButton {
 
 DashboardButton Buttons[10] = {
     { 0,    99, FN_BRAKE },
-    { 100, 225, FN_HORN },                      // 178
-    { 250, 350, FN_DISPLAY },                   // 301
+    { 100, 284, FN_HORN },                      // 178
+    { 285, 350, FN_DISPLAY },                   // 301
     { 370, 470, FN_RIGHT },                     // 426
     { 475, 600, FN_LEFT },                      // 550
     { 625, 750, FN_DOWN },                      // 707
@@ -64,7 +64,7 @@ class DashboardClass {
 
 			int value = analogRead(this->pin);
 
-            // if ( DEBUG ) {
+            // if ( DEBUG && value<1000 ) {
             //     Serial.print("\tValue:\t");
             //     Serial.print(value);
             //     Serial.println();
@@ -116,6 +116,12 @@ class DashboardClass {
             if ( this->function == FN_RIGHT ) {
                 this->indicator = 1;
             }
+
+            // if ( DEBUG && this->function>=0 ) {
+            //     Serial.print("\tFuntion:\t");
+            //     Serial.print(this->function);
+            //     Serial.println();
+            // }
 
             return true;
         }
