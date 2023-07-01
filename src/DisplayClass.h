@@ -386,7 +386,7 @@ public:
         this->show_item_string(row,label,timeStr);
     }
 
-    void show_mode(const char mode[], int width = 6, bool inverse = false ) {
+    void show_mode(const char mode[], int width = 5, bool inverse = false ) {
         CRGB menuColor = WHITE;
         CRGB menuTextColor = BLACK;
         CRGB textColor = WHITE;
