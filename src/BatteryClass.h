@@ -92,14 +92,14 @@ public:
                 Serial.print(meanValue);
                 Serial.print("\tmV:");
                 Serial.print(battery_mv);
-                Serial.print("\tCells:");
-                Serial.print(NUM_CELLS);
+                // Serial.print("\tCells:");
+                // Serial.print(NUM_CELLS);
                 Serial.print("\tmV:");
                 Serial.print(this->cell_mv);
                 Serial.print("\t%:");
                 Serial.print(this->percentage);
-                Serial.print("\ttmDead:");
-                Serial.print(this->timeDead);
+                // Serial.print("\ttmDead:");
+                // Serial.print(this->timeDead);
                 Serial.println();
             }
 
