@@ -36,7 +36,7 @@ public:
         pinMode(this->pinPower, OUTPUT);
         digitalWrite(this->pinPower,LOW);
         this->cell_mv = 0;
-        this->percentage = 0;
+        this->percentage = 100;
         this->timeMeasurement = millis();
         this->timeDead = 0;
         this->v_counter = 0;
@@ -98,8 +98,8 @@ public:
                 Serial.print(this->cell_mv);
                 Serial.print("\t%:");
                 Serial.print(this->percentage);
-                // Serial.print("\ttmDead:");
-                // Serial.print(this->timeDead);
+                Serial.print("\ttmDead:");
+                Serial.print(this->timeDead);
                 Serial.println();
             }
 
