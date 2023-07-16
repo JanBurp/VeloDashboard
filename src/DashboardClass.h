@@ -126,6 +126,14 @@ class DashboardClass {
             return true;
         }
 
+        bool waitForButtonPress() {
+            while ( !this->read() ) {
+                ;
+            }
+            return true;
+        }
+
+
         int getFunction() {
             return this->function;
         }
@@ -161,6 +169,5 @@ class DashboardClass {
         bool isBrake() {
             return ( this->function == FN_BRAKE );
         }
-
 
 };

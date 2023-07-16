@@ -28,6 +28,7 @@ private:
     int firstSettingsMode = DISPLAY_SETTINGS_TRIP;
     int lastSettingsMode = DISPLAY_SETTINGS_TOTAL;
     bool settingsMenu = false;
+    bool startupQuestion = false;
     int cursorPosition = 0;
 
     SpeedClass *Speed;
@@ -91,11 +92,24 @@ public:
         this->displayMode = DISPLAY_HOME;
     }
 
+    void askStartupQuestion() {
+        this->startupQuestion = true;
+    }
+
     void show_welcome()
     {
         OLED.setTextSize(2);
         OLED.setCursor(0, 0);
         OLED.print("Quest 631");
+        OLED.drawLine(0,20,SCREEN_WIDTH,20,WHITE);
+
+        if (this->startupQuestion) {
+            OLED.setTextSize(1);
+            OLED.setCursor(0,SCREEN_HALF_HEIGHT);
+            OLED.print("Keep distance?");
+            OLED.setCursor(0,SCREEN_HALF_HEIGHT+20);
+            OLED.print("YES => Press UP");
+        }
     }
 
     void show_speed()

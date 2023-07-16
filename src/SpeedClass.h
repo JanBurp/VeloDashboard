@@ -36,17 +36,19 @@ public:
     {
         this->Memory = this->readMemory();
 
-        // Reset Day counter?
-        TimeElements time;
-        breakTime( this->Memory.timestamp, time );
-        if ( time.Day != day() || time.Month != month() ) {
-            this->Memory.prevDayDistance = this->Memory.dayDistance;
-            this->Memory.prevDayAverage = this->Memory.dayAverageSpeed;
-            this->Memory.prevDayMaxSpeed = this->Memory.dayMaxSpeed;
-            this->Memory.dayDistance = 0.0;
-        }
-        // this->Memory.tripDistance = 0.0;
-        // this->Memory.dayDistance = 0.0;
+        // // Reset Day counter?
+        // if ( this->IsNewDay() ) {
+        //     this->Memory.prevDayDistance = this->Memory.dayDistance;
+        //     this->Memory.prevDayAverage = this->Memory.dayAverageSpeed;
+        //     this->Memory.prevDayMaxSpeed = this->Memory.dayMaxSpeed;
+        //     this->Memory.dayDistance = 0.0;
+        // }
+        // else {
+        //     this->tripTimeMs = this->Memory.dayTimeMovedSecs * 1000;
+        //     this->distance = this->Memory.dayDistance;
+        //     this->avgSpeed = this->Memory.dayAverageSpeed;
+        //     this->maxSpeed = this->Memory.dayMaxSpeed;
+        // }
 
         // if ( DEBUG ) {
         //     Serial.print("\tDay:\t");
@@ -63,6 +65,30 @@ public:
         //     // Serial.print(year());
         //     Serial.println();
         // }
+    }
+
+    void resetDay() {
+        this->Memory.prevDayDistance = this->Memory.dayDistance;
+        this->Memory.prevDayAverage = this->Memory.dayAverageSpeed;
+        this->Memory.prevDayMaxSpeed = this->Memory.dayMaxSpeed;
+        this->Memory.dayDistance = 0.0;
+    }
+
+    void resetDistance() {
+        this->distance = 0.0;
+    }
+
+    void continueDay() {
+        this->tripTimeMs = this->Memory.dayTimeMovedSecs * 1000;
+        this->distance = this->Memory.dayDistance;
+        this->avgSpeed = this->Memory.dayAverageSpeed;
+        this->maxSpeed = this->Memory.dayMaxSpeed;
+    }
+
+    bool IsNewDay() {
+        TimeElements time;
+        breakTime( this->Memory.timestamp, time );
+        return ( time.Day != day() || time.Month != month() );
     }
 
     bool isStarted()
@@ -336,7 +362,7 @@ public:
     void storeMemory()
     {
         this->Memory.timestamp = now();
-        this->Memory.dayTimeMovedSecs = this->startTimeMs / 1000;
+        this->Memory.dayTimeMovedSecs = this->tripTimeMs / 1000;
         this->Memory.dayAverageSpeed = this->avgSpeed;
         this->Memory.dayMaxSpeed = this->maxSpeed;
         EEPROM.put(MEM_ADDRESS, this->Memory);
