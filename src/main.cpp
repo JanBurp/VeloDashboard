@@ -132,6 +132,21 @@ void setup()
         LEDstrips.startup_animation();
     }
 
+    if ( ! Speed.IsNewDay() ) {
+        Display.askStartupQuestion();
+        Display.show();
+        Dashboard.waitForButtonPress();
+        if ( Dashboard.isLightsUp() ) {
+            Speed.continueDay();
+        }
+        else {
+            Speed.resetDistance();
+        }
+    }
+    else {
+        Speed.resetDay();
+    }
+
     Display.setDisplayMode(DISPLAY_HOME);
     Display.show();
 
