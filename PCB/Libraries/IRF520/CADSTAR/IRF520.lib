@@ -1,0 +1,16 @@
+.IRF520 :1 ;MOSFET N-Ch 100 Volt 10 Amp
+TO270P460X1020X2008-3P
+*STM Q
+*NGS
+*PLB 1="G" 2="D" 3="S"
+*MXP 3
+*DFN IRF520
+~!Mouser Part Number (511-IRF520)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/STMicroelectronics/IRF520?qs=%2FcnINApUglMqLk371v6AuA%3D%3D)
+~!Manufacturer_Name (STMicroelectronics)
+~!Manufacturer_Part_Number (IRF520)
+~!Link Datasheet (-)
+~!Height (4.6mm)
+~!3D_Model (IRF520)
+IRF520
+1.1!U 2.1!U 3.1!U 
