@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG false // [default = false] - set to true for Serial output
+#define DEBUG true // [default = false] - set to true for Serial output
 #define TEST true   // [default = false] - set to true for local test environment
 
 /*
@@ -14,7 +14,7 @@ typedef struct
 } Wheel;
 
 // https://www.cateyeamerica.com/tire-size-calculator/
-#define NR_ETRTO_WHEELS 12
+#define NR_ETRTO_WHEELS 13
 Wheel Wheels[NR_ETRTO_WHEELS] = {
     {"23-406", 1.418},
     {"25-406", 1.431},

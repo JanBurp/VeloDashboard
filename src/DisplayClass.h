@@ -238,6 +238,12 @@ public:
             int juiceHeight = (h - innerpad * 2) * (percentage/100.0);
             OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight), x + w - 2 * innerpad, juiceHeight, WHITE);
 
+            OLED.drawLine( x + innerpad, y + 2 + innerpad + h/4, x + w - innerpad, y + 2 + innerpad + h/4, BLACK);
+            OLED.drawLine( x + innerpad, y + 1 + innerpad + h/2, x + w - innerpad, y + 1 + innerpad + h/2, BLACK);
+            OLED.drawLine( x + innerpad, y + 2 + innerpad + h/4*3, x + w - innerpad, y + 2 + innerpad + h/4*3, BLACK);
+
+
+
             // print cell voltage
             int cellMilliV = this->Battery->getCellVoltage();
             int cellV = cellMilliV / 1000;
@@ -255,8 +261,8 @@ public:
             // print percentage
             OLED.setCursor(x + w + 5, y + toppad + 15);
             OLED.setTextSize(1);
-            char percStr[4];
-            snprintf(percStr, 4, "%02i%%", percentage);
+            char percStr[5];
+            snprintf(percStr, 5, "%-3i%%", percentage);
             OLED.print(percStr);
         }
         else {
@@ -264,6 +270,8 @@ public:
             OLED.setTextSize(3);
             OLED.print(this->Battery->secondsUntilPowerOff());
         }
+
+
     }
 
     void show_lights()
