@@ -175,6 +175,30 @@ public:
         this->increaseCircumference( - inc );
     }
 
+    void increaseClock( int inc = 1 ) {
+        if (inc == 1) {
+            setTime( hour(), minute() + 1,0,day(),month(),year());
+        }
+        if (inc == 10) {
+            setTime( hour(), minute() + 10,0,day(),month(),year());
+        }
+        if (inc == 1000) {
+            setTime( hour()+1, minute(),0,day(),month(),year());
+        }
+    }
+
+    void decreaseClock(int inc = 1) {
+        if (inc == 1 && minute() > 0) {
+            setTime( hour(), minute() - 1,0,day(),month(),year());
+        }
+        if (inc == 10 && minute() > 10 ) {
+            setTime( hour(), minute() - 10,0,day(),month(),year());
+        }
+        if (inc == 1000 && hour() > 0) {
+            setTime( hour()-1, minute(),0,day(),month(),year());
+        }
+    }
+
 
     float getSpeed()
     {

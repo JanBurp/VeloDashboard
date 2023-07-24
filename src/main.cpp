@@ -194,6 +194,14 @@ void readButtons()
                 Speed.resetTripDistance();
             }
         }
+        else if ( Display.isSetClockMenu() ) {
+            if ( Dashboard.isLightsUp() )  {
+                Speed.increaseClock( Display.cursorAmount() );
+            }
+            if ( Dashboard.isLightsDown() )  {
+                Speed.decreaseClock( Display.cursorAmount() );
+            }
+        }
         else if ( Display.isSetTyreMenu() ) {
             if ( Dashboard.isLightsUp() )  {
                 Speed.increaseCircumference( Display.cursorAmount() );

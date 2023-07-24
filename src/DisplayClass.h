@@ -401,6 +401,12 @@ public:
         this->show_item_string(row,label,timeStr);
     }
 
+    void show_item_clock( int row, const char label[], int hour, int min ) {
+        char clockStr[8];
+        snprintf(clockStr, 8, " %2d:%02d", hour, min);
+        this->show_item_string(row,label,clockStr);
+    }
+
     void show_mode(const char mode[], int width = 5, bool inverse = false ) {
         CRGB menuColor = WHITE;
         CRGB menuTextColor = BLACK;
@@ -431,7 +437,7 @@ public:
     }
 
     void showSettingsMode(const char mode[]) {
-        this->show_mode( mode, 3, true);
+        this->show_mode( mode, 4, true);
     }
 
     void moveCursor( int inc ) {
@@ -496,6 +502,12 @@ public:
         this->show_item_string(2,"RESET => Press UP","");
     }
 
+    void showSetTime() {
+        this->show_item_clock(1,"Clock",hour(),minute());
+        this->showCursor();
+        this->show_item_string(2,"LEFT/RIGHT - UP/DOWN","");
+    }
+
     void showTotalEdit() {
         int Odo = this->Speed->getTotalDistance();
         this->show_item_float(1,"ME","% 6.0f",Odo);
@@ -522,12 +534,16 @@ public:
                     this->showSettingsMode("TRIP");
                     this->showResetTrip();
                     break;
+                case DISPLAY_SETTINGS_CLOCK:
+                    this->showSettingsMode("CLOCK");
+                    this->showSetTime();
+                    break;
                 case DISPLAY_SETTINGS_TYRE:
                     this->showSettingsMode("TYRE");
                     this->showTyreEdit();
                     break;
                 case DISPLAY_SETTINGS_TOTAL:
-                    this->showSettingsMode("TOTAL");
+                    this->showSettingsMode("BIKE");
                     this->showTotalEdit();
                     break;
             }
@@ -592,6 +608,10 @@ public:
 
     bool isResetTripMenu() {
         return this->displayMode == DISPLAY_SETTINGS_TRIP;
+    }
+
+    bool isSetClockMenu() {
+        return this->displayMode == DISPLAY_SETTINGS_CLOCK;
     }
 
     bool isSetTyreMenu() {
