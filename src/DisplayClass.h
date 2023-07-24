@@ -555,9 +555,11 @@ public:
                     this->show_welcome();
                     break;
                 case DISPLAY_HOME:
-                    this->show_speed();
+                    if ( !this->IdleTimer->warning() ) {
+                        this->show_speed();
+                        this->show_lights();
+                    }
                     this->show_time();
-                    this->show_lights();
                     this->show_battery();
                     break;
                 case DISPLAY_TODAY:
