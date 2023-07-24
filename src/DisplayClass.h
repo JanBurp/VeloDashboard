@@ -18,6 +18,11 @@
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
+enum DisplayType {
+    three,
+    four,
+};
+
 class DisplayClass
 {
 
@@ -322,42 +327,31 @@ public:
         if ( this->Speed->getDayDistance() >= 100 ) {
             format = "% 6.1f";
         }
-        this->show_item_float(1,"DIST",format,this->Speed->getDistance() );
-        this->show_item_float(2,"DAY",format,this->Speed->getDayDistance() );
+        this->show_item_float(three,1,"DISTANCE",format,this->Speed->getDistance() );
+        this->show_item_float(three,2,"Today","%-6.1f",this->Speed->getDayDistance() );
+        this->show_item_float(three,3,"Last","% 6.1f",this->Speed->getPrevDistance() );
     }
 
     void show_today_speeds()
     {
-        this->show_item_float(1,"AVG","% 6.1f", this->Speed->getAvgSpeed());
-        this->show_item_float(2,"MAX","% 6.1f", this->Speed->getMaxSpeed());
+        this->show_item_float(four,1,"Avg","%-6.1f", this->Speed->getAvgSpeed());
+        this->show_item_float(four,2,"Max","% 6.1f", this->Speed->getMaxSpeed());
+        this->show_item_time(four,3,"Time", this->Speed->getTripTime());
+        this->show_item_time(four,4,"All", this->Speed->getTotalTime(),true);
     }
 
-    void show_today_time()
-    {
-        this->show_item_time(1,"TIME", this->Speed->getTripTime());
-        this->show_item_time(2,"PLUS", this->Speed->getTotalTime());
-    }
 
-    void show_prev_dist() {
-        std::string format = "% 6.2f";
-        if ( this->Speed->getTripDistance() >= 100 ) {
-            format = "% 6.1f";
-        }
-        this->show_item_float(1,"PREV",format,this->Speed->getPrevDistance() );
-        this->show_item_float(2,"TRIP",format,this->Speed->getTripDistance() );
-    }
-
-    void show_prev_speed() {
-        this->show_item_float(1,"AVG","% 6.1f", this->Speed->getPrevAvgSpeed());
-        this->show_item_float(2,"MAX","% 6.1f", this->Speed->getPrevMaxSpeed());
-    }
-
+    // void show_prev_speed() {
+    //     this->show_item_float(three,1,"Avg","% 6.1f", this->Speed->getPrevAvgSpeed());
+    //     this->show_item_float(three,2,"Max","% 6.1f", this->Speed->getPrevMaxSpeed());
+    // }
 
     void show_totals() {
         int Odo = this->Speed->getTotalDistance();
         int Quest = Odo + BIKE_DISTANCE_START;
-        this->show_item_float(1,"ME","% 6.0f",Odo);
-        this->show_item_float(2,"Q","% 6.0f",Quest);
+        this->show_item_float(three,1,"TOTAL","%6.0f",Odo);
+        this->show_item_float(three,2,"Trip","%-6.0f",this->Speed->getTripDistance());
+        this->show_item_float(three,3,"Quest","% 6.0f",Quest);
     }
 
     void off() {
@@ -367,67 +361,130 @@ public:
         OLED.display();
     }
 
-    void show_item_string(int row, const char label[], const char value[] ) {
-        int xl = 0;
-        int xv = SCREEN_HALF_WIDTH - 44;
-        int y = 16 + (row-1) * (SCREEN_HALF_HEIGHT-5);
-        OLED.setTextSize(1);
-        OLED.setCursor(xl, y+13);
-        OLED.print(label);
-        OLED.setTextSize(3);
-        OLED.setCursor(xv, y);
-        OLED.print(value);
+    void show_item_string(DisplayType type, int row, const char label[], const char value[] ) {
+        if (type==three) {
+            if (row ==1) {
+                OLED.setTextSize(1);
+                OLED.setCursor(0, 0);
+                OLED.print(label);
+                OLED.setTextSize(3);
+                OLED.setCursor(SCREEN_HALF_WIDTH - 44, SCREEN_HALF_HEIGHT - 21);
+                OLED.print(value);
+            }
+            if (row==2) {
+                OLED.setTextSize(1);
+                OLED.setCursor(0, SCREEN_HALF_HEIGHT + 5);
+                OLED.print(label);
+                OLED.setTextSize(2);
+                OLED.setCursor(0, SCREEN_HEIGHT - 16);
+                OLED.print(value);
+            }
+            if (row==3) {
+                OLED.setTextSize(1);
+                OLED.setCursor(SCREEN_HALF_WIDTH + 4, SCREEN_HALF_HEIGHT + 5);
+                char labelStr[10];
+                snprintf(labelStr,11, "%10s", label);
+                OLED.print(labelStr);
+                OLED.setTextSize(2);
+                OLED.setCursor(SCREEN_HALF_WIDTH - 32, SCREEN_HEIGHT - 16);
+                char valueStr[8];
+                snprintf(valueStr,9, "%8s", value);
+                OLED.print(valueStr);
+            }
+        }
+        if (type==four) {
+            if (row==1) {
+                OLED.setTextSize(1);
+                OLED.setCursor(0, 0);
+                OLED.print(label);
+                OLED.setTextSize(2);
+                OLED.setCursor(0, 10);
+                OLED.print(value);
+            }
+            if (row==2) {
+                OLED.setTextSize(1);
+                OLED.setCursor(SCREEN_HALF_WIDTH + 4, 0);
+                char labelStr[10];
+                snprintf(labelStr,11, "%10s", label);
+                OLED.print(labelStr);
+                OLED.setTextSize(2);
+                OLED.setCursor(SCREEN_HALF_WIDTH - 32, 10);
+                char valueStr[8];
+                snprintf(valueStr,9, "%8s", value);
+                OLED.print(valueStr);
+            }
+            if (row==3) {
+                OLED.setTextSize(1);
+                OLED.setCursor(0, SCREEN_HALF_HEIGHT + 5);
+                OLED.print(label);
+                OLED.setTextSize(2);
+                OLED.setCursor(0, SCREEN_HEIGHT - 16);
+                OLED.print(value);
+            }
+            if (row==4) {
+                OLED.setTextSize(1);
+                OLED.setCursor(SCREEN_HALF_WIDTH + 4, SCREEN_HALF_HEIGHT + 5);
+                char labelStr[10];
+                snprintf(labelStr,11, "%10s", label);
+                OLED.print(labelStr);
+                OLED.setTextSize(2);
+                OLED.setCursor(SCREEN_HALF_WIDTH - 32, SCREEN_HEIGHT - 16);
+                char valueStr[8];
+                snprintf(valueStr,9, "%8s", value);
+                OLED.print(valueStr);
+            }
+        }
     }
 
-    void show_item_float(int row, const char label[], std::string format, float value ) {
+    void show_item_float(DisplayType type,int row, const char label[], std::string format, float value ) {
         char valueStr[6];
         snprintf(valueStr, 7, format.c_str(), value);
-        this->show_item_string(row,label,valueStr);
+        this->show_item_string(type,row,label,valueStr);
     }
 
-    void show_item_time(int row, const char label[], unsigned long millis ) {
+    void show_item_time(DisplayType type,int row, const char label[], unsigned long millis, bool align_right = false ) {
         char timeStr[8];
         unsigned long secs = millis / 1000;
         unsigned int minutes = secs / 60;
         if (minutes > 59) {
             unsigned int hours = secs / 3600;
             minutes = minutes % 60;
-            snprintf(timeStr, 8, " %2dh%02d", hours, minutes);
+            snprintf(timeStr, 8, "%dh%02d", hours, minutes);
         }
         else {
             unsigned int seconds = secs % 60;
-            snprintf(timeStr, 8, " %2d:%02d", minutes, seconds);
+            snprintf(timeStr, 8, "%d:%02d", minutes, seconds);
         }
-        this->show_item_string(row,label,timeStr);
+        this->show_item_string(type,row,label,timeStr);
     }
 
-    void show_item_clock( int row, const char label[], int hour, int min ) {
-        char clockStr[8];
+    void show_item_clock(DisplayType type, int row, const char label[], int hour, int min ) {
+        char clockStr[9];
         snprintf(clockStr, 8, " %2d:%02d", hour, min);
-        this->show_item_string(row,label,clockStr);
+        this->show_item_string(type, row,label,clockStr);
     }
 
-    void show_speed_in_menu()
-    {
-        OLED.setTextColor(WHITE);
-        if ( this->Speed->isStarted() ) {
+    // void show_speed_in_menu()
+    // {
+    //     OLED.setTextColor(WHITE);
+    //     if ( this->Speed->isStarted() ) {
 
-            float speed = this->Speed->getSpeed();
-            int decis = (int)speed;
-            int precision = (speed - decis) * 10;
-            char speedStr[6];
-            snprintf(speedStr, 6, "%2i.%1i", decis,precision);
+    //         float speed = this->Speed->getSpeed();
+    //         int decis = (int)speed;
+    //         int precision = (speed - decis) * 10;
+    //         char speedStr[6];
+    //         snprintf(speedStr, 6, "%2i.%1i", decis,precision);
 
-            int x = SCREEN_WIDTH - 24;
-            if ( this->displayMode > 4) {
-                x = 0;
-            }
+    //         int x = SCREEN_WIDTH - 24;
+    //         if ( this->displayMode > 4) {
+    //             x = 0;
+    //         }
 
-            OLED.setTextSize(1);
-            OLED.setCursor(x, 3);
-            OLED.print(speedStr);
-        }
-    }
+    //         OLED.setTextSize(1);
+    //         OLED.setCursor(x, 0);
+    //         OLED.print(speedStr);
+    //     }
+    // }
 
     void show_mode(const char mode[], int width = 5, bool inverse = false ) {
         CRGB menuColor = WHITE;
@@ -446,17 +503,17 @@ public:
         int x = currentMode * (SCREEN_WIDTH / width);
         int y = 0;
         int w = SCREEN_WIDTH / width + 5;
-        int h = 14;
+        int h = 9;
         int tx = x+3;
 
         OLED.fillRect(x,y,w,h,menuColor);
         OLED.drawLine(0,y+h-1,SCREEN_WIDTH,y+h-1,menuColor);
-        OLED.setCursor(tx,y+3);
+        OLED.setCursor(tx,y+1);
         OLED.setTextSize(1);
         OLED.setTextColor(menuTextColor);
         OLED.print(mode);
         OLED.setTextColor(textColor);
-        this->show_speed_in_menu();
+        // this->show_speed_in_menu();
     }
 
     void showSettingsMode(const char mode[]) {
@@ -521,28 +578,28 @@ public:
         if ( this->Speed->getTripDistance() >= 100 ) {
             format = "% 6.1f";
         }
-        this->show_item_float(1,"TRIP",format,this->Speed->getTripDistance() );
-        this->show_item_string(2,"RESET => Press UP","");
+        this->show_item_float(three,1,"TRIP",format,this->Speed->getTripDistance() );
+        this->show_item_string(three,2,"RESET => Press UP","");
     }
 
     void showSetTime() {
-        this->show_item_clock(1,"Clock",hour(),minute());
+        this->show_item_clock(three,1,"Clock",hour(),minute());
         this->showCursor();
-        this->show_item_string(2,"LEFT/RIGHT - UP/DOWN","");
+        this->show_item_string(three,2,"LEFT/RIGHT - UP/DOWN","");
     }
 
     void showTotalEdit() {
         int Odo = this->Speed->getTotalDistance();
-        this->show_item_float(1,"ME","% 6.0f",Odo);
+        this->show_item_float(three,1,"ME","% 6.0f",Odo);
         this->showCursor();
-        this->show_item_string(2,"LEFT/RIGHT - UP/DOWN","");
+        this->show_item_string(three,2,"LEFT/RIGHT - UP/DOWN","");
     }
 
     void showTyreEdit() {
         int wheelNr = this->Speed->getClosestETRTO();
-        this->show_item_float(1,Wheels[wheelNr].name, "% 6.0f", this->Speed->getWheelCircumference() * 1000 );
+        this->show_item_float(three,1,Wheels[wheelNr].name, "% 6.0f", this->Speed->getWheelCircumference() * 1000 );
         this->showCursor();
-        this->show_item_string(2,"LEFT/RIGHT - UP/DOWN","");
+        this->show_item_string(three,2,"LEFT/RIGHT - UP/DOWN","");
     }
 
     void show()
@@ -586,27 +643,12 @@ public:
                     this->show_battery();
                     break;
                 case DISPLAY_TODAY:
-                    this->show_mode("DIST");
                     this->show_today_distances();
                     break;
                 case DISPLAY_SPEEDS:
-                    this->show_mode("SPED");
                     this->show_today_speeds();
                     break;
-                case DISPLAY_TIME:
-                    this->show_mode("TIME");
-                    this->show_today_time();
-                    break;
-                case DISPLAY_PREV_DIST:
-                    this->show_mode("DST<");
-                    this->show_prev_dist();
-                    break;
-                case DISPLAY_PREV_SPEED:
-                    this->show_mode("SPD<");
-                    this->show_prev_speed();
-                    break;
                 case DISPLAY_TOTALS:
-                    this->show_mode("ALL");
                     this->show_totals();
                     break;
             }
