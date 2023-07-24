@@ -407,6 +407,28 @@ public:
         this->show_item_string(row,label,clockStr);
     }
 
+    void show_speed_in_menu()
+    {
+        OLED.setTextColor(WHITE);
+        if ( this->Speed->isStarted() ) {
+
+            float speed = this->Speed->getSpeed();
+            int decis = (int)speed;
+            int precision = (speed - decis) * 10;
+            char speedStr[6];
+            snprintf(speedStr, 6, "%2i.%1i", decis,precision);
+
+            int x = SCREEN_WIDTH - 24;
+            if ( this->displayMode > 4) {
+                x = 0;
+            }
+
+            OLED.setTextSize(1);
+            OLED.setCursor(x, 3);
+            OLED.print(speedStr);
+        }
+    }
+
     void show_mode(const char mode[], int width = 5, bool inverse = false ) {
         CRGB menuColor = WHITE;
         CRGB menuTextColor = BLACK;
@@ -434,6 +456,7 @@ public:
         OLED.setTextColor(menuTextColor);
         OLED.print(mode);
         OLED.setTextColor(textColor);
+        this->show_speed_in_menu();
     }
 
     void showSettingsMode(const char mode[]) {
