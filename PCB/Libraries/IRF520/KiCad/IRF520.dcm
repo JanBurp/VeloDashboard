@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP IRF520
+D MOSFET N-Ch 100 Volt 10 Amp
+K
+F 
+$ENDCMP
+#
+#End Doc Library

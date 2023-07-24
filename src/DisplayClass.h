@@ -238,6 +238,12 @@ public:
             int juiceHeight = (h - innerpad * 2) * (percentage/100.0);
             OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight), x + w - 2 * innerpad, juiceHeight, WHITE);
 
+            OLED.drawLine( x + innerpad, y + 2 + innerpad + h/4, x + w - innerpad, y + 2 + innerpad + h/4, BLACK);
+            OLED.drawLine( x + innerpad, y + 1 + innerpad + h/2, x + w - innerpad, y + 1 + innerpad + h/2, BLACK);
+            OLED.drawLine( x + innerpad, y + 2 + innerpad + h/4*3, x + w - innerpad, y + 2 + innerpad + h/4*3, BLACK);
+
+
+
             // print cell voltage
             int cellMilliV = this->Battery->getCellVoltage();
             int cellV = cellMilliV / 1000;
@@ -255,8 +261,8 @@ public:
             // print percentage
             OLED.setCursor(x + w + 5, y + toppad + 15);
             OLED.setTextSize(1);
-            char percStr[4];
-            snprintf(percStr, 4, "%02i%%", percentage);
+            char percStr[5];
+            snprintf(percStr, 5, "%-3i%%", percentage);
             OLED.print(percStr);
         }
         else {
@@ -264,6 +270,8 @@ public:
             OLED.setTextSize(3);
             OLED.print(this->Battery->secondsUntilPowerOff());
         }
+
+
     }
 
     void show_lights()
@@ -393,6 +401,34 @@ public:
         this->show_item_string(row,label,timeStr);
     }
 
+    void show_item_clock( int row, const char label[], int hour, int min ) {
+        char clockStr[8];
+        snprintf(clockStr, 8, " %2d:%02d", hour, min);
+        this->show_item_string(row,label,clockStr);
+    }
+
+    void show_speed_in_menu()
+    {
+        OLED.setTextColor(WHITE);
+        if ( this->Speed->isStarted() ) {
+
+            float speed = this->Speed->getSpeed();
+            int decis = (int)speed;
+            int precision = (speed - decis) * 10;
+            char speedStr[6];
+            snprintf(speedStr, 6, "%2i.%1i", decis,precision);
+
+            int x = SCREEN_WIDTH - 24;
+            if ( this->displayMode > 4) {
+                x = 0;
+            }
+
+            OLED.setTextSize(1);
+            OLED.setCursor(x, 3);
+            OLED.print(speedStr);
+        }
+    }
+
     void show_mode(const char mode[], int width = 5, bool inverse = false ) {
         CRGB menuColor = WHITE;
         CRGB menuTextColor = BLACK;
@@ -420,10 +456,11 @@ public:
         OLED.setTextColor(menuTextColor);
         OLED.print(mode);
         OLED.setTextColor(textColor);
+        this->show_speed_in_menu();
     }
 
     void showSettingsMode(const char mode[]) {
-        this->show_mode( mode, 3, true);
+        this->show_mode( mode, 4, true);
     }
 
     void moveCursor( int inc ) {
@@ -488,6 +525,12 @@ public:
         this->show_item_string(2,"RESET => Press UP","");
     }
 
+    void showSetTime() {
+        this->show_item_clock(1,"Clock",hour(),minute());
+        this->showCursor();
+        this->show_item_string(2,"LEFT/RIGHT - UP/DOWN","");
+    }
+
     void showTotalEdit() {
         int Odo = this->Speed->getTotalDistance();
         this->show_item_float(1,"ME","% 6.0f",Odo);
@@ -514,12 +557,16 @@ public:
                     this->showSettingsMode("TRIP");
                     this->showResetTrip();
                     break;
+                case DISPLAY_SETTINGS_CLOCK:
+                    this->showSettingsMode("CLOCK");
+                    this->showSetTime();
+                    break;
                 case DISPLAY_SETTINGS_TYRE:
                     this->showSettingsMode("TYRE");
                     this->showTyreEdit();
                     break;
                 case DISPLAY_SETTINGS_TOTAL:
-                    this->showSettingsMode("TOTAL");
+                    this->showSettingsMode("BIKE");
                     this->showTotalEdit();
                     break;
             }
@@ -531,9 +578,11 @@ public:
                     this->show_welcome();
                     break;
                 case DISPLAY_HOME:
-                    this->show_speed();
+                    if ( !this->IdleTimer->warning() ) {
+                        this->show_speed();
+                        this->show_lights();
+                    }
                     this->show_time();
-                    this->show_lights();
                     this->show_battery();
                     break;
                 case DISPLAY_TODAY:
@@ -584,6 +633,10 @@ public:
 
     bool isResetTripMenu() {
         return this->displayMode == DISPLAY_SETTINGS_TRIP;
+    }
+
+    bool isSetClockMenu() {
+        return this->displayMode == DISPLAY_SETTINGS_CLOCK;
     }
 
     bool isSetTyreMenu() {

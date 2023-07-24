@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP LDD-700L
+D LED Power Supplies 9-36Vin 2-32Vout 700mA LED Driver
+K
+F https://datasheet.datasheetarchive.com/originals/distributors/DKDS-14/277848.pdf
+$ENDCMP
+#
+#End Doc Library

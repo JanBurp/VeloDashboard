@@ -14,17 +14,18 @@ typedef struct
 } Wheel;
 
 // https://www.cateyeamerica.com/tire-size-calculator/
-#define NR_ETRTO_WHEELS 12
+#define NR_ETRTO_WHEELS 13
 Wheel Wheels[NR_ETRTO_WHEELS] = {
     {"23-406", 1.418},
     {"25-406", 1.431},
     {"26-406", 1.437},
     {"28-406", 1.450},
     {"30-406", 1.462},
-    {"32-406", 1.475}, // CCU
+    {"32-406", 1.475}, // CCU 32
     {"35-406", 1.494}, // Schwalbe Marathon+
     {"38-406", 1.512},
     {"40-406", 1.525},
+    {"42-406", 1.538}, // CCU 42
     {"44-406", 1.550},
     {"50-406", 1.588},
     {"56-406", 1.625},
@@ -110,8 +111,9 @@ typedef struct {
 #define DISPLAY_PREV_SPEED  7 // CHANGE WITH DISPLAY_TOTALS IF NEEDED
 
 #define DISPLAY_SETTINGS_TRIP   10
-#define DISPLAY_SETTINGS_TYRE   11
-#define DISPLAY_SETTINGS_TOTAL  12
+#define DISPLAY_SETTINGS_CLOCK   11
+#define DISPLAY_SETTINGS_TYRE   12
+#define DISPLAY_SETTINGS_TOTAL  13
 
 /*
   LED STRIPS
