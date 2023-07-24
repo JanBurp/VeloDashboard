@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG true // [default = false] - set to true for Serial output
+#define DEBUG false // [default = false] - set to true for Serial output
 #define TEST true   // [default = false] - set to true for local test environment
 
 /*
@@ -105,9 +105,9 @@ typedef struct {
 #define DISPLAY_HOME        1
 #define DISPLAY_TODAY       2
 #define DISPLAY_SPEEDS      3
-#define DISPLAY_TIME        4
-#define DISPLAY_TOTALS      5
-#define DISPLAY_PREV_DIST   5 // CHANGE WITH DISPLAY_TOTALS IF NEEDED
+#define DISPLAY_TOTALS      4
+#define DISPLAY_TIME        5 // CHANGE WITH DISPLAY_TOTALS IF NEEDED
+#define DISPLAY_PREV_DIST   6 // CHANGE WITH DISPLAY_TOTALS IF NEEDED
 #define DISPLAY_PREV_SPEED  7 // CHANGE WITH DISPLAY_TOTALS IF NEEDED
 
 #define DISPLAY_SETTINGS_TRIP   10
