@@ -186,7 +186,7 @@ public:
     void show_time()
     {
         OLED.setTextColor(WHITE);
-        int x = 0;
+        int x = SCREEN_HALF_WIDTH + 8;
         int y = SCREEN_HALF_HEIGHT + 18;
         char hourStr[3];
         char minStr[3];
@@ -223,7 +223,7 @@ public:
     }
 
     void show_distance() {
-        int x = SCREEN_HALF_WIDTH + 14;
+        int x = 0;
         int y = SCREEN_HALF_HEIGHT + 18;
         std::string format = "%-6.2f";
         if ( this->Speed->getDayDistance() >= 100 ) {
@@ -657,10 +657,10 @@ public:
                     if ( !this->IdleTimer->warning() ) {
                         this->show_speed();
                         this->show_lights();
+                        this->show_distance();
+                        this->show_battery();
                     }
-                    this->show_distance();
                     this->show_time();
-                    this->show_battery();
                     break;
                 case DISPLAY_TODAY:
                     this->show_today_distances();
