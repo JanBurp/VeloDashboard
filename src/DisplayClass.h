@@ -240,23 +240,23 @@ public:
     void show_battery( bool off = false)
     {
         OLED.setTextColor(WHITE);
-        int toppad = 4;
+        int toppad = 3;
         int innerpad = 2;
         int x = 0;
         int y = 0;
-        int w = 14;
-        int h = 24;
+        int w = 16;
+        int h = 26;
         OLED.drawRect(x + toppad, y, x + w - 2 * toppad, toppad, WHITE);
-        OLED.drawRect(x, y + toppad, x + w, h, WHITE);
+        OLED.drawRect(x, y + toppad -1, x + w, h, WHITE);
 
         if ( !off ) {
             int percentage = this->Battery->getBatteryPercentage();
             int juiceHeight = (h - innerpad * 2) * (percentage/100.0);
-            OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight), x + w - 2 * innerpad, juiceHeight, WHITE);
+            OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight) - 2, x + w - 2 * innerpad, juiceHeight, WHITE);
 
-            OLED.drawLine( x + innerpad, y + 2 + innerpad + h/4, x + w - innerpad, y + 2 + innerpad + h/4, BLACK);
-            OLED.drawLine( x + innerpad, y + 1 + innerpad + h/2, x + w - innerpad, y + 1 + innerpad + h/2, BLACK);
-            OLED.drawLine( x + innerpad, y + 2 + innerpad + h/4*3, x + w - innerpad, y + 2 + innerpad + h/4*3, BLACK);
+            OLED.drawLine( x + innerpad, y + 1 + innerpad + h/4, x + w - innerpad, y + 1 + innerpad + h/4, BLACK);
+            OLED.drawLine( x + innerpad, y + 0 + innerpad + h/2, x + w - innerpad, y + 0 + innerpad + h/2, BLACK);
+            OLED.drawLine( x + innerpad, y + 1 + innerpad + h/4*3, x + w - innerpad, y + 1 + innerpad + h/4*3, BLACK);
 
             // print cell voltage
             int cellMilliV = this->Battery->getCellVoltage();
@@ -270,10 +270,10 @@ public:
             // OLED.print( cellMilliV );
 
             OLED.setTextSize(2);
-            OLED.setCursor(x + 18, y + 10 + toppad);
+            OLED.setCursor(x + 20, y + 10 + toppad);
             OLED.print( cellV );
             OLED.setTextSize(1);
-            OLED.setCursor(x + 29, y + 17 + toppad);
+            OLED.setCursor(x + 31, y + 17 + toppad);
             OLED.print( cellMstr );
 
             // print percentage
@@ -281,7 +281,7 @@ public:
             char percStr[5];
             snprintf(percStr, 5, "%-i%%", percentage);
             OLED.setTextSize(1);
-            OLED.setCursor(x + 18, y + toppad);
+            OLED.setCursor(x + 20, y + toppad);
             OLED.print(percStr);
             // OLED.print("%");
         }
