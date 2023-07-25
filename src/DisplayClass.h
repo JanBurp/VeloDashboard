@@ -111,9 +111,9 @@ public:
         if (this->startupQuestion) {
             OLED.setTextSize(1);
             OLED.setCursor(0,SCREEN_HALF_HEIGHT);
-            OLED.print("Keep distance?");
+            OLED.print("Afstand bewaren?");
             OLED.setCursor(0,SCREEN_HALF_HEIGHT+20);
-            OLED.print("YES => Press UP");
+            OLED.print("Ja => Druk op PLUS");
         }
     }
 
@@ -344,17 +344,17 @@ public:
 
     void show_today_distances()
     {
-        this->show_item_float(three,1,"TODAY DIST","% 6.1f",this->Speed->getDayDistance() );
-        this->show_item_float(three,2,"Last","%-6.1f",this->Speed->getPrevDistance() );
-        this->show_item_float(three,3,"Trip","% 6.1f",this->Speed->getTripDistance() );
+        this->show_item_float(three,1,"Vandaag","% 6.1f",this->Speed->getDayDistance() );
+        this->show_item_float(three,2,"Vorige","%-6.1f",this->Speed->getPrevDistance() );
+        this->show_item_float(three,3,"Tocht","% 6.1f",this->Speed->getTripDistance() );
     }
 
     void show_today_speeds()
     {
-        this->show_item_float(four,1,"Avg","%-6.1f", this->Speed->getAvgSpeed());
-        this->show_item_float(four,2,"Max","% 6.1f", this->Speed->getMaxSpeed());
-        this->show_item_time(four,3,"Time", this->Speed->getTripTime());
-        this->show_item_time(four,4,"Total", this->Speed->getTotalTime(),true);
+        this->show_item_float(four,1,"Gemiddeld","%-6.1f", this->Speed->getAvgSpeed());
+        this->show_item_float(four,2,"Maximum","% 6.1f", this->Speed->getMaxSpeed());
+        this->show_item_time(four,3,"Tijd", this->Speed->getTripTime());
+        this->show_item_time(four,4,"Totaal", this->Speed->getTotalTime(),true);
     }
 
     // void show_prev_speed() {
@@ -365,7 +365,7 @@ public:
     void show_totals() {
         int Odo = this->Speed->getTotalDistance();
         int Quest = Odo + BIKE_DISTANCE_START;
-        this->show_item_float(three,1,"TOTAL","%6.0f",Odo);
+        this->show_item_float(three,1,"Totaal","%6.0f",Odo);
         this->show_item_float(three,3,"Quest","% 6.0f",Quest);
     }
 
