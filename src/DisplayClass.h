@@ -379,14 +379,16 @@ public:
     void show_item_string(DisplayType type, int row, const char label[], const char value[] ) {
         if (type==three) {
             if (row ==1) {
+                OLED.setTextSize(1);
+                OLED.setCursor(SCREEN_HALF_WIDTH + 4, 0);
                 char labelStr[10];
                 snprintf(labelStr,11, "%10s", label);
-                OLED.setCursor(SCREEN_HALF_WIDTH + 4, 0);
-                OLED.setTextSize(1);
                 OLED.print(labelStr);
-                OLED.setTextSize(3);
-                OLED.setCursor(SCREEN_HALF_WIDTH - 44, SCREEN_HALF_HEIGHT - 21);
-                OLED.print(value);
+                OLED.setTextSize(2);
+                OLED.setCursor(SCREEN_HALF_WIDTH - 32, 10);
+                char valueStr[8];
+                snprintf(valueStr,9, "%8s", value);
+                OLED.print(valueStr);
             }
             if (row==2) {
                 OLED.setTextSize(1);
