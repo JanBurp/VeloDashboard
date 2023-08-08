@@ -6,6 +6,10 @@
 #define V_SAMPLES   30
 #define V_TIME      100
 
+#define ADJUST_REF  4200
+#define ADJUST      1.7
+
+
 #define NUM_CELLS   3
 
 #define BAT_LOW         25
@@ -65,11 +69,8 @@ public:
 
             int battery_mv = 4.4 * (VREF / 1023) * meanValue;
             this->cell_mv = battery_mv / NUM_CELLS;
-
-
-            // LiPo capacity
-            // const int V[2] = {4200, 3750};     // mV - 12.6 - 12.0 - 11.55 - 11.25 - 10.35 - 10.0
-            // const int P[2] = {100, 0};          // % capacity
+            // Adjust voltage to compensate for LiPo
+            this->cell_mv = this->cell_mv + (this->cell_mv - ADJUST_REF) * ADJUST;
 
             const int V[21] = { 4200, 4150, 4110, 4080, 4020, 3980, 3950, 3910, 3870, 3850, 3840, 3820, 3800, 3790, 3770, 3750, 3730, 3710, 3690, 3610, 3270 };  // mV - 12.6 - 12.0 - 11.55 - 11.25 - 10.35 - 10.0
             const int P[21] = {  100,   95,   90,   85,   80,   75,   70,   65,   60,   55,   50,   45,   40,   35,   30,   25,   20,   15,   10,    5,    0 };  // % capacity
