@@ -21,7 +21,7 @@ private:
     LedClass *HeadLightLeft, *HeadLightRight, *RearLight;
     int lights = LIGHTS_OFF;
     bool brake = false;
-    bool horn = false;
+    bool beam = false;
 
 public:
 
@@ -41,7 +41,7 @@ public:
             }
         }
 
-        if ( this->horn ) {
+        if ( this->beam ) {
             this->HeadLightLeft->setIntensity(HEAD_LED_MAX_INTENSITY);
             this->HeadLightRight->setIntensity(HEAD_LED_MAX_INTENSITY);
         }
@@ -122,8 +122,8 @@ public:
         return this->brake;
     }
 
-    void setHorn(bool h) {
-        this->horn = h;
+    void setBeam(bool b) {
+        this->beam = b;
         this->_set();
     }
 
@@ -134,15 +134,15 @@ public:
 
     int getLights()
     {
-        if (this->horn && !this->Battery->isVeryLow() && !this->Battery->isAlmostDead() ) {
+        if (this->beam && !this->Battery->isVeryLow() && !this->Battery->isAlmostDead() ) {
             return LIGHTS_BEAM;
         }
         return this->lights;
     }
 
-    bool getHorn()
+    bool getBeam()
     {
-        return this->horn;
+        return this->beam;
     }
 
 };

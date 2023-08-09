@@ -6,7 +6,7 @@
 #define FN_RIGHT            1
 #define FN_UP               2
 #define FN_DOWN             3
-#define FN_HORN             4
+#define FN_BEAM             4
 #define FN_DISPLAY          5
 #define FN_BRAKE            10
 
@@ -23,7 +23,7 @@ struct DashboardButton {
 
 DashboardButton Buttons[10] = {
     { 0,    99, FN_BRAKE },
-    { 100, 284, FN_HORN },                      // 178
+    { 100, 284, FN_BEAM },                      // 178
     { 285, 350, FN_DISPLAY },                   // 301
     { 370, 470, FN_RIGHT },                     // 426
     { 475, 600, FN_LEFT },                      // 550
@@ -158,8 +158,8 @@ class DashboardClass {
             return ( this->function == FN_DOWN );
         }
 
-        bool isHorn() {
-            return ( this->function == FN_HORN );
+        bool isBeam() {
+            return ( this->function == FN_BEAM );
         }
 
         bool isDisplay() {

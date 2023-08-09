@@ -335,11 +335,6 @@ public:
             OLED.drawBitmap(xr, yr, icoBrakeRear, w, h, WHITE);
         }
 
-        // if (this->Lights->getHorn()) {
-        //     OLED.setCursor(x + w, y);
-        //     OLED.setTextSize(2);
-        //     OLED.print("!");
-        // }
     }
 
     void show_today_distances()
