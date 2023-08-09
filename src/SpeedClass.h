@@ -36,20 +36,6 @@ public:
     {
         this->Memory = this->readMemory();
 
-        // // Reset Day counter?
-        // if ( this->IsNewDay() ) {
-        //     this->Memory.prevDayDistance = this->Memory.dayDistance;
-        //     this->Memory.prevDayAverage = this->Memory.dayAverageSpeed;
-        //     this->Memory.prevDayMaxSpeed = this->Memory.dayMaxSpeed;
-        //     this->Memory.dayDistance = 0.0;
-        // }
-        // else {
-        //     this->tripTimeMs = this->Memory.dayTimeMovedSecs * 1000;
-        //     this->distance = this->Memory.dayDistance;
-        //     this->avgSpeed = this->Memory.dayAverageSpeed;
-        //     this->maxSpeed = this->Memory.dayMaxSpeed;
-        // }
-
         // if ( DEBUG ) {
         //     Serial.print("\tDay:\t");
         //     Serial.print(time.Day);
@@ -76,9 +62,13 @@ public:
 
     void resetDistance() {
         this->distance = 0.0;
+        this->started = false;
+        this->paused = true;
     }
 
     void continueDay() {
+        this->started = true;
+        this->paused = true;
         this->tripTimeMs = this->Memory.dayTimeMovedSecs * 1000;
         this->distance = this->Memory.dayDistance;
         this->avgSpeed = this->Memory.dayAverageSpeed;
@@ -128,23 +118,6 @@ public:
                     closest = i;
                 }
             }
-            // if ( DEBUG ) {
-            //     Serial.print("i:\t");
-            //     Serial.print(i);
-            //     Serial.print("\tSet = ");
-            //     Serial.print(this->Memory.wheelCircumference);
-            //     Serial.print("\tWheel< : ");
-            //     Serial.print(Wheels[i-1].circumference);
-            //     Serial.print("\tWheel> : ");
-            //     Serial.print(Wheels[i].circumference);
-            //     Serial.print("\tdiffL : ");
-            //     Serial.print(diffLower);
-            //     Serial.print("\tdiffH : ");
-            //     Serial.print(diffHigher);
-            //     Serial.print("\t= : ");
-            //     Serial.print(closest);
-            //     Serial.println();
-            // }
         }
         return closest;
     }
@@ -310,10 +283,10 @@ public:
         // Add moved to all distances
         if ( movedDistance > 0 && !this->started )
         {
-            this->startTimeMs = now;
-            this->runningTimeMs = now;
             this->started = true;
             this->paused = false;
+            this->startTimeMs = now;
+            this->runningTimeMs = now;
         }
         this->distance += movedDistance;
         this->Memory.dayDistance += movedDistance;

@@ -34,7 +34,7 @@ Wheel Wheels[NR_ETRTO_WHEELS] = {
 #define BIKE_DISTANCE_START         8060
 
 typedef struct {
-    unsigned long   timestamp;
+    unsigned long   timestamp;              // Time when data is stored
     unsigned long   totalDistance;
     float           tripDistance;
     float           dayDistance;
@@ -62,11 +62,6 @@ typedef struct {
 #define REAR_LED_MEDIUM_INTENSITY   32
 #define REAR_LED_MAX_INTENSITY      128
 
-
-/*
-    HORN Loudness
-*/
-#define HORN_LOUDNESS               10 // 10 = 6.2V // 11 = 7.3V // 12 = 8.3V // 13 = 9V ...
 
 /*
     TIMERS
@@ -180,18 +175,18 @@ typedef struct {
 // 17 - unused
 // 16 - unused
 #define PIN_TEST_SPEED          15              // 15 - unused, but used for testing
-#define PIN_HORN                14
+// #define PIN_HORN                14
 #define INTERNAL_LED            13              // 13 - unused - OFF
 
 /**
  * Unused PINS
  */
 #if TEST
-#define UNUSED_PINS         {0,1,7,12,16,17,20,21}
-#define NR_UNUSED_PINS      8
-#else
-#define UNUSED_PINS         {0,1,7,12,15,16,17,20,21}
+#define UNUSED_PINS         {0,1,7,12,14,16,17,20,21}
 #define NR_UNUSED_PINS      9
+#else
+#define UNUSED_PINS         {0,1,7,12,14,15,16,17,20,21}
+#define NR_UNUSED_PINS      10
 #endif
 
 
