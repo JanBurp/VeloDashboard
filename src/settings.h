@@ -34,7 +34,7 @@ Wheel Wheels[NR_ETRTO_WHEELS] = {
 #define BIKE_DISTANCE_START         8060
 
 typedef struct {
-    unsigned long   timestamp;
+    unsigned long   timestamp;              // Time when data is stored
     unsigned long   totalDistance;
     float           tripDistance;
     float           dayDistance;
