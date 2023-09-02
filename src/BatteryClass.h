@@ -4,10 +4,15 @@
 
 #define VREF        3300
 #define V_SAMPLES   10
-#define V_TIME      250
+#define V_TIME      1000
 
 #define ADJUST_REF  4200
+#if TEST
+#define ADJUST      2.0 // Was 1.7
+#else
 #define ADJUST      6.0 // Was 1.7
+#endif
+
 
 
 #define NUM_CELLS   3
@@ -84,21 +89,21 @@ public:
             }
             this->percentage = constrain(percent, 0, 100);
 
-            if ( DEBUG ) {
-                Serial.print("value:\t");
-                Serial.print(value);
-                Serial.print("\t\tmeanValue:\t");
-                Serial.print(meanValue);
-                Serial.print("\tmV:");
-                Serial.print(battery_mv);
-                Serial.print("\tmV:");
-                Serial.print(this->cell_mv);
-                Serial.print("\t%:");
-                Serial.print(this->percentage);
-                Serial.print("\ttmDead:");
-                Serial.print(this->timeDead);
-                Serial.println();
-            }
+            // if ( DEBUG ) {
+            //     Serial.print("value:\t");
+            //     Serial.print(value);
+            //     Serial.print("\t\tmeanValue:\t");
+            //     Serial.print(meanValue);
+            //     Serial.print("\tmV:");
+            //     Serial.print(battery_mv);
+            //     Serial.print("\tmV:");
+            //     Serial.print(this->cell_mv);
+            //     Serial.print("\t%:");
+            //     Serial.print(this->percentage);
+            //     Serial.print("\ttmDead:");
+            //     Serial.print(this->timeDead);
+            //     Serial.println();
+            // }
 
 
         }
