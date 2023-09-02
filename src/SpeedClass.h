@@ -5,8 +5,8 @@
 
 #define PAUSE_THRESHOLD 1.0
 
-#define OLD_ADDRESS 4
 #define MEM_ADDRESS 4
+#define NEW_ADDRESS 50
 
 class SpeedClass
 {
@@ -16,6 +16,7 @@ private:
     bool paused = true;
 
     MemoryStruct Memory;
+    newMemoryStruct newMemory;
 
     // Speed sensor
     bool SpeedSensor = true;
@@ -25,7 +26,7 @@ private:
     // Times in ms
     unsigned long startTimeMs = 0;
     unsigned long tempTimeMs = 0;
-    unsigned long tripTimeMs = 0;
+    unsigned long timeMs = 0;
 
     // all in meters or meters/per hour
     float distance = 0.0;
@@ -78,7 +79,7 @@ public:
     void resetDistance()
     {
         this->distance = 0.0;
-        this->tripTimeMs = 0.0;
+        this->timeMs = 0.0;
         this->started = false;
         this->paused = true;
     }
@@ -87,7 +88,7 @@ public:
     {
         this->started = true;
         this->paused = true;
-        this->tripTimeMs = this->Memory.dayTimeMovedSecs * 1000.0;
+        this->timeMs = this->Memory.dayTimeMovedSecs * 1000.0;
         this->distance = this->Memory.dayDistance;
         this->avgSpeed = this->Memory.dayAverageSpeed;
         this->maxSpeed = this->Memory.dayMaxSpeed;
@@ -292,7 +293,7 @@ public:
 
     unsigned long getTripTime()
     {
-        return this->tripTimeMs;
+        return this->timeMs;
     }
 
     unsigned long getTotalTime()
@@ -364,7 +365,7 @@ public:
         }
 
         // Calc AVG & MAX
-        this->avgSpeed = this->distance / (this->tripTimeMs / 1000.0) * 3.6;
+        this->avgSpeed = this->distance / (this->timeMs / 1000.0) * 3.6;
         if (this->speed < 120.0 && this->speed >= this->maxSpeed)
         {
             this->maxSpeed = this->speed;
@@ -385,14 +386,14 @@ public:
             {
                 this->continueCounter();
             }
-            this->tripTimeMs += (now - this->tempTimeMs);
+            this->timeMs += (now - this->tempTimeMs);
             this->tempTimeMs = now;
             this->SpeedSensor = !this->SpeedSensor;
         }
 
-        // Only store ODO if it has changed, so EEPROM is only written when needed
-        unsigned long oldOdo = (int)this->readMemory().totalDistance;
-        unsigned long currentOdo = (int)this->Memory.totalDistance;
+        // Only store ODO if it has changed (per 100m), so EEPROM is only written when needed
+        unsigned long oldOdo = (int)this->readMemory().totalDistance / 100;
+        unsigned long currentOdo = (int)this->Memory.totalDistance / 100;
         if (currentOdo != oldOdo)
         {
             this->storeMemory();
@@ -402,11 +403,30 @@ public:
     void storeMemory()
     {
         this->Memory.timestamp = now();
-        this->Memory.dayTimeMovedSecs = this->tripTimeMs / 1000;
+        this->Memory.dayTimeMovedSecs = this->timeMs / 1000;
         this->Memory.dayAverageSpeed = this->avgSpeed;
         this->Memory.dayMaxSpeed = this->maxSpeed;
         EEPROM.put(MEM_ADDRESS, this->Memory);
-        // EEPROM.put(ODO_ADDRESS, this->Memory.totalDistance);
+
+        // new struct
+        this->newMemory.timestamp           = this->Memory.timestamp;              // Time when data is stored
+        this->newMemory.totalDistance       = this->Memory.totalDistance;          // Total ODO
+        this->newMemory.tripDistance1       = this->Memory.tripDistance;           // trip totals 1..3
+        this->newMemory.tripDistance2       = 0;
+        this->newMemory.tripDistance3       = 0;
+        this->newMemory.currentDistance     = this->distance;                      // current
+        this->newMemory.currentTimeSecs     = this->timeMs;
+        this->newMemory.currentAverageSpeed = this->avgSpeed;
+        this->newMemory.currentMaxSpeed     = this->maxSpeed;
+        this->newMemory.dayDistance         = this->Memory.dayDistance;            // day totals
+        this->newMemory.dayTimeSecs         = this->Memory.dayTimeMovedSecs;
+        this->newMemory.dayAverageSpeed     = this->Memory.dayAverageSpeed;
+        this->newMemory.dayMaxSpeed         = this->Memory.dayMaxSpeed;
+        this->newMemory.prevDayDistance     = this->Memory.prevDayDistance;        // prev day
+        this->newMemory.prevDayAverage      = this->Memory.prevDayAverage;
+        this->newMemory.prevDayMaxSpeed     = this->Memory.prevDayMaxSpeed;
+        this->newMemory.wheelCircumference  = this->Memory.wheelCircumference;     // config
+        EEPROM.put(NEW_ADDRESS, this->newMemory);
 
         if ( DEBUG ) {
             this->_printMemory("STORE");
@@ -424,7 +444,7 @@ public:
         Serial.print(message);
         Serial.print("\t");
         // Serial.print("stamp: ");Serial.print(this->Memory.timestamp);Serial.print("\t");
-        // Serial.print("totalDistance: ");Serial.print(this->Memory.totalDistance / 1000);Serial.print("\t");
+        Serial.print("totalDistance: ");Serial.print(this->Memory.totalDistance);Serial.print("\t");
         // Serial.print("tripDistance: ");Serial.print(this->Memory.tripDistance/ 1000);Serial.print("\t");
         Serial.print("dayDistance: ");Serial.print(this->Memory.dayDistance/1000);Serial.print("\t");
         Serial.print("dayTimeMovedSecs: ");Serial.print(this->Memory.dayTimeMovedSecs);Serial.print("\t");
@@ -432,7 +452,7 @@ public:
 
         Serial.print("Speed: ");Serial.print(this->speed);Serial.print("\t");
         Serial.print("distance: ");Serial.print(this->distance/1000);Serial.print("\t");
-        Serial.print("tripTime: ");Serial.print(this->tripTimeMs);Serial.print("\t");
+        Serial.print("tripTime: ");Serial.print(this->timeMs);Serial.print("\t");
         Serial.print("avgSpeed: ");Serial.print(this->avgSpeed);Serial.print("\t");
         Serial.print("maxSpeed: ");Serial.print(this->maxSpeed);Serial.print("\t");
 

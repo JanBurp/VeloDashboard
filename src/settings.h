@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG true // [default = false] - set to true for Serial output
+#define DEBUG true  // [default = false] - set to true for Serial output
 #define TEST true   // [default = false] - set to true for local test environment
 
 /*
@@ -46,6 +46,34 @@ typedef struct {
     float           prevDayMaxSpeed;
     float           wheelCircumference;
 } MemoryStruct;
+// total bytes = 4 * 11 = 44 bytes
+
+
+typedef struct {
+    unsigned long   timestamp;                  // Time when data is stored
+    unsigned long   totalDistance;              // ODO (meters)
+    float           tripDistance1;              // sub total 1..3
+    float           tripDistance2;
+    float           tripDistance3;
+
+    float           currentDistance;            // current trip (secs)
+    unsigned long   currentTimeSecs;
+    float           currentAverageSpeed;
+    float           currentMaxSpeed;
+
+    float           dayDistance;                // day totals
+    unsigned long   dayTimeSecs;
+    float           dayAverageSpeed;
+    float           dayMaxSpeed;
+
+    float           prevDayDistance;            // prev day
+    float           prevDayAverage;
+    float           prevDayMaxSpeed;
+
+    float           wheelCircumference;         // config
+} newMemoryStruct;
+
+
 
 
 /*
