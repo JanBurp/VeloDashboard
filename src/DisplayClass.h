@@ -153,12 +153,14 @@ public:
 
             // Faster / Slower than average
             if ( !this->Speed->isPaused() ) {
-                int x = SCREEN_WIDTH - 18;
+                int diff = this->Speed->speedDiffScale();
+                int x = SCREEN_WIDTH - 18 + map(diff,0,9,7,0);
                 int y = 0;
-                int w = 14;
-                int h = 10;
+                int w = map(diff,0,9,1,7) * 2;
+                int h = map(diff,0,9,1,5) * 2;
                 if (this->Speed->isFaster())
                 {
+                    y = y + map(diff,0,9,8,0);
                     OLED.fillTriangle(x, y + h, x + w / 2, y, x + w, y + h, WHITE);
                 }
                 else
@@ -303,11 +305,6 @@ public:
         int yr = SCREEN_HALF_HEIGHT + 1;
         int w = 24;
         int h = 14;
-        // int x = 30;
-        // int y = 0;
-        // int yr = 16;
-        // int w = 24;
-        // int h = 14;
         switch (this->Lights->getLights())
         {
         case LIGHTS_OFF:
@@ -477,28 +474,6 @@ public:
         snprintf(clockStr, 8, " %2d:%02d", hour, min);
         this->show_item_string(type, row,label,clockStr);
     }
-
-    // void show_speed_in_menu()
-    // {
-    //     OLED.setTextColor(WHITE);
-    //     if ( this->Speed->isStarted() ) {
-
-    //         float speed = this->Speed->getSpeed();
-    //         int decis = (int)speed;
-    //         int precision = (speed - decis) * 10;
-    //         char speedStr[6];
-    //         snprintf(speedStr, 6, "%2i.%1i", decis,precision);
-
-    //         int x = SCREEN_WIDTH - 24;
-    //         if ( this->displayMode > 4) {
-    //             x = 0;
-    //         }
-
-    //         OLED.setTextSize(1);
-    //         OLED.setCursor(x, 0);
-    //         OLED.print(speedStr);
-    //     }
-    // }
 
     void show_mode(const char mode[], int width = 5, bool inverse = false ) {
         CRGB menuColor = WHITE;

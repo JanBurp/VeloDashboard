@@ -223,6 +223,13 @@ public:
         return this->avgSpeed;
     }
 
+    int speedDiffScale() {
+        float diff = this->speed - this->avgSpeed;
+        int iDiff = abs(map(diff,-30,30,-9,9));
+        if (iDiff>9) iDiff = 9;
+        return abs(iDiff);
+    }
+
     bool isFaster()
     {
         return this->speed > this->avgSpeed;
