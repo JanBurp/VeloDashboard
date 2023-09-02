@@ -5,7 +5,7 @@
 
 #define PAUSE_THRESHOLD 1.0
 
-#define ODO_ADDRESS 0
+#define OLD_ADDRESS 4
 #define MEM_ADDRESS 4
 
 class SpeedClass
@@ -399,7 +399,7 @@ public:
         this->Memory.dayAverageSpeed = this->avgSpeed;
         this->Memory.dayMaxSpeed = this->maxSpeed;
         EEPROM.put(MEM_ADDRESS, this->Memory);
-        EEPROM.put(ODO_ADDRESS, this->Memory.totalDistance);
+        // EEPROM.put(ODO_ADDRESS, this->Memory.totalDistance);
 
         if ( DEBUG ) {
             this->_printMemory("STORE");
