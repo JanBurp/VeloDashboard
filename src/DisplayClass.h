@@ -232,7 +232,7 @@ public:
             format = "%-6.1f";
         }
         char distStr[9];
-        snprintf(distStr,10, format.c_str(), this->Speed->getDistance() );
+        snprintf(distStr,10, format.c_str(), this->Speed->getCurrentDistance() );
         OLED.setTextColor(WHITE);
         OLED.setTextSize(2);
         OLED.setCursor(x,y);
@@ -344,8 +344,8 @@ public:
     void show_today_speeds()
     {
         this->show_item_float(four,1,"Gemiddeld","%-6.1f", this->Speed->getAvgSpeed());
-        this->show_item_float(four,2,"Maximum","% 6.1f", this->Speed->getMaxSpeed());
-        this->show_item_time(four,3,"Tijd", this->Speed->getTripTime());
+        this->show_item_float(four,2,"Maximum","% 6.1f", this->Speed->getCurrentMaxSpeed());
+        this->show_item_time(four,3,"Tijd", this->Speed->getCurrentTime());
         this->show_item_time(four,4,"Totaal", this->Speed->getTotalTime(),true);
     }
 

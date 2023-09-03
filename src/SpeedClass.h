@@ -5,7 +5,7 @@
 
 #define PAUSE_THRESHOLD 1.0
 
-#define MEM_ADDRESS 4
+// #define MEM_ADDRESS 4
 #define NEW_ADDRESS 50
 
 class SpeedClass
@@ -15,24 +15,15 @@ private:
     bool started = false;
     bool paused = true;
 
-    MemoryStruct Memory;
-    newMemoryStruct newMemory;
-
     // Speed sensor
     bool SpeedSensor = true;
     volatile unsigned long lastSensorTimeMs = 0;
     volatile unsigned long sensorTimesMs[SENSOR_BUFF] = {0};
 
-    // Times in ms
-    unsigned long startTimeMs = 0;
-    unsigned long tempTimeMs = 0;
-    unsigned long timeMs = 0;
+    newMemoryStruct Memory;
 
-    // all in meters or meters/per hour
-    float distance = 0.0;
+    unsigned long tempTimeMs = 0;
     float speed = 0.0;
-    float maxSpeed = 0.0;
-    float avgSpeed = 0.0;
 
 public:
     void init()
@@ -41,18 +32,42 @@ public:
         if ( DEBUG ) {
             this->_printMemory("READ");
         }
-
+        this->started = false;
+        this->paused = true;
     }
 
-    void startCounter()
+    void start()
     {
         this->started = true;
         this->paused = false;
-        this->startTimeMs = millis();
+    }
+
+    void startCurrent()
+    {
+        if (this->IsNewDay()) {
+            this->startDay();
+        }
+        else {
+            this->resetCurrent();
+        }
+    }
+
+    void continueCurrent()
+    {
         this->tempTimeMs = millis();
     }
 
-    void pauseCounter()
+    void resetCurrent()
+    {
+        this->tempTimeMs = millis();
+        this->Memory.currentDistance = 0.0;
+        this->Memory.currentStartTime = millis();
+        this->Memory.currentTime = 0.0;
+        this->Memory.currentAverageSpeed = 0.0;
+        this->Memory.currentMaxSpeed = 0.0;
+    }
+
+    void pauseCurrent()
     {
         if (!this->paused)
         {
@@ -61,37 +76,22 @@ public:
         }
     }
 
-    void continueCounter()
-    {
+    void unPauseCurrent() {
         this->paused = false;
         this->tempTimeMs = millis();
     }
 
-
-    void resetDay()
+    void startDay()
     {
         this->Memory.prevDistance = this->Memory.dayDistance;
+        this->Memory.prevTime = this->Memory.dayTime;
         this->Memory.prevAverageSpeed = this->Memory.dayAverageSpeed;
         this->Memory.prevMaxSpeed = this->Memory.dayMaxSpeed;
         this->Memory.dayDistance = 0.0;
-    }
-
-    void resetDistance()
-    {
-        this->distance = 0.0;
-        this->timeMs = 0.0;
-        this->started = false;
-        this->paused = true;
-    }
-
-    void continueDay()
-    {
-        this->started = true;
-        this->paused = true;
-        this->timeMs = this->Memory.dayTimeMovedSecs * 1000.0;
-        this->distance = this->Memory.dayDistance;
-        this->avgSpeed = this->Memory.dayAverageSpeed;
-        this->maxSpeed = this->Memory.dayMaxSpeed;
+        this->Memory.dayTime = 0.0;
+        this->Memory.dayAverageSpeed = 0.0;
+        this->Memory.dayMaxSpeed = 0.0;
+        this->resetCurrent();
     }
 
     bool IsNewDay()
@@ -221,11 +221,11 @@ public:
 
     float getAvgSpeed()
     {
-        return this->avgSpeed;
+        return this->Memory.currentAverageSpeed;
     }
 
     int speedDiffScale() {
-        float diff = this->speed - this->avgSpeed;
+        float diff = this->speed - this->Memory.currentAverageSpeed;
         int iDiff = abs(map(diff,-30,30,-9,9));
         if (iDiff>9) iDiff = 9;
         return abs(iDiff);
@@ -233,17 +233,17 @@ public:
 
     bool isFaster()
     {
-        return this->speed > this->avgSpeed;
+        return this->speed > this->Memory.currentAverageSpeed;
     }
 
-    float getMaxSpeed()
+    float getCurrentMaxSpeed()
     {
-        return this->maxSpeed;
+        return this->Memory.currentMaxSpeed;
     }
 
-    float getDistance()
+    float getCurrentDistance()
     {
-        return this->distance / 1000;
+        return this->Memory.currentDistance / 1000;
     }
 
     float getDayDistance()
@@ -253,12 +253,12 @@ public:
 
     float getTripDistance()
     {
-        return this->Memory.tripDistance / 1000;
+        return this->Memory.tripDistance1 / 1000;
     }
 
     void resetTripDistance()
     {
-        this->Memory.tripDistance = 0;
+        this->Memory.tripDistance1 = 0;
     }
 
     unsigned long getTotalDistance()
@@ -291,14 +291,14 @@ public:
         return this->Memory.prevMaxSpeed;
     }
 
-    unsigned long getTripTime()
+    unsigned long getCurrentTime()
     {
-        return this->timeMs;
+        return this->Memory.currentTime;
     }
 
     unsigned long getTotalTime()
     {
-        return millis() - this->startTimeMs;
+        return millis() - this->Memory.currentStartTime;
     }
 
     void loop()
@@ -340,7 +340,7 @@ public:
         // start
         if (movedDistance > 0 && !this->started)
         {
-            this->startCounter();
+            this->start();
         }
 
         if (!this->started)
@@ -349,9 +349,11 @@ public:
         }
 
         // Add moved distance to all distances
-        this->distance += movedDistance;
+        this->Memory.currentDistance += movedDistance;
         this->Memory.dayDistance += movedDistance;
-        this->Memory.tripDistance += movedDistance;
+        this->Memory.tripDistance1 += movedDistance;
+        this->Memory.tripDistance2 += movedDistance;
+        this->Memory.tripDistance3 += movedDistance;
         this->Memory.totalDistance += movedDistance;
 
         // Calc speeds
@@ -365,28 +367,28 @@ public:
         }
 
         // Calc AVG & MAX
-        this->avgSpeed = this->distance / (this->timeMs / 1000.0) * 3.6;
-        if (this->speed < 120.0 && this->speed >= this->maxSpeed)
+        this->Memory.currentAverageSpeed = this->Memory.currentDistance / (this->Memory.currentTime / 1000.0) * 3.6;
+        if (this->speed < 120.0 && this->speed >= this->Memory.currentMaxSpeed)
         {
-            this->maxSpeed = this->speed;
+            this->Memory.currentMaxSpeed = this->speed;
         }
-        if (this->avgSpeed > this->maxSpeed) {
-            this->avgSpeed = this->maxSpeed;
-        }
+        // if (this->Memory.currentAverageSpeed > this->Memory.currentMaxSpeed) {
+        //     this->Memory.currentAverageSpeed = this->Memory.currentMaxSpeed;
+        // }
 
         // Pause??
         if (this->speed <= PAUSE_THRESHOLD)
         {
-            this->pauseCounter();
+            this->pauseCurrent();
         }
 
         if (this->speed > PAUSE_THRESHOLD)
         {
             if (this->paused)
             {
-                this->continueCounter();
+                this->unPauseCurrent();
             }
-            this->timeMs += (now - this->tempTimeMs);
+            this->Memory.currentTime += (now - this->tempTimeMs);
             this->tempTimeMs = now;
             this->SpeedSensor = !this->SpeedSensor;
         }
@@ -398,52 +400,50 @@ public:
         {
             this->storeMemory();
         }
+
+        if ( DEBUG ) {
+            this->_printMemory("LOOP");
+        }
+
     }
 
     void storeMemory()
     {
         this->Memory.timestamp = now();
-        this->Memory.dayTimeMovedSecs = this->timeMs / 1000;
-        this->Memory.dayAverageSpeed = this->avgSpeed;
-        this->Memory.dayMaxSpeed = this->maxSpeed;
-        EEPROM.put(MEM_ADDRESS, this->Memory);
+        EEPROM.put(NEW_ADDRESS, this->Memory);
 
         // new struct
-        this->newMemory.timestamp           = this->Memory.timestamp;              // Time when data is stored
-        this->newMemory.totalDistance       = this->Memory.totalDistance;          // Total ODO
-        this->newMemory.tripDistance1       = this->Memory.tripDistance;           // trip totals 1..3
-        this->newMemory.tripDistance2       = 0;
-        this->newMemory.tripDistance3       = 0;
+        // this->newMemory.timestamp           = this->Memory.timestamp;              // Time when data is stored
+        // this->newMemory.totalDistance       = this->Memory.totalDistance;          // Total ODO
+        // this->newMemory.tripDistance1       = this->Memory.tripDistance;           // trip totals 1..3
+        // this->newMemory.tripDistance2       = 0;
+        // this->newMemory.tripDistance3       = 0;
 
-        this->newMemory.currentDistance     = this->distance;                      // current
-        this->newMemory.currentStartTime    = this->startTimeMs;
-        this->newMemory.currentTime         = this->timeMs;
-        this->newMemory.currentAverageSpeed = this->avgSpeed;
-        this->newMemory.currentMaxSpeed     = this->maxSpeed;
+        // this->newMemory.currentDistance     = this->Memory.currentDistance;                      // current
+        // this->newMemory.currentStartTime    = this->Memory.currentStartTime;
+        // this->newMemory.currentTime         = this->Memory.currentTime;
+        // this->newMemory.currentAverageSpeed = this->Memory.currentAverageSpeed;
+        // this->newMemory.currentMaxSpeed     = this->Memory.currentMaxSpeed;
 
-        this->newMemory.dayDistance         = this->Memory.dayDistance;            // day totals
-        this->newMemory.dayStartTime        = this->startTimeMs;
-        this->newMemory.dayTime             = this->timeMs;
-        this->newMemory.dayAverageSpeed     = this->Memory.dayAverageSpeed;
-        this->newMemory.dayMaxSpeed         = this->Memory.dayMaxSpeed;
+        // this->newMemory.dayDistance         = this->Memory.dayDistance;            // day totals
+        // this->newMemory.dayStartTime        = this->Memory.currentStartTime;
+        // this->newMemory.dayTime             = this->Memory.currentTime;
+        // this->newMemory.dayAverageSpeed     = this->Memory.dayAverageSpeed;
+        // this->newMemory.dayMaxSpeed         = this->Memory.dayMaxSpeed;
 
-        this->newMemory.prevDistance        = this->Memory.prevDistance;        // prev day
-        this->newMemory.prevTime            = this->timeMs;
-        this->newMemory.prevAverageSpeed    = this->Memory.prevAverageSpeed;
-        this->newMemory.prevMaxSpeed        = this->Memory.prevMaxSpeed;
+        // this->newMemory.prevDistance        = this->Memory.prevDistance;        // prev day
+        // this->newMemory.prevTime            = this->Memory.currentTime;
+        // this->newMemory.prevAverageSpeed    = this->Memory.prevAverageSpeed;
+        // this->newMemory.prevMaxSpeed        = this->Memory.prevMaxSpeed;
 
-        this->newMemory.wheelCircumference  = this->Memory.wheelCircumference;     // config
-        EEPROM.put(NEW_ADDRESS, this->newMemory);
-
-        if ( DEBUG ) {
-            this->_printMemory("STORE");
-        }
+        // this->newMemory.wheelCircumference  = this->Memory.wheelCircumference;     // config
+        // EEPROM.put(NEW_ADDRESS, this->newMemory);
     }
 
-    MemoryStruct readMemory()
+    newMemoryStruct readMemory()
     {
-        MemoryStruct tmpMemory;
-        EEPROM.get(MEM_ADDRESS, tmpMemory);
+        newMemoryStruct tmpMemory;
+        EEPROM.get(NEW_ADDRESS, tmpMemory);
         return tmpMemory;
     }
 
@@ -453,17 +453,15 @@ public:
         // Serial.print("stamp: ");Serial.print(this->Memory.timestamp);Serial.print("\t");
         Serial.print("totalDistance: ");Serial.print(this->Memory.totalDistance);Serial.print("\t");
         // Serial.print("tripDistance: ");Serial.print(this->Memory.tripDistance/ 1000);Serial.print("\t");
-        Serial.print("dayDistance: ");Serial.print(this->Memory.dayDistance/1000);Serial.print("\t");
-        Serial.print("dayTimeMovedSecs: ");Serial.print(this->Memory.dayTimeMovedSecs);Serial.print("\t");
-        Serial.print("dayAverageSpeed: ");Serial.print(this->Memory.dayAverageSpeed);Serial.print("\t");
+        // Serial.print("dayDistance: ");Serial.print(this->Memory.dayDistance/1000);Serial.print("\t");
+        // Serial.print("dayTime: ");Serial.print(this->Memory.dayTime);Serial.print("\t");
+        // Serial.print("dayAverageSpeed: ");Serial.print(this->Memory.dayAverageSpeed);Serial.print("\t");
 
         Serial.print("Speed: ");Serial.print(this->speed);Serial.print("\t");
-        Serial.print("distance: ");Serial.print(this->distance/1000);Serial.print("\t");
-        Serial.print("tripTime: ");Serial.print(this->timeMs);Serial.print("\t");
-        Serial.print("avgSpeed: ");Serial.print(this->avgSpeed);Serial.print("\t");
-        Serial.print("maxSpeed: ");Serial.print(this->maxSpeed);Serial.print("\t");
-
-
+        Serial.print("currentDistance: ");Serial.print(this->Memory.currentDistance/1000);Serial.print("\t");
+        Serial.print("currentTime: ");Serial.print(this->Memory.currentTime);Serial.print("\t");
+        Serial.print("CurrentAvgSpeed: ");Serial.print(this->Memory.currentAverageSpeed);Serial.print("\t");
+        Serial.print("CurrentMaxSpeed: ");Serial.print(this->Memory.currentMaxSpeed);Serial.print("\t");
 
         // Serial.print("dayMaxSpeed: ");Serial.print(this->Memory.dayMaxSpeed);Serial.print("\t");
         // Serial.print("prevDistance: ");Serial.print(this->Memory.prevDistance);Serial.print("\t");

@@ -132,14 +132,14 @@ void setup()
         Display.show();
         Dashboard.waitForButtonPress();
         if ( Dashboard.isLightsUp() ) {
-            Speed.continueDay();
+            Speed.continueCurrent();
         }
         else {
-            Speed.resetDistance();
+            Speed.startCurrent();
         }
     }
     else {
-        Speed.resetDay();
+        Speed.startDay();
     }
 
     Display.setDisplayMode(DISPLAY_HOME);
