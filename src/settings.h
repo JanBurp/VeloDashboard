@@ -41,34 +41,39 @@ typedef struct {
     unsigned long   dayTimeMovedSecs;
     float           dayAverageSpeed;
     float           dayMaxSpeed;
-    float           prevDayDistance;
-    float           prevDayAverage;
-    float           prevDayMaxSpeed;
+    float           prevDistance;
+    float           prevAverageSpeed;
+    float           prevMaxSpeed;
     float           wheelCircumference;
 } MemoryStruct;
 // total bytes = 4 * 11 = 44 bytes
 
 
+// total bytes = 4 * 20 = 80 bytes
 typedef struct {
     unsigned long   timestamp;                  // Time when data is stored
+
     unsigned long   totalDistance;              // ODO (meters)
     float           tripDistance1;              // sub total 1..3
     float           tripDistance2;
     float           tripDistance3;
 
-    float           currentDistance;            // current trip (secs)
-    unsigned long   currentTimeSecs;
+    float           currentDistance;            // current trip
+    unsigned long   currentStartTime;
+    unsigned long   currentTime;
     float           currentAverageSpeed;
     float           currentMaxSpeed;
 
     float           dayDistance;                // day totals
-    unsigned long   dayTimeSecs;
+    unsigned long   dayStartTime;
+    unsigned long   dayTime;
     float           dayAverageSpeed;
     float           dayMaxSpeed;
 
-    float           prevDayDistance;            // prev day
-    float           prevDayAverage;
-    float           prevDayMaxSpeed;
+    float           prevDistance;               // prev day
+    unsigned long   prevTime;
+    float           prevAverageSpeed;
+    float           prevMaxSpeed;
 
     float           wheelCircumference;         // config
 } newMemoryStruct;

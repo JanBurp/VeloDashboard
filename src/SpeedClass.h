@@ -70,9 +70,9 @@ public:
 
     void resetDay()
     {
-        this->Memory.prevDayDistance = this->Memory.dayDistance;
-        this->Memory.prevDayAverage = this->Memory.dayAverageSpeed;
-        this->Memory.prevDayMaxSpeed = this->Memory.dayMaxSpeed;
+        this->Memory.prevDistance = this->Memory.dayDistance;
+        this->Memory.prevAverageSpeed = this->Memory.dayAverageSpeed;
+        this->Memory.prevMaxSpeed = this->Memory.dayMaxSpeed;
         this->Memory.dayDistance = 0.0;
     }
 
@@ -278,17 +278,17 @@ public:
 
     float getPrevDistance()
     {
-        return this->Memory.prevDayDistance / 1000;
+        return this->Memory.prevDistance / 1000;
     }
 
     float getPrevAvgSpeed()
     {
-        return this->Memory.prevDayAverage;
+        return this->Memory.prevAverageSpeed;
     }
 
     float getPrevMaxSpeed()
     {
-        return this->Memory.prevDayMaxSpeed;
+        return this->Memory.prevMaxSpeed;
     }
 
     unsigned long getTripTime()
@@ -414,17 +414,24 @@ public:
         this->newMemory.tripDistance1       = this->Memory.tripDistance;           // trip totals 1..3
         this->newMemory.tripDistance2       = 0;
         this->newMemory.tripDistance3       = 0;
+
         this->newMemory.currentDistance     = this->distance;                      // current
-        this->newMemory.currentTimeSecs     = this->timeMs;
+        this->newMemory.currentStartTime    = this->startTimeMs;
+        this->newMemory.currentTime         = this->timeMs;
         this->newMemory.currentAverageSpeed = this->avgSpeed;
         this->newMemory.currentMaxSpeed     = this->maxSpeed;
+
         this->newMemory.dayDistance         = this->Memory.dayDistance;            // day totals
-        this->newMemory.dayTimeSecs         = this->Memory.dayTimeMovedSecs;
+        this->newMemory.dayStartTime        = this->startTimeMs;
+        this->newMemory.dayTime             = this->timeMs;
         this->newMemory.dayAverageSpeed     = this->Memory.dayAverageSpeed;
         this->newMemory.dayMaxSpeed         = this->Memory.dayMaxSpeed;
-        this->newMemory.prevDayDistance     = this->Memory.prevDayDistance;        // prev day
-        this->newMemory.prevDayAverage      = this->Memory.prevDayAverage;
-        this->newMemory.prevDayMaxSpeed     = this->Memory.prevDayMaxSpeed;
+
+        this->newMemory.prevDistance        = this->Memory.prevDistance;        // prev day
+        this->newMemory.prevTime            = this->timeMs;
+        this->newMemory.prevAverageSpeed    = this->Memory.prevAverageSpeed;
+        this->newMemory.prevMaxSpeed        = this->Memory.prevMaxSpeed;
+
         this->newMemory.wheelCircumference  = this->Memory.wheelCircumference;     // config
         EEPROM.put(NEW_ADDRESS, this->newMemory);
 
@@ -459,9 +466,9 @@ public:
 
 
         // Serial.print("dayMaxSpeed: ");Serial.print(this->Memory.dayMaxSpeed);Serial.print("\t");
-        // Serial.print("prevDayDistance: ");Serial.print(this->Memory.prevDayDistance);Serial.print("\t");
-        // Serial.print("prevDayAverage: ");Serial.print(this->Memory.prevDayAverage);Serial.print("\t");
-        // Serial.print("prevDayMaxSpeed: ");Serial.print(this->Memory.prevDayMaxSpeed);Serial.print("\t");
+        // Serial.print("prevDistance: ");Serial.print(this->Memory.prevDistance);Serial.print("\t");
+        // Serial.print("prevAverageSpeed: ");Serial.print(this->Memory.prevAverageSpeed);Serial.print("\t");
+        // Serial.print("prevMaxSpeed: ");Serial.print(this->Memory.prevMaxSpeed);Serial.print("\t");
         Serial.println();
     }
 
