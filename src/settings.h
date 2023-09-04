@@ -32,6 +32,7 @@ Wheel Wheels[NR_ETRTO_WHEELS] = {
 };
 
 #define BIKE_DISTANCE_START         8060
+#define MAX_TIME_SHORT_BRAKE        21600 // 6 hours = 60*60*6 seconds
 
 // total bytes = 4 * 20 = 80 bytes
 typedef struct {

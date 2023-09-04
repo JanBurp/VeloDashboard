@@ -101,6 +101,10 @@ public:
         return (time.Day != day() || time.Month != month());
     }
 
+    bool IsShortBrake() {
+        return (now() - this->Memory.timestamp) < MAX_TIME_SHORT_BRAKE;
+    }
+
     bool isStarted()
     {
         return this->started;
@@ -423,7 +427,9 @@ public:
     void _printMemory(const char message[]) {
         Serial.print(message);
         Serial.print("\t");
-        // Serial.print("stamp: ");Serial.print(this->Memory.timestamp);Serial.print("\t");
+        Serial.print("now: ");Serial.print(now());Serial.print("\t");
+        Serial.print("stamp: ");Serial.print(this->Memory.timestamp);Serial.print("\t");
+        Serial.print("diff (sec): ");Serial.print(now() - this->Memory.timestamp);Serial.print("\t");
         Serial.print("totalDistance: ");Serial.print(this->Memory.totalDistance);Serial.print("\t");
         // Serial.print("tripDistance: ");Serial.print(this->Memory.tripDistance/ 1000);Serial.print("\t");
         Serial.print("dayDistance: ");Serial.print(this->Memory.dayDistance/1000);Serial.print("\t");
