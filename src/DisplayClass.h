@@ -153,14 +153,13 @@ public:
 
             // Faster / Slower than average
             if ( !this->Speed->isPaused() ) {
-                int diff = this->Speed->speedDiffScale();
-                int x = SCREEN_WIDTH - 18 + map(diff,0,9,7,0);
+                // int diff = this->Speed->speedDiffScale();
+                int x = SCREEN_WIDTH - 18;
                 int y = 0;
-                int w = map(diff,0,9,1,7) * 2;
-                int h = map(diff,0,9,1,5) * 2;
+                int w = 14;
+                int h = 10;
                 if (this->Speed->isFaster())
                 {
-                    y = y + map(diff,0,9,8,0);
                     OLED.fillTriangle(x, y + h, x + w / 2, y, x + w, y + h, WHITE);
                 }
                 else
