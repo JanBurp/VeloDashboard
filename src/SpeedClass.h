@@ -371,14 +371,16 @@ public:
         }
 
         // Calc AVG & MAX
-        this->Memory.currentAverageSpeed = this->Memory.currentDistance / (this->Memory.currentTime / 1000.0) * 3.6;
-        if (this->speed < 120.0 && this->speed >= this->Memory.currentMaxSpeed)
-        {
-            this->Memory.currentMaxSpeed = this->speed;
+        if (this->Memory.currentDistance > 0.1 && this->Memory.currentTime > 1000) {
+            this->Memory.currentAverageSpeed = this->Memory.currentDistance / (this->Memory.currentTime / 1000.0) * 3.6;
+            if (this->speed < 120.0 && this->speed >= this->Memory.currentMaxSpeed)
+            {
+                this->Memory.currentMaxSpeed = this->speed;
+            }
+            if (this->Memory.currentAverageSpeed > this->Memory.currentMaxSpeed) {
+                this->Memory.currentAverageSpeed = this->Memory.currentMaxSpeed;
+            }
         }
-        // if (this->Memory.currentAverageSpeed > this->Memory.currentMaxSpeed) {
-        //     this->Memory.currentAverageSpeed = this->Memory.currentMaxSpeed;
-        // }
 
         // Pause??
         if (this->speed <= PAUSE_THRESHOLD)
