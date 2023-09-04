@@ -186,7 +186,13 @@ void readButtons()
         // UP - DOWN
         if ( Display.isResetTripMenu() ) {
             if ( Dashboard.isLightsUp() )  {
-                Speed.resetTripDistance();
+                Speed.resetTripDistance(1);
+            }
+            if ( Dashboard.isLightsDown() )  {
+                Speed.resetTripDistance(2);
+            }
+            if ( Dashboard.isIndicatorLeft() )  {
+                Speed.resetTripDistance(3);
             }
         }
         else if ( Display.isSetClockMenu() ) {

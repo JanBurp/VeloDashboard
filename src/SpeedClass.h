@@ -255,14 +255,38 @@ public:
         return this->Memory.dayDistance / 1000;
     }
 
-    float getTripDistance()
+    float getTripDistance(int trip = 1)
     {
-        return this->Memory.tripDistance1 / 1000;
+        float dist = 0;
+        switch (trip)
+        {
+        case 1:
+            dist = this->Memory.tripDistance1;
+            break;
+        case 2:
+            dist = this->Memory.tripDistance2;
+            break;
+        case 3:
+            dist = this->Memory.tripDistance3;
+            break;
+        }
+        return dist / 1000;
     }
 
-    void resetTripDistance()
+    void resetTripDistance(int trip = 1)
     {
-        this->Memory.tripDistance1 = 0;
+        switch (trip)
+        {
+        case 1:
+            this->Memory.tripDistance1 = 0;
+            break;
+        case 2:
+            this->Memory.tripDistance2 = 0;
+            break;
+        case 3:
+            this->Memory.tripDistance3 = 0;
+            break;
+        }
     }
 
     unsigned long getTotalDistance()

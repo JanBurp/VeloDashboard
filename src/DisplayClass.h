@@ -19,6 +19,7 @@
 Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 enum DisplayType {
+    settings,
     three,
     four,
 };
@@ -335,9 +336,9 @@ public:
 
     void show_today_distances()
     {
-        this->show_item_float(three,1,"Vandaag","% 6.1f",this->Speed->getDayDistance() );
-        this->show_item_float(three,2,"Vorige","%-6.1f",this->Speed->getPrevDistance() );
-        this->show_item_float(three,3,"Tocht","% 6.1f",this->Speed->getTripDistance() );
+        this->show_item_float(four,1,"Vandaag","%-6.1f",this->Speed->getDayDistance() );
+        this->show_item_float(four,3,"Vorige","%-6.1f",this->Speed->getPrevDistance() );
+        this->show_item_float(four,4,"Tocht","% 6.1f",this->Speed->getTripDistance() );
     }
 
     void show_today_speeds()
@@ -348,6 +349,12 @@ public:
         this->show_item_time(four,4,"Totaal", this->Speed->getTotalTime(),true);
     }
 
+    // void show_trips() {
+    //     this->show_item_float(four,1,"Tocht 1","%-6.1f",this->Speed->getTripDistance(1) );
+    //     this->show_item_float(four,3,"Tocht 2","%-6.1f",this->Speed->getTripDistance(2) );
+    //     this->show_item_float(four,4,"Tocht 3","% 6.1f",this->Speed->getTripDistance(3) );
+    // }
+
     // void show_prev_speed() {
     //     this->show_item_float(three,1,"Avg","% 6.1f", this->Speed->getPrevAvgSpeed());
     //     this->show_item_float(three,2,"Max","% 6.1f", this->Speed->getPrevMaxSpeed());
@@ -356,8 +363,11 @@ public:
     void show_totals() {
         int Odo = this->Speed->getTotalDistance();
         int Quest = Odo + BIKE_DISTANCE_START;
-        this->show_item_float(three,1,"Totaal","%6.0f",Odo);
-        this->show_item_float(three,3,"Quest","% 6.0f",Quest);
+        this->show_item_float(four,1,"Totaal","%-6.0f",Odo);
+        this->show_item_float(four,2,"Quest","% 6.0f",Quest);
+        this->show_item_float(four,3,"Tocht 2","%-6.0f",this->Speed->getTripDistance(2));
+        this->show_item_float(four,4,"Tocht 3","% 6.0f",this->Speed->getTripDistance(2));
+
     }
 
     void off() {
@@ -368,6 +378,54 @@ public:
     }
 
     void show_item_string(DisplayType type, int row, const char label[], const char value[] ) {
+        if (type==settings) {
+            if (row ==1) {
+                OLED.setTextSize(1);
+                OLED.setCursor(1, 16);
+                char labelStr[10];
+                snprintf(labelStr,11, "%s", label);
+                OLED.print(labelStr);
+                OLED.setTextSize(2);
+                OLED.setCursor(SCREEN_HALF_WIDTH - 32, 10);
+                char valueStr[8];
+                snprintf(valueStr,9, "%8s", value);
+                OLED.print(valueStr);
+            }
+            if (row ==2) {
+                OLED.setTextSize(1);
+                OLED.setCursor(1, 28);
+                char labelStr[10];
+                snprintf(labelStr,11, "%s", label);
+                OLED.print(labelStr);
+                OLED.setCursor(SCREEN_HALF_WIDTH + 16, 32);
+                char valueStr[8];
+                snprintf(valueStr,9, "%8s", value);
+                OLED.print(valueStr);
+            }
+            if (row ==3) {
+                OLED.setTextSize(1);
+                OLED.setCursor(1, 42);
+                char labelStr[10];
+                snprintf(labelStr,11, "%s", label);
+                OLED.print(labelStr);
+                OLED.setCursor(SCREEN_HALF_WIDTH + 16, 42);
+                char valueStr[8];
+                snprintf(valueStr,9, "%8s", value);
+                OLED.print(valueStr);
+            }
+
+
+
+            if (row==4) {
+                OLED.setTextSize(1);
+                OLED.setCursor(1, SCREEN_HEIGHT - 10);
+                OLED.print(label);
+                OLED.setTextSize(2);
+                OLED.setCursor(1, SCREEN_HEIGHT - 10);
+                OLED.print(value);
+            }
+        }
+
         if (type==three) {
             if (row ==1) {
                 OLED.setTextSize(1);
@@ -554,10 +612,10 @@ public:
     }
 
     void showCursor() {
-        int w = 18;
-        int h = 4;
+        int w = 12;
+        int h = 3;
         int x = SCREEN_WIDTH - 1 - this->cursorPosition * w;
-        int y = SCREEN_HALF_HEIGHT + 6;
+        int y = SCREEN_HALF_HEIGHT - 4;
         OLED.fillRect( x-w, y, w,h, BLACK);
     }
 
@@ -566,28 +624,30 @@ public:
         if ( this->Speed->getTripDistance() >= 100 ) {
             format = "% 6.1f";
         }
-        this->show_item_float(three,1,"TRIP",format,this->Speed->getTripDistance() );
-        this->show_item_string(three,2,"RESET => Press UP","");
+        this->show_item_float(settings,1,"TRIP 1",format,this->Speed->getTripDistance(1) );
+        this->show_item_float(settings,2,"TRIP 2",format,this->Speed->getTripDistance(2) );
+        this->show_item_float(settings,3,"TRIP 3",format,this->Speed->getTripDistance(3) );
+        this->show_item_string(settings,4,"RESET: UP DOWN LEFT","");
     }
 
     void showSetTime() {
-        this->show_item_clock(three,1,"Clock",hour(),minute());
+        this->show_item_clock(settings,1,"Clock",hour(),minute());
         this->showCursor();
-        this->show_item_string(three,2,"LEFT/RIGHT - UP/DOWN","");
+        this->show_item_string(settings,4,"LEFT/RIGHT - UP/DOWN","");
     }
 
     void showTotalEdit() {
         int Odo = this->Speed->getTotalDistance();
-        this->show_item_float(three,1,"ME","% 6.0f",Odo);
+        this->show_item_float(settings,1,"ME","% 6.0f",Odo);
         this->showCursor();
-        this->show_item_string(three,2,"LEFT/RIGHT - UP/DOWN","");
+        this->show_item_string(settings,4,"LEFT/RIGHT - UP/DOWN","");
     }
 
     void showTyreEdit() {
         int wheelNr = this->Speed->getClosestETRTO();
-        this->show_item_float(three,1,Wheels[wheelNr].name, "% 6.0f", this->Speed->getWheelCircumference() * 1000 );
+        this->show_item_float(settings,1,Wheels[wheelNr].name, "% 6.0f", this->Speed->getWheelCircumference() * 1000 );
         this->showCursor();
-        this->show_item_string(three,2,"LEFT/RIGHT - UP/DOWN","");
+        this->show_item_string(settings,4,"LEFT/RIGHT - UP/DOWN","");
     }
 
     void show()
@@ -637,6 +697,9 @@ public:
                 case DISPLAY_SPEEDS:
                     this->show_today_speeds();
                     break;
+                // case DISPLAY_TRIPS:
+                //     this->show_trips();
+                //     break;
                 case DISPLAY_TOTALS:
                     this->show_totals();
                     break;
