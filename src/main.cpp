@@ -127,7 +127,7 @@ void setup()
         LEDstrips.startup_animation();
     }
 
-    if ( ! Speed.IsNewDay() ) {
+    if ( ! Speed.IsNewDay() && Speed.getCurrentDistance() > 0.1 ) {
         Display.askStartupQuestion();
         Display.show();
         Dashboard.waitForButtonPress();
