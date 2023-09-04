@@ -20,7 +20,7 @@ private:
     volatile unsigned long lastSensorTimeMs = 0;
     volatile unsigned long sensorTimesMs[SENSOR_BUFF] = {0};
 
-    newMemoryStruct Memory;
+    MemoryStruct Memory;
 
     unsigned long tempTimeMs = 0;
     float speed = 0.0;
@@ -411,38 +411,11 @@ public:
     {
         this->Memory.timestamp = now();
         EEPROM.put(NEW_ADDRESS, this->Memory);
-
-        // new struct
-        // this->newMemory.timestamp           = this->Memory.timestamp;              // Time when data is stored
-        // this->newMemory.totalDistance       = this->Memory.totalDistance;          // Total ODO
-        // this->newMemory.tripDistance1       = this->Memory.tripDistance;           // trip totals 1..3
-        // this->newMemory.tripDistance2       = 0;
-        // this->newMemory.tripDistance3       = 0;
-
-        // this->newMemory.currentDistance     = this->Memory.currentDistance;                      // current
-        // this->newMemory.currentStartTime    = this->Memory.currentStartTime;
-        // this->newMemory.currentTime         = this->Memory.currentTime;
-        // this->newMemory.currentAverageSpeed = this->Memory.currentAverageSpeed;
-        // this->newMemory.currentMaxSpeed     = this->Memory.currentMaxSpeed;
-
-        // this->newMemory.dayDistance         = this->Memory.dayDistance;            // day totals
-        // this->newMemory.dayStartTime        = this->Memory.currentStartTime;
-        // this->newMemory.dayTime             = this->Memory.currentTime;
-        // this->newMemory.dayAverageSpeed     = this->Memory.dayAverageSpeed;
-        // this->newMemory.dayMaxSpeed         = this->Memory.dayMaxSpeed;
-
-        // this->newMemory.prevDistance        = this->Memory.prevDistance;        // prev day
-        // this->newMemory.prevTime            = this->Memory.currentTime;
-        // this->newMemory.prevAverageSpeed    = this->Memory.prevAverageSpeed;
-        // this->newMemory.prevMaxSpeed        = this->Memory.prevMaxSpeed;
-
-        // this->newMemory.wheelCircumference  = this->Memory.wheelCircumference;     // config
-        // EEPROM.put(NEW_ADDRESS, this->newMemory);
     }
 
-    newMemoryStruct readMemory()
+    MemoryStruct readMemory()
     {
-        newMemoryStruct tmpMemory;
+        MemoryStruct tmpMemory;
         EEPROM.get(NEW_ADDRESS, tmpMemory);
         return tmpMemory;
     }
@@ -453,15 +426,15 @@ public:
         // Serial.print("stamp: ");Serial.print(this->Memory.timestamp);Serial.print("\t");
         Serial.print("totalDistance: ");Serial.print(this->Memory.totalDistance);Serial.print("\t");
         // Serial.print("tripDistance: ");Serial.print(this->Memory.tripDistance/ 1000);Serial.print("\t");
-        // Serial.print("dayDistance: ");Serial.print(this->Memory.dayDistance/1000);Serial.print("\t");
+        Serial.print("dayDistance: ");Serial.print(this->Memory.dayDistance/1000);Serial.print("\t");
         // Serial.print("dayTime: ");Serial.print(this->Memory.dayTime);Serial.print("\t");
         // Serial.print("dayAverageSpeed: ");Serial.print(this->Memory.dayAverageSpeed);Serial.print("\t");
 
         Serial.print("Speed: ");Serial.print(this->speed);Serial.print("\t");
         Serial.print("currentDistance: ");Serial.print(this->Memory.currentDistance/1000);Serial.print("\t");
         Serial.print("currentTime: ");Serial.print(this->Memory.currentTime);Serial.print("\t");
-        Serial.print("CurrentAvgSpeed: ");Serial.print(this->Memory.currentAverageSpeed);Serial.print("\t");
-        Serial.print("CurrentMaxSpeed: ");Serial.print(this->Memory.currentMaxSpeed);Serial.print("\t");
+        // Serial.print("CurrentAvgSpeed: ");Serial.print(this->Memory.currentAverageSpeed);Serial.print("\t");
+        // Serial.print("CurrentMaxSpeed: ");Serial.print(this->Memory.currentMaxSpeed);Serial.print("\t");
 
         // Serial.print("dayMaxSpeed: ");Serial.print(this->Memory.dayMaxSpeed);Serial.print("\t");
         // Serial.print("prevDistance: ");Serial.print(this->Memory.prevDistance);Serial.print("\t");

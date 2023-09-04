@@ -33,22 +33,6 @@ Wheel Wheels[NR_ETRTO_WHEELS] = {
 
 #define BIKE_DISTANCE_START         8060
 
-typedef struct {
-    unsigned long   timestamp;              // Time when data is stored
-    unsigned long   totalDistance;
-    float           tripDistance;
-    float           dayDistance;
-    unsigned long   dayTimeMovedSecs;
-    float           dayAverageSpeed;
-    float           dayMaxSpeed;
-    float           prevDistance;
-    float           prevAverageSpeed;
-    float           prevMaxSpeed;
-    float           wheelCircumference;
-} MemoryStruct;
-// total bytes = 4 * 11 = 44 bytes
-
-
 // total bytes = 4 * 20 = 80 bytes
 typedef struct {
     unsigned long   timestamp;                  // Time when data is stored
@@ -76,7 +60,7 @@ typedef struct {
     float           prevMaxSpeed;
 
     float           wheelCircumference;         // config
-} newMemoryStruct;
+} MemoryStruct;
 
 
 
