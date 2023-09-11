@@ -127,19 +127,24 @@ void setup()
         LEDstrips.startup_animation();
     }
 
-    if ( !Speed.IsNewDay() && Speed.IsShortBrake() && Speed.getCurrentDistance() > 0.2 ) {
-        Display.askStartupQuestion();
-        Display.show();
-        Dashboard.waitForButtonPress();
-        if ( Dashboard.isLightsUp() ) {
-            Speed.continueCurrent();
-        }
-        else {
-            Speed.startCurrent();
-        }
+    if ( Speed.IsNewDay() ) {
+        Speed.startDay();
     }
     else {
-        Speed.startDay();
+        if ( Speed.IsShortBrake() ) {
+            Display.askStartupQuestion();
+            Display.show();
+            Dashboard.waitForButtonPress();
+            if ( Dashboard.isLightsUp() ) {
+                Speed.continueCurrent();
+            }
+            else {
+                Speed.resetCurrent();
+            }
+        }
+        else {
+            Speed.startDay();
+        }
     }
 
     Display.setDisplayMode(DISPLAY_HOME);

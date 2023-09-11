@@ -42,15 +42,15 @@ public:
         this->paused = false;
     }
 
-    void startCurrent()
-    {
-        if (this->IsNewDay()) {
-            this->startDay();
-        }
-        else {
-            this->resetCurrent();
-        }
-    }
+    // void startCurrent()
+    // {
+    //     if (this->IsNewDay()) {
+    //         this->startDay();
+    //     }
+    //     else {
+    //         this->resetCurrent();
+    //     }
+    // }
 
     void continueCurrent()
     {
