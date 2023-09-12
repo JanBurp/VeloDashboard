@@ -743,4 +743,10 @@ public:
     }
 
 
+    void setContrast(byte contrast) {
+        OLED.ssd1306_command(SSD1306_SETCONTRAST);
+        OLED.ssd1306_command(contrast);
+    }
+
+
 };
