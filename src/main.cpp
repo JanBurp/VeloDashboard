@@ -84,6 +84,9 @@ void setup()
     if (DEBUG)
     {
         Serial.begin(115200);
+        Serial.println("\n");
+        Serial.print("F_CPU_ACTUAL = (Mhz)\t");
+        Serial.println(F_CPU_ACTUAL / 1000000);
     }
 
     // Disable unused pins (saves a bit current)

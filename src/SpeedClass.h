@@ -339,6 +339,14 @@ public:
             int value = analogRead(PIN_TEST_SPEED);
             unsigned long sensorTime = map(value,0,1023,10000, 1);
             // this->speed = map(value, 0, 1023, 0, 100);
+            // if (DEBUG)
+            // {
+            //     Serial.print("READ: ");
+            //     Serial.print(value);
+            //     Serial.print(" \t ");
+            //     Serial.print(sensorTime);
+            // }
+
             for (size_t i = 0; i < SENSOR_BUFF; i++)
             {
                 this->sensorTimesMs[i] = sensorTime;
@@ -364,6 +372,13 @@ public:
                 buffLength--;
             }
         }
+
+        // if (DEBUG)
+        // {
+        //     Serial.print("MOVED:");
+        //     Serial.println(movedDistance);
+        // }
+
 
         // start
         if (movedDistance > 0 && !this->started)
@@ -472,6 +487,9 @@ public:
         // Serial.print("prevDistance: ");Serial.print(this->Memory.prevDistance);Serial.print("\t");
         // Serial.print("prevAverageSpeed: ");Serial.print(this->Memory.prevAverageSpeed);Serial.print("\t");
         // Serial.print("prevMaxSpeed: ");Serial.print(this->Memory.prevMaxSpeed);Serial.print("\t");
+
+        // Serial.print("wheelCircumference: ");Serial.print(this->Memory.wheelCircumference);Serial.print("\t");
+
         Serial.println();
     }
 
