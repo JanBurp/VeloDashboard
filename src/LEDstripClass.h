@@ -169,19 +169,17 @@ public:
             num_leds -= 10;
         }
 
-        // if (DEBUG)
-        // {
-        //     Serial.print("BLINK");
-        //     Serial.print("\tPercentage:\t");
-        //     Serial.print(percentage);
-        //     Serial.print("\tLEDS:\t");
-        //     Serial.print(num_leds);
-        //     Serial.println();
-        // }
+        int start_leds = 0;
+        if (num_leds>NUM_LIGHT_LEDS) {
+            start_leds = num_leds - NUM_LIGHT_LEDS;
+        }
+        int end_leds = NUM_LEDS - start_leds;
 
-        this->set(this->indicatorStrip, 0, num_leds, ORANGE);
+        this->set(this->indicatorStrip, 0, start_leds, BLACK);
+        this->set(this->indicatorStrip, start_leds, num_leds, ORANGE);
         this->set(this->indicatorStrip, num_leds, NUM_LEDS - num_leds, BLACK);
-        this->set(this->indicatorStrip, NUM_LEDS - num_leds, NUM_LEDS, ORANGE);
+        this->set(this->indicatorStrip, NUM_LEDS - num_leds, end_leds, ORANGE);
+        this->set(this->indicatorStrip, end_leds, NUM_LEDS, BLACK);
 
         if ((millis() - this->indicatorTimer) >= INDICATOR_TIMER_INT)
         {
@@ -200,12 +198,6 @@ public:
 
     void blink_animation_stop()
     {
-        // if (DEBUG)
-        // {
-        //     Serial.print("STOP - ");
-        //     Serial.print(this->indicatorStrip);
-        //     Serial.println();
-        // }
         stripTimer.stop();
         this->set_all(this->indicatorStrip, BLACK);
         this->indicatorTimer = 0;
