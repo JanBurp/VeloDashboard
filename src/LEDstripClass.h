@@ -214,8 +214,8 @@ public:
 
     void normal(int strip = BOTH)
     {
-        CRGB white = WHITE_DIM;
-        CRGB red = RED_DIM;
+        CRGB white = BLACK;
+        CRGB red = BLACK;
         if (this->Lights->getLights() >= LIGHTS_DIM)
         {
             white = WHITE;
