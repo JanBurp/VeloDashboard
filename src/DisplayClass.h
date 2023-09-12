@@ -112,9 +112,9 @@ public:
         if (this->startupQuestion) {
             OLED.setTextSize(1);
             OLED.setCursor(0,SCREEN_HALF_HEIGHT);
-            OLED.print("Afstand bewaren?");
+            OLED.print("Keep Distance ?");
             OLED.setCursor(0,SCREEN_HALF_HEIGHT+20);
-            OLED.print("Ja => Druk op PLUS");
+            OLED.print("YES => Press PLUS");
         }
     }
 
@@ -336,17 +336,18 @@ public:
 
     void show_today_distances()
     {
-        this->show_item_float(four,1,"Vandaag","%-6.1f",this->Speed->getDayDistance() );
-        this->show_item_float(four,3,"Vorige","%-6.1f",this->Speed->getPrevDistance() );
-        this->show_item_float(four,4,"Tocht","% 6.1f",this->Speed->getTripDistance() );
+        this->show_item_float(four,1,"","%-6.1f",this->Speed->getCurrentDistance() );
+        this->show_item_float(four,2,"Day","% 6.1f",this->Speed->getDayDistance() );
+        this->show_item_float(four,3,"Prev","%-6.1f",this->Speed->getPrevDistance() );
+        this->show_item_float(four,4,"Trip","% 6.1f",this->Speed->getTripDistance() );
     }
 
     void show_today_speeds()
     {
-        this->show_item_float(four,1,"Gemiddeld","%-6.1f", this->Speed->getAvgSpeed());
-        this->show_item_float(four,2,"Maximum","% 6.1f", this->Speed->getCurrentMaxSpeed());
-        this->show_item_time(four,3,"Tijd", this->Speed->getCurrentTime());
-        this->show_item_time(four,4,"Totaal", this->Speed->getTotalTime(),true);
+        this->show_item_float(four,1,"Avg","%-6.1f", this->Speed->getAvgSpeed());
+        this->show_item_float(four,2,"Max","% 6.1f", this->Speed->getCurrentMaxSpeed());
+        this->show_item_time(four,3,"Time", this->Speed->getCurrentTime());
+        this->show_item_time(four,4,"Total", this->Speed->getTotalTime(),true);
     }
 
     // void show_trips() {
@@ -363,10 +364,10 @@ public:
     void show_totals() {
         int Odo = this->Speed->getTotalDistance();
         int Quest = Odo + BIKE_DISTANCE_START;
-        this->show_item_float(four,1,"Totaal","%-6.0f",Odo);
+        this->show_item_float(four,1,"Total","%-6.0f",Odo);
         this->show_item_float(four,2,"Quest","% 6.0f",Quest);
-        this->show_item_float(four,3,"Tocht 2","%-6.0f",this->Speed->getTripDistance(2));
-        this->show_item_float(four,4,"Tocht 3","% 6.0f",this->Speed->getTripDistance(2));
+        this->show_item_float(four,3,"Trip 2","%-6.0f",this->Speed->getTripDistance(2));
+        this->show_item_float(four,4,"Trip 3","% 6.0f",this->Speed->getTripDistance(2));
 
     }
 
