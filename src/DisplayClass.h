@@ -307,25 +307,28 @@ public:
         int h = 14;
         switch (this->Lights->getLights())
         {
-        case LIGHTS_OFF:
-            OLED.drawBitmap(x, y, icoLowBeam, w, h, WHITE);
-            break;
-        case LIGHTS_DIM:
-            OLED.drawBitmap(x, y, icoDefaultBeam, w, h, WHITE);
-            OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
-            break;
-        case LIGHTS_NORMAL:
-            OLED.drawBitmap(x, y, icoHighBeam, w, h, WHITE);
-            OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
-            break;
-        case LIGHTS_BEAM:
-            OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
-            OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
-            break;
-        case LIGHTS_FOG:
-            OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
-            OLED.drawBitmap(xr, yr, icoHighRear, w, h, WHITE);
-            break;
+            case LIGHTS_OFF:
+                // OLED.drawBitmap(x, y, icoLowBeam, w, h, WHITE);
+                break;
+            case LIGHTS_DIM:
+                OLED.drawBitmap(x, y, icoLowBeam, w, h, WHITE);
+                break;
+            case LIGHTS_ON:
+                OLED.drawBitmap(x, y, icoDefaultBeam, w, h, WHITE);
+                OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
+                break;
+            case LIGHTS_NORMAL:
+                OLED.drawBitmap(x, y, icoHighBeam, w, h, WHITE);
+                OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
+                break;
+            case LIGHTS_BEAM:
+                OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
+                OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
+                break;
+            case LIGHTS_FOG:
+                OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
+                OLED.drawBitmap(xr, yr, icoHighRear, w, h, WHITE);
+                break;
         }
         if (this->Lights->getBrake())
         {

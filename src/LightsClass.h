@@ -9,9 +9,10 @@
 
 #define LIGHTS_OFF 0
 #define LIGHTS_DIM 1
-#define LIGHTS_NORMAL 2
-#define LIGHTS_BEAM 3
-#define LIGHTS_FOG 4
+#define LIGHTS_ON 2
+#define LIGHTS_NORMAL 3
+#define LIGHTS_BEAM 4
+#define LIGHTS_FOG 5
 
 class LightsClass
 {
@@ -42,8 +43,8 @@ public:
         }
 
         if ( this->beam ) {
-            this->HeadLightLeft->setIntensity(HEAD_LED_MAX_INTENSITY);
-            this->HeadLightRight->setIntensity(HEAD_LED_MAX_INTENSITY);
+            this->HeadLightLeft->setIntensity(HEAD_LED_BEAM_INTENSITY);
+            this->HeadLightRight->setIntensity(HEAD_LED_BEAM_INTENSITY);
         }
         else {
             switch (lights)
@@ -54,30 +55,35 @@ public:
                     this->RearLight->setIntensity(REAR_LED_OFF_INTENSITY);
                     break;
                 case LIGHTS_DIM:
-                    this->HeadLightLeft->setIntensity(HEAD_LED_LOW_INTENSITY);
-                    this->HeadLightRight->setIntensity(HEAD_LED_LOW_INTENSITY);
-                    this->RearLight->setIntensity(REAR_LED_LOW_INTENSITY);
+                    this->HeadLightLeft->setIntensity(HEAD_LED_DIM_INTENSITY);
+                    this->HeadLightRight->setIntensity(HEAD_LED_DIM_INTENSITY);
+                    this->RearLight->setIntensity(REAR_LED_DIM_INTENSITY);
+                    break;
+                case LIGHTS_ON:
+                    this->HeadLightLeft->setIntensity(HEAD_LED_ON_INTENSITY);
+                    this->HeadLightRight->setIntensity(HEAD_LED_ON_INTENSITY);
+                    this->RearLight->setIntensity(REAR_LED_ON_INTENSITY);
                     break;
                 case LIGHTS_NORMAL:
-                    this->HeadLightLeft->setIntensity(HEAD_LED_MEDIUM_INTENSITY);
-                    this->HeadLightRight->setIntensity(HEAD_LED_MEDIUM_INTENSITY);
-                    this->RearLight->setIntensity(REAR_LED_MEDIUM_INTENSITY);
+                    this->HeadLightLeft->setIntensity(HEAD_LED_NORMAL_INTENSITY);
+                    this->HeadLightRight->setIntensity(HEAD_LED_NORMAL_INTENSITY);
+                    this->RearLight->setIntensity(REAR_LED_NORMAL_INTENSITY);
                     break;
                 case LIGHTS_BEAM:
-                    this->HeadLightLeft->setIntensity(HEAD_LED_MAX_INTENSITY);
-                    this->HeadLightRight->setIntensity(HEAD_LED_MAX_INTENSITY);
-                    this->RearLight->setIntensity(REAR_LED_MEDIUM_INTENSITY);
+                    this->HeadLightLeft->setIntensity(HEAD_LED_BEAM_INTENSITY);
+                    this->HeadLightRight->setIntensity(HEAD_LED_BEAM_INTENSITY);
+                    this->RearLight->setIntensity(REAR_LED_BEAM_INTENSITY);
                     break;
                 case LIGHTS_FOG:
-                    this->HeadLightLeft->setIntensity(HEAD_LED_MAX_INTENSITY);
-                    this->HeadLightRight->setIntensity(HEAD_LED_MAX_INTENSITY);
-                    this->RearLight->setIntensity(REAR_LED_MAX_INTENSITY);
+                    this->HeadLightLeft->setIntensity(HEAD_LED_FOG_INTENSITY);
+                    this->HeadLightRight->setIntensity(HEAD_LED_FOG_INTENSITY);
+                    this->RearLight->setIntensity(REAR_LED_FOG_INTENSITY);
                     break;
             }
         }
 
         if ( this->brake ) {
-            this->RearLight->setIntensity(REAR_LED_MAX_INTENSITY);
+            this->RearLight->setIntensity(REAR_LED_BEAM_INTENSITY);
         }
 
     }
@@ -90,8 +96,8 @@ public:
     void increaseLights()
     {
         this->lights++;
-        if ( this->lights > LIGHTS_BEAM ) {
-            this->lights = LIGHTS_BEAM;
+        if ( this->lights > LIGHTS_FOG ) {
+            this->lights = LIGHTS_FOG;
         }
         this->_set();
     }

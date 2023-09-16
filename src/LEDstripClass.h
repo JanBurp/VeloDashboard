@@ -208,11 +208,29 @@ public:
     {
         CRGB white = BLACK;
         CRGB red = BLACK;
-        if (this->Lights->getLights() >= LIGHTS_DIM)
+
+        switch (this->Lights->getLights())
         {
-            white = WHITE;
-            red = RED;
+            case LIGHTS_OFF:
+                white = BLACK;
+                red = BLACK;
+                break;
+            case LIGHTS_DIM:
+                white = WHITE_DIM;
+                red = RED_DIM;
+                break;
+            case LIGHTS_ON:
+            case LIGHTS_NORMAL:
+            case LIGHTS_BEAM:
+                white = WHITE;
+                red = RED;
+                break;
+            case LIGHTS_FOG:
+                white = WHITE;
+                red = RED_FULL;
+                break;
         }
+
         if (this->Lights->getBrake())
         {
             red = RED_FULL;
