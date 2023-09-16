@@ -391,13 +391,18 @@ public:
             return;
         }
 
+        if (DEBUG) {
+            Serial.print(movedDistance);
+            Serial.print("\t");
+        }
+
         // Add moved distance to all distances
         this->Memory.currentDistance += movedDistance;
         this->Memory.dayDistance += movedDistance;
         this->Memory.tripDistance1 += movedDistance;
         this->Memory.tripDistance2 += movedDistance;
         this->Memory.tripDistance3 += movedDistance;
-        this->Memory.totalDistance += movedDistance;
+        this->Memory.totalDistance += (int) movedDistance;
 
         // Calc speeds
         unsigned long avgSensorTime = 0;
