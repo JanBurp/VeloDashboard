@@ -255,6 +255,10 @@ public:
         return this->Memory.dayDistance / 1000;
     }
 
+    // int getLengthDistance() {
+    //     return int(this->Memory.currentDistance*100) % BIKE_LENGTH;
+    // }
+
     float getTripDistance(int trip = 1)
     {
         float dist = 0;
@@ -391,10 +395,10 @@ public:
             return;
         }
 
-        if (DEBUG) {
-            Serial.print(movedDistance);
-            Serial.print("\t");
-        }
+        // if (DEBUG) {
+        //     Serial.print(movedDistance);
+        //     Serial.print("\t");
+        // }
 
         // Add moved distance to all distances
         this->Memory.currentDistance += movedDistance;

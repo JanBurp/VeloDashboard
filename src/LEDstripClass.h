@@ -25,14 +25,18 @@ private:
     CRGB RED = CRGB(64, 0, 0);
     CRGB RED_FULL = CRGB(255, 0, 0);
     CRGB ORANGE = CRGB(255, 128, 0);
+    // CRGB BLUE = CRGB(0, 0, 128);
+
     CRGB leds_left[NUM_LEDS], leds_right[NUM_LEDS];
     bool turnedOff = false;
     int indicatorStrip = 0;
     unsigned int indicatorTimer = 0;
+    // unsigned int speedLeds = 0;
     IndicatorClass *Indicators;
     LightsClass *Lights;
     BatteryClass *Battery;
     IdleClass *IdleTimer;
+    SpeedClass *Speed;
 
 public:
     LEDstripClass()
@@ -43,12 +47,13 @@ public:
         FastLED.setMaxPowerInVoltsAndMilliamps(5, MAX_MILLIAMPS);
     }
 
-    void init(IndicatorClass *indicators, LightsClass *lights, BatteryClass *battery, IdleClass *idle)
+    void init(IndicatorClass *indicators, LightsClass *lights, BatteryClass *battery, IdleClass *idle, SpeedClass *speed)
     {
         this->Indicators = indicators;
         this->Lights = lights;
         this->Battery = battery;
         this->IdleTimer = idle;
+        this->Speed = speed;
     }
 
     void set_all(int strip, CRGB color)
@@ -242,6 +247,22 @@ public:
         this->set(strip, 0, numLEDSfront, white);
         this->set(strip, numLEDSfront, NUM_LEDS - numLEDSback, BLACK);
         this->set(strip, NUM_LEDS - numLEDSback, NUM_LEDS, red);
+
+        // SPEED INDICATOR
+        // float speed = this->Speed->getSpeed() / 1000.0; // m/sec
+        // float length = fmod(dist,BIKE_LENGTH);
+        // int start_LEDS = int(length / float(BIKE_LENGTH) * float(NUM_LEDS));
+        // if (DEBUG) {
+        //     Serial.print(dist);
+        //     Serial.print("\t");
+        //     Serial.print(length);
+        //     Serial.print("\t");
+        //     Serial.println(start_LEDS);
+
+        // }
+
+        // this->set(strip, start_LEDS, start_LEDS + NUM_SPEED_LEDS, BLUE);
+
 
         FastLED.show();
     }

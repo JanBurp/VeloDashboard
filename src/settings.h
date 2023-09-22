@@ -31,6 +31,8 @@ Wheel Wheels[NR_ETRTO_WHEELS] = {
     {"56-406", 1.625},
 };
 
+#define BIKE_LENGTH                 285 // cm
+
 #define BIKE_DISTANCE_START         8060
 #define MAX_TIME_SHORT_BRAKE        21600 // 6 hours = 60*60*6 seconds
 
@@ -145,13 +147,15 @@ typedef struct {
 #define NUM_LIGHT_LEDS_FRONT    3
 #define NUM_LIGHT_LEDS_BACK     3
 #define NUM_INDICATOR_LEDS      3
+#define NUM_SPEED_LEDS          1
 #define MAX_MILLIAMPS 400
 #else
 #define NUM_LEDS                169 // 2,85 m * 66 = 188
 #define NUM_LIGHT_LEDS_FRONT    36
 #define NUM_LIGHT_LEDS_BACK     48
 #define NUM_INDICATOR_LEDS      70
-#define MAX_MILLIAMPS 1500
+#define NUM_SPEED_LEDS          10
+#define MAX_MILLIAMPS           2000
 #endif
 
 #define LEFT -1
