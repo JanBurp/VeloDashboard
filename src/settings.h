@@ -141,16 +141,16 @@ typedef struct {
 #define BRIGHTNESS 255
 #define FRAMES_PER_SECOND 100
 #if TEST
-#define NUM_LEDS 12
-#define NUM_LIGHT_LEDS 3
-#define NUM_LIGHT_LEDS_BACK 3
-#define NUM_INDICATOR_LEDS 3
+#define NUM_LEDS                12
+#define NUM_LIGHT_LEDS_FRONT    3
+#define NUM_LIGHT_LEDS_BACK     3
+#define NUM_INDICATOR_LEDS      3
 #define MAX_MILLIAMPS 400
 #else
-#define NUM_LEDS 169 // 2,85 m * 66 = 188
-#define NUM_LIGHT_LEDS 36
-#define NUM_LIGHT_LEDS_BACK 48
-#define NUM_INDICATOR_LEDS 56
+#define NUM_LEDS                169 // 2,85 m * 66 = 188
+#define NUM_LIGHT_LEDS_FRONT    36
+#define NUM_LIGHT_LEDS_BACK     48
+#define NUM_INDICATOR_LEDS      70
 #define MAX_MILLIAMPS 1500
 #endif
 

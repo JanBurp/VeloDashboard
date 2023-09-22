@@ -101,7 +101,7 @@ public:
     {
         if (num_leds == 0)
         {
-            num_leds = NUM_LIGHT_LEDS;
+            num_leds = NUM_LIGHT_LEDS_FRONT;
         }
         for (int x = 0; x < NUM_LEDS; x++)
         {
@@ -164,21 +164,16 @@ public:
     void blink_animation()
     {
         float percentage = float(millis() - this->indicatorTimer) / float(INDICATOR_TIMER_INT);
-        int num_leds = int(NUM_LEDS / 2 * percentage) + 10;
-        if (TEST) {
-            num_leds -= 10;
-        }
+        int num_leds_front = int(NUM_INDICATOR_LEDS * percentage);
+        int num_leds_back = int(NUM_INDICATOR_LEDS * percentage);
 
         int start_leds = 0;
-        if (num_leds>NUM_LIGHT_LEDS) {
-            start_leds = num_leds - NUM_LIGHT_LEDS;
-        }
-        int end_leds = NUM_LEDS - start_leds;
+        int end_leds = NUM_LEDS;
 
         this->set(this->indicatorStrip, 0, start_leds, BLACK);
-        this->set(this->indicatorStrip, start_leds, num_leds, ORANGE);
-        this->set(this->indicatorStrip, num_leds, NUM_LEDS - num_leds, BLACK);
-        this->set(this->indicatorStrip, NUM_LEDS - num_leds, end_leds, ORANGE);
+        this->set(this->indicatorStrip, start_leds, num_leds_front, ORANGE);
+        this->set(this->indicatorStrip, num_leds_front, NUM_LEDS - num_leds_back, BLACK);
+        this->set(this->indicatorStrip, NUM_LEDS - num_leds_back, end_leds, ORANGE);
         this->set(this->indicatorStrip, end_leds, NUM_LEDS, BLACK);
 
         if ((millis() - this->indicatorTimer) >= INDICATOR_TIMER_INT)
@@ -236,17 +231,17 @@ public:
             red = RED_FULL;
         }
 
-        int num_light_leds = NUM_LIGHT_LEDS;
-        int num_light_leds_back = NUM_LIGHT_LEDS_BACK;
+        int numLEDSfront = NUM_LIGHT_LEDS_FRONT;
+        int numLEDSback = NUM_LIGHT_LEDS_BACK;
         if (this->IdleTimer->warning())
         {
-            num_light_leds = int(num_light_leds * this->IdleTimer->remainingPercentage());
-            num_light_leds_back = int(num_light_leds_back * this->IdleTimer->remainingPercentage());
+            numLEDSfront = int(NUM_LIGHT_LEDS_FRONT * this->IdleTimer->remainingPercentage());
+            numLEDSback = int(NUM_LIGHT_LEDS_BACK * this->IdleTimer->remainingPercentage());
         }
 
-        this->set(strip, 0, num_light_leds, white);
-        this->set(strip, num_light_leds, NUM_LEDS - num_light_leds_back, BLACK);
-        this->set(strip, NUM_LEDS - num_light_leds_back, NUM_LEDS, red);
+        this->set(strip, 0, numLEDSfront, white);
+        this->set(strip, numLEDSfront, NUM_LEDS - numLEDSback, BLACK);
+        this->set(strip, NUM_LEDS - numLEDSback, NUM_LEDS, red);
 
         FastLED.show();
     }
@@ -298,21 +293,21 @@ public:
     void startup_animation()
     {
         unsigned long delayMs = 200 / NUM_LEDS;
-        const int NUM_GRADIENT_LEDS = NUM_LEDS - 2 * NUM_LIGHT_LEDS;
+        const int NUM_GRADIENT_LEDS = NUM_LEDS - 2 * NUM_LIGHT_LEDS_FRONT;
         CRGB colors[NUM_LEDS];
         CRGB gradient_colors[NUM_GRADIENT_LEDS];
         fill_gradient_RGB(gradient_colors, 0, WHITE, NUM_GRADIENT_LEDS, RED);
         for (int i = 0; i < NUM_LEDS; ++i)
         {
-            if (i <= NUM_LIGHT_LEDS)
+            if (i <= NUM_LIGHT_LEDS_FRONT)
             {
                 colors[i] = WHITE;
             }
             else
             {
-                if (i > NUM_LIGHT_LEDS && i < (NUM_LEDS - NUM_LIGHT_LEDS))
+                if (i > NUM_LIGHT_LEDS_FRONT && i < (NUM_LEDS - NUM_LIGHT_LEDS_FRONT))
                 {
-                    colors[i] = gradient_colors[i - NUM_LIGHT_LEDS];
+                    colors[i] = gradient_colors[i - NUM_LIGHT_LEDS_FRONT];
                 }
                 else
                 {
@@ -329,15 +324,15 @@ public:
             {
                 this->leds_left[i] = colors[i];
                 this->leds_right[i] = colors[i];
-                if (i >= NUM_LIGHT_LEDS)
+                if (i >= NUM_LIGHT_LEDS_FRONT)
                 {
-                    this->leds_left[i - NUM_LIGHT_LEDS] = BLACK;
-                    this->leds_right[i - NUM_LIGHT_LEDS] = BLACK;
+                    this->leds_left[i - NUM_LIGHT_LEDS_FRONT] = BLACK;
+                    this->leds_right[i - NUM_LIGHT_LEDS_FRONT] = BLACK;
                 }
                 delay(delayMs);
                 FastLED.show();
             }
-            for (i = NUM_LEDS - NUM_LIGHT_LEDS; i < NUM_LEDS; ++i)
+            for (i = NUM_LEDS - NUM_LIGHT_LEDS_FRONT; i < NUM_LEDS; ++i)
             {
                 this->leds_left[i] = BLACK;
                 this->leds_right[i] = BLACK;
