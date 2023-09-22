@@ -1,7 +1,7 @@
 #pragma once
 
 #define DEBUG false  // [default = false] - set to true for Serial output
-#define TEST true   // [default = false] - set to true for local test environment
+#define TEST false   // [default = false] - set to true for local test environment
 
 /*
   WHEELS
@@ -72,17 +72,17 @@ typedef struct {
 
 #define HEAD_LED_OFF_INTENSITY      0
 #define HEAD_LED_DIM_INTENSITY      0
-#define HEAD_LED_ON_INTENSITY       16
+#define HEAD_LED_ON_INTENSITY       4   // 4 = minimum light
 #define HEAD_LED_NORMAL_INTENSITY   92
-#define HEAD_LED_BEAM_INTENSITY     255
-#define HEAD_LED_FOG_INTENSITY      255
+#define HEAD_LED_BEAM_INTENSITY     140 // 140 = maximum light
+#define HEAD_LED_FOG_INTENSITY      140
 
 #define REAR_LED_OFF_INTENSITY      0
-#define REAR_LED_DIM_INTENSITY      2
-#define REAR_LED_ON_INTENSITY       32
+#define REAR_LED_DIM_INTENSITY      4
+#define REAR_LED_ON_INTENSITY       16
 #define REAR_LED_NORMAL_INTENSITY   32
-#define REAR_LED_BEAM_INTENSITY     128
-#define REAR_LED_FOG_INTENSITY      255
+#define REAR_LED_BEAM_INTENSITY     64
+#define REAR_LED_FOG_INTENSITY      140 // 140 = max
 
 
 /*
