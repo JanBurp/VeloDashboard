@@ -3,7 +3,7 @@
 #include "Arduino.h"
 
 #define VREF        3300
-#define V_SAMPLES   10
+#define V_SAMPLES   25
 #define V_TIME      1000
 
 #define ADJUST_REF  4200
