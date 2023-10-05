@@ -152,8 +152,8 @@ public:
                 OLED.print(" ");
             }
 
-            // Faster / Slower than average
-            if ( !this->Speed->isPaused() ) {
+            // Faster / Slower than average | flash every second
+            if ( !this->Speed->isPaused() && (millis() / 500) % 2 == 0) {
                 // int diff = this->Speed->speedDiffScale();
                 int x = SCREEN_WIDTH - 18;
                 int y = 0;
