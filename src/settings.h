@@ -122,8 +122,8 @@ typedef struct {
  */
 #define DISPLAY_WELCOME     0
 #define DISPLAY_HOME        1
-#define DISPLAY_TODAY       2
-#define DISPLAY_SPEEDS      3
+#define DISPLAY_SPEEDS      2
+#define DISPLAY_TODAY       3
 #define DISPLAY_TOTALS      4
 #define DISPLAY_TIME        5 // CHANGE WITH DISPLAY_TOTALS IF NEEDED
 #define DISPLAY_PREV_DIST   6 // CHANGE WITH DISPLAY_TOTALS IF NEEDED
