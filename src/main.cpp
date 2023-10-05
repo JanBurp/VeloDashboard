@@ -147,7 +147,7 @@ void setup()
             }
         }
         else {
-            Speed.startDay();
+            Speed.resetCurrent();
         }
     }
 
