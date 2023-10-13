@@ -84,6 +84,9 @@ void setup()
     if (DEBUG)
     {
         Serial.begin(115200);
+        Serial.println("\n");
+        Serial.print("F_CPU_ACTUAL = (Mhz)\t");
+        Serial.println(F_CPU_ACTUAL / 1000000);
     }
 
     // Disable unused pins (saves a bit current)
@@ -116,30 +119,36 @@ void setup()
 
     Speed.init();
     Indicators.init();
-    LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer);
+    LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer,&Speed);
 
 
     Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights, &LEDstrips);
     Display.setDisplayMode(DISPLAY_WELCOME);
+    Display.setContrast(1);
     Display.show();
 
     if ( !Battery.isDead() ) {
         LEDstrips.startup_animation();
     }
 
-    if ( ! Speed.IsNewDay() ) {
-        Display.askStartupQuestion();
-        Display.show();
-        Dashboard.waitForButtonPress();
-        if ( Dashboard.isLightsUp() ) {
-            Speed.continueDay();
-        }
-        else {
-            Speed.resetDistance();
-        }
+    if ( Speed.IsNewDay() ) {
+        Speed.startDay();
     }
     else {
-        Speed.resetDay();
+        if ( Speed.IsShortBrake() ) {
+            Display.askStartupQuestion();
+            Display.show();
+            Dashboard.waitForButtonPress();
+            if ( Dashboard.isLightsUp() ) {
+                Speed.continueCurrent();
+            }
+            else {
+                Speed.resetCurrent();
+            }
+        }
+        else {
+            Speed.resetCurrent();
+        }
     }
 
     Display.setDisplayMode(DISPLAY_HOME);
@@ -186,7 +195,13 @@ void readButtons()
         // UP - DOWN
         if ( Display.isResetTripMenu() ) {
             if ( Dashboard.isLightsUp() )  {
-                Speed.resetTripDistance();
+                Speed.resetTripDistance(1);
+            }
+            if ( Dashboard.isLightsDown() )  {
+                Speed.resetTripDistance(2);
+            }
+            if ( Dashboard.isIndicatorLeft() )  {
+                Speed.resetTripDistance(3);
             }
         }
         else if ( Display.isSetClockMenu() ) {

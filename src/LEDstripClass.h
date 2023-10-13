@@ -25,14 +25,18 @@ private:
     CRGB RED = CRGB(64, 0, 0);
     CRGB RED_FULL = CRGB(255, 0, 0);
     CRGB ORANGE = CRGB(255, 128, 0);
+    // CRGB BLUE = CRGB(0, 0, 128);
+
     CRGB leds_left[NUM_LEDS], leds_right[NUM_LEDS];
     bool turnedOff = false;
     int indicatorStrip = 0;
     unsigned int indicatorTimer = 0;
+    // unsigned int speedLeds = 0;
     IndicatorClass *Indicators;
     LightsClass *Lights;
     BatteryClass *Battery;
     IdleClass *IdleTimer;
+    SpeedClass *Speed;
 
 public:
     LEDstripClass()
@@ -43,12 +47,13 @@ public:
         FastLED.setMaxPowerInVoltsAndMilliamps(5, MAX_MILLIAMPS);
     }
 
-    void init(IndicatorClass *indicators, LightsClass *lights, BatteryClass *battery, IdleClass *idle)
+    void init(IndicatorClass *indicators, LightsClass *lights, BatteryClass *battery, IdleClass *idle, SpeedClass *speed)
     {
         this->Indicators = indicators;
         this->Lights = lights;
         this->Battery = battery;
         this->IdleTimer = idle;
+        this->Speed = speed;
     }
 
     void set_all(int strip, CRGB color)
@@ -101,7 +106,7 @@ public:
     {
         if (num_leds == 0)
         {
-            num_leds = NUM_LIGHT_LEDS;
+            num_leds = NUM_LIGHT_LEDS_FRONT;
         }
         for (int x = 0; x < NUM_LEDS; x++)
         {
@@ -164,24 +169,17 @@ public:
     void blink_animation()
     {
         float percentage = float(millis() - this->indicatorTimer) / float(INDICATOR_TIMER_INT);
-        int num_leds = int(NUM_LEDS / 2 * percentage) + 10;
-        if (TEST) {
-            num_leds -= 10;
-        }
+        int num_leds_front = int(NUM_INDICATOR_LEDS * percentage);
+        int num_leds_back = int(NUM_INDICATOR_LEDS * percentage);
 
-        // if (DEBUG)
-        // {
-        //     Serial.print("BLINK");
-        //     Serial.print("\tPercentage:\t");
-        //     Serial.print(percentage);
-        //     Serial.print("\tLEDS:\t");
-        //     Serial.print(num_leds);
-        //     Serial.println();
-        // }
+        int start_leds = 0;
+        int end_leds = NUM_LEDS;
 
-        this->set(this->indicatorStrip, 0, num_leds, ORANGE);
-        this->set(this->indicatorStrip, num_leds, NUM_LEDS - num_leds, BLACK);
-        this->set(this->indicatorStrip, NUM_LEDS - num_leds, NUM_LEDS, ORANGE);
+        this->set(this->indicatorStrip, 0, start_leds, BLACK);
+        this->set(this->indicatorStrip, start_leds, num_leds_front, ORANGE);
+        this->set(this->indicatorStrip, num_leds_front, NUM_LEDS - num_leds_back, BLACK);
+        this->set(this->indicatorStrip, NUM_LEDS - num_leds_back, end_leds, ORANGE);
+        this->set(this->indicatorStrip, end_leds, NUM_LEDS, BLACK);
 
         if ((millis() - this->indicatorTimer) >= INDICATOR_TIMER_INT)
         {
@@ -200,12 +198,6 @@ public:
 
     void blink_animation_stop()
     {
-        // if (DEBUG)
-        // {
-        //     Serial.print("STOP - ");
-        //     Serial.print(this->indicatorStrip);
-        //     Serial.println();
-        // }
         stripTimer.stop();
         this->set_all(this->indicatorStrip, BLACK);
         this->indicatorTimer = 0;
@@ -214,29 +206,63 @@ public:
 
     void normal(int strip = BOTH)
     {
-        CRGB white = WHITE_DIM;
-        CRGB red = RED_DIM;
-        if (this->Lights->getLights() >= LIGHTS_DIM)
+        CRGB white = BLACK;
+        CRGB red = BLACK;
+
+        switch (this->Lights->getLights())
         {
-            white = WHITE;
-            red = RED;
+            case LIGHTS_OFF:
+                white = BLACK;
+                red = BLACK;
+                break;
+            case LIGHTS_DIM:
+                white = WHITE_DIM;
+                red = RED_DIM;
+                break;
+            case LIGHTS_ON:
+            case LIGHTS_NORMAL:
+            case LIGHTS_BEAM:
+                white = WHITE;
+                red = RED;
+                break;
+            case LIGHTS_FOG:
+                white = WHITE;
+                red = RED_FULL;
+                break;
         }
+
         if (this->Lights->getBrake())
         {
             red = RED_FULL;
         }
 
-        int num_light_leds = NUM_LIGHT_LEDS;
-        int num_light_leds_back = NUM_LIGHT_LEDS_BACK;
+        int numLEDSfront = NUM_LIGHT_LEDS_FRONT;
+        int numLEDSback = NUM_LIGHT_LEDS_BACK;
         if (this->IdleTimer->warning())
         {
-            num_light_leds = int(num_light_leds * this->IdleTimer->remainingPercentage());
-            num_light_leds_back = int(num_light_leds_back * this->IdleTimer->remainingPercentage());
+            numLEDSfront = int(NUM_LIGHT_LEDS_FRONT * this->IdleTimer->remainingPercentage());
+            numLEDSback = int(NUM_LIGHT_LEDS_BACK * this->IdleTimer->remainingPercentage());
         }
 
-        this->set(strip, 0, num_light_leds, white);
-        this->set(strip, num_light_leds, NUM_LEDS - num_light_leds_back, BLACK);
-        this->set(strip, NUM_LEDS - num_light_leds_back, NUM_LEDS, red);
+        this->set(strip, 0, numLEDSfront, white);
+        this->set(strip, numLEDSfront, NUM_LEDS - numLEDSback, BLACK);
+        this->set(strip, NUM_LEDS - numLEDSback, NUM_LEDS, red);
+
+        // SPEED INDICATOR
+        // float speed = this->Speed->getSpeed() / 1000.0; // m/sec
+        // float length = fmod(dist,BIKE_LENGTH);
+        // int start_LEDS = int(length / float(BIKE_LENGTH) * float(NUM_LEDS));
+        // if (DEBUG) {
+        //     Serial.print(dist);
+        //     Serial.print("\t");
+        //     Serial.print(length);
+        //     Serial.print("\t");
+        //     Serial.println(start_LEDS);
+
+        // }
+
+        // this->set(strip, start_LEDS, start_LEDS + NUM_SPEED_LEDS, BLUE);
+
 
         FastLED.show();
     }
@@ -288,21 +314,21 @@ public:
     void startup_animation()
     {
         unsigned long delayMs = 200 / NUM_LEDS;
-        const int NUM_GRADIENT_LEDS = NUM_LEDS - 2 * NUM_LIGHT_LEDS;
+        const int NUM_GRADIENT_LEDS = NUM_LEDS - 2 * NUM_LIGHT_LEDS_FRONT;
         CRGB colors[NUM_LEDS];
         CRGB gradient_colors[NUM_GRADIENT_LEDS];
         fill_gradient_RGB(gradient_colors, 0, WHITE, NUM_GRADIENT_LEDS, RED);
         for (int i = 0; i < NUM_LEDS; ++i)
         {
-            if (i <= NUM_LIGHT_LEDS)
+            if (i <= NUM_LIGHT_LEDS_FRONT)
             {
                 colors[i] = WHITE;
             }
             else
             {
-                if (i > NUM_LIGHT_LEDS && i < (NUM_LEDS - NUM_LIGHT_LEDS))
+                if (i > NUM_LIGHT_LEDS_FRONT && i < (NUM_LEDS - NUM_LIGHT_LEDS_FRONT))
                 {
-                    colors[i] = gradient_colors[i - NUM_LIGHT_LEDS];
+                    colors[i] = gradient_colors[i - NUM_LIGHT_LEDS_FRONT];
                 }
                 else
                 {
@@ -319,15 +345,15 @@ public:
             {
                 this->leds_left[i] = colors[i];
                 this->leds_right[i] = colors[i];
-                if (i >= NUM_LIGHT_LEDS)
+                if (i >= NUM_LIGHT_LEDS_FRONT)
                 {
-                    this->leds_left[i - NUM_LIGHT_LEDS] = BLACK;
-                    this->leds_right[i - NUM_LIGHT_LEDS] = BLACK;
+                    this->leds_left[i - NUM_LIGHT_LEDS_FRONT] = BLACK;
+                    this->leds_right[i - NUM_LIGHT_LEDS_FRONT] = BLACK;
                 }
                 delay(delayMs);
                 FastLED.show();
             }
-            for (i = NUM_LEDS - NUM_LIGHT_LEDS; i < NUM_LEDS; ++i)
+            for (i = NUM_LEDS - NUM_LIGHT_LEDS_FRONT; i < NUM_LEDS; ++i)
             {
                 this->leds_left[i] = BLACK;
                 this->leds_right[i] = BLACK;

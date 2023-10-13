@@ -3,11 +3,16 @@
 #include "Arduino.h"
 
 #define VREF        3300
-#define V_SAMPLES   30
-#define V_TIME      100
+#define V_SAMPLES   25
+#define V_TIME      1000
 
 #define ADJUST_REF  4200
-#define ADJUST      1.7
+#if TEST
+#define ADJUST      2.0 // Was 1.7
+#else
+#define ADJUST      6.0 // Was 1.7
+#endif
+
 
 
 #define NUM_CELLS   3
@@ -67,10 +72,11 @@ public:
             }
             unsigned int meanValue = totalValue / V_SAMPLES;
 
-            int battery_mv = 4.4 * (VREF / 1023) * meanValue;
+            int battery_mv = 4.34 * (VREF / 1023) * meanValue;
             this->cell_mv = battery_mv / NUM_CELLS;
             // Adjust voltage to compensate for LiPo
-            this->cell_mv = this->cell_mv + (this->cell_mv - ADJUST_REF) * ADJUST;
+            this->cell_mv = this->cell_mv - (ADJUST_REF - this->cell_mv) * ADJUST;
+            if (this->cell_mv > ADJUST_REF) this->cell_mv = ADJUST_REF;
 
             const int V[21] = { 4200, 4150, 4110, 4080, 4020, 3980, 3950, 3910, 3870, 3850, 3840, 3820, 3800, 3790, 3770, 3750, 3730, 3710, 3690, 3610, 3270 };  // mV - 12.6 - 12.0 - 11.55 - 11.25 - 10.35 - 10.0
             const int P[21] = {  100,   95,   90,   85,   80,   75,   70,   65,   60,   55,   50,   45,   40,   35,   30,   25,   20,   15,   10,    5,    0 };  // % capacity
@@ -83,21 +89,21 @@ public:
             }
             this->percentage = constrain(percent, 0, 100);
 
-            if ( DEBUG ) {
-                Serial.print("value:\t");
-                Serial.print(value);
-                Serial.print("\t\tmeanValue:\t");
-                Serial.print(meanValue);
-                Serial.print("\tmV:");
-                Serial.print(battery_mv);
-                Serial.print("\tmV:");
-                Serial.print(this->cell_mv);
-                Serial.print("\t%:");
-                Serial.print(this->percentage);
-                Serial.print("\ttmDead:");
-                Serial.print(this->timeDead);
-                Serial.println();
-            }
+            // if ( DEBUG ) {
+            //     Serial.print("value:\t");
+            //     Serial.print(value);
+            //     Serial.print("\t\tmeanValue:\t");
+            //     Serial.print(meanValue);
+            //     Serial.print("\tmV:");
+            //     Serial.print(battery_mv);
+            //     Serial.print("\tmV:");
+            //     Serial.print(this->cell_mv);
+            //     Serial.print("\t%:");
+            //     Serial.print(this->percentage);
+            //     Serial.print("\ttmDead:");
+            //     Serial.print(this->timeDead);
+            //     Serial.println();
+            // }
 
 
         }

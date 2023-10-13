@@ -3,8 +3,10 @@
 #include "Arduino.h"
 #include <EEPROM.h>
 
-#define ODO_ADDRESS 0
-#define MEM_ADDRESS 4
+#define PAUSE_THRESHOLD 1.0
+
+// #define MEM_ADDRESS 4
+#define NEW_ADDRESS 50
 
 class SpeedClass
 {
@@ -13,72 +15,94 @@ private:
     bool started = false;
     bool paused = true;
 
-    MemoryStruct Memory;
-
     // Speed sensor
     bool SpeedSensor = true;
     volatile unsigned long lastSensorTimeMs = 0;
     volatile unsigned long sensorTimesMs[SENSOR_BUFF] = {0};
 
-    // Times in ms
-    unsigned long startTimeMs = 0;
-    unsigned long runningTimeMs = 0;
-    unsigned long tripTimeMs = 0;
+    MemoryStruct Memory;
 
-    // all in meters or meters/per hour
-    float distance = 0.0;
+    unsigned long tempTimeMs = 0;
     float speed = 0.0;
-    float maxSpeed = 0.0;
-    float avgSpeed = 0.0;
 
 public:
     void init()
     {
         this->Memory = this->readMemory();
-
-        // if ( DEBUG ) {
-        //     Serial.print("\tDay:\t");
-        //     Serial.print(time.Day);
-        //     Serial.print("\tMonth:\t");
-        //     Serial.print(time.Month);
-        //     // Serial.print("\tYear:\t");
-        //     // Serial.print(time.Year);
-        //     Serial.print("\t\tToday:\t");
-        //     Serial.print(day());
-        //     Serial.print("\tMonth:\t");
-        //     Serial.print(month());
-        //     // Serial.print("\tYear:\t");
-        //     // Serial.print(year());
-        //     Serial.println();
-        // }
-    }
-
-    void resetDay() {
-        this->Memory.prevDayDistance = this->Memory.dayDistance;
-        this->Memory.prevDayAverage = this->Memory.dayAverageSpeed;
-        this->Memory.prevDayMaxSpeed = this->Memory.dayMaxSpeed;
-        this->Memory.dayDistance = 0.0;
-    }
-
-    void resetDistance() {
-        this->distance = 0.0;
+        if ( DEBUG ) {
+            this->_printMemory("READ");
+        }
         this->started = false;
         this->paused = true;
     }
 
-    void continueDay() {
+    void start()
+    {
         this->started = true;
-        this->paused = true;
-        this->tripTimeMs = this->Memory.dayTimeMovedSecs * 1000;
-        this->distance = this->Memory.dayDistance;
-        this->avgSpeed = this->Memory.dayAverageSpeed;
-        this->maxSpeed = this->Memory.dayMaxSpeed;
+        this->paused = false;
     }
 
-    bool IsNewDay() {
+    // void startCurrent()
+    // {
+    //     if (this->IsNewDay()) {
+    //         this->startDay();
+    //     }
+    //     else {
+    //         this->resetCurrent();
+    //     }
+    // }
+
+    void continueCurrent()
+    {
+        this->tempTimeMs = millis();
+    }
+
+    void resetCurrent()
+    {
+        this->tempTimeMs = millis();
+        this->Memory.currentDistance = 0.0;
+        this->Memory.currentStartTime = millis();
+        this->Memory.currentTime = 0.0;
+        this->Memory.currentAverageSpeed = 0.0;
+        this->Memory.currentMaxSpeed = 0.0;
+    }
+
+    void pauseCurrent()
+    {
+        if (!this->paused)
+        {
+            this->paused = true;
+            this->storeMemory();
+        }
+    }
+
+    void unPauseCurrent() {
+        this->paused = false;
+        this->tempTimeMs = millis();
+    }
+
+    void startDay()
+    {
+        this->Memory.prevDistance = this->Memory.dayDistance;
+        this->Memory.prevTime = this->Memory.dayTime;
+        this->Memory.prevAverageSpeed = this->Memory.dayAverageSpeed;
+        this->Memory.prevMaxSpeed = this->Memory.dayMaxSpeed;
+        this->Memory.dayDistance = 0.0;
+        this->Memory.dayTime = 0.0;
+        this->Memory.dayAverageSpeed = 0.0;
+        this->Memory.dayMaxSpeed = 0.0;
+        this->resetCurrent();
+    }
+
+    bool IsNewDay()
+    {
         TimeElements time;
-        breakTime( this->Memory.timestamp, time );
-        return ( time.Day != day() || time.Month != month() );
+        breakTime(this->Memory.timestamp, time);
+        return (time.Day != day() || time.Month != month());
+    }
+
+    bool IsShortBrake() {
+        return (now() - this->Memory.timestamp) < MAX_TIME_SHORT_BRAKE;
     }
 
     bool isStarted()
@@ -96,25 +120,31 @@ public:
         return this->SpeedSensor;
     }
 
-    void setWheelCircumference(float circumference) {
+    void setWheelCircumference(float circumference)
+    {
         this->Memory.wheelCircumference = circumference;
     }
 
-    float getWheelCircumference() {
+    float getWheelCircumference()
+    {
         return this->Memory.wheelCircumference;
     }
 
-    unsigned int getClosestETRTO() {
+    unsigned int getClosestETRTO()
+    {
         int closest = 0;
         for (size_t i = 1; i < NR_ETRTO_WHEELS; i++)
         {
-            float diffLower = Wheels[i-1].circumference - this->Memory.wheelCircumference;
+            float diffLower = Wheels[i - 1].circumference - this->Memory.wheelCircumference;
             float diffHigher = Wheels[i].circumference - this->Memory.wheelCircumference;
-            if (diffLower <= 0 && diffHigher >= 0) {
-                if ( -diffLower < diffHigher ) {
-                    closest = i-1;
+            if (diffLower <= 0 && diffHigher >= 0)
+            {
+                if (-diffLower < diffHigher)
+                {
+                    closest = i - 1;
                 }
-                else {
+                else
+                {
                     closest = i;
                 }
             }
@@ -122,56 +152,71 @@ public:
         return closest;
     }
 
-    void increaseCircumference( int inc = 1 ) {
-        if ( inc > 1000 || inc < -1000 ) {
-            int wheelnr =  this->getClosestETRTO();
-            if ( inc > 1000 ) {
+    void increaseCircumference(int inc = 1)
+    {
+        if (inc > 1000 || inc < -1000)
+        {
+            int wheelnr = this->getClosestETRTO();
+            if (inc > 1000)
+            {
                 wheelnr++;
             }
-            if ( inc < -1000 ) {
+            if (inc < -1000)
+            {
                 wheelnr--;
             }
-            if ( wheelnr > NR_ETRTO_WHEELS ) {
+            if (wheelnr > NR_ETRTO_WHEELS)
+            {
                 wheelnr = NR_ETRTO_WHEELS;
             }
-            if ( wheelnr < 0 ) {
+            if (wheelnr < 0)
+            {
                 wheelnr = 0;
             }
             this->Memory.wheelCircumference = Wheels[wheelnr].circumference;
         }
-        else {
+        else
+        {
             this->Memory.wheelCircumference += (inc / 1000.0);
         }
     }
 
-    void decreaseCircumference(int inc = 1) {
-        this->increaseCircumference( - inc );
+    void decreaseCircumference(int inc = 1)
+    {
+        this->increaseCircumference(-inc);
     }
 
-    void increaseClock( int inc = 1 ) {
-        if (inc == 1) {
-            setTime( hour(), minute() + 1,0,day(),month(),year());
+    void increaseClock(int inc = 1)
+    {
+        if (inc == 1)
+        {
+            setTime(hour(), minute() + 1, 0, day(), month(), year());
         }
-        if (inc == 10) {
-            setTime( hour(), minute() + 10,0,day(),month(),year());
+        if (inc == 10)
+        {
+            setTime(hour(), minute() + 10, 0, day(), month(), year());
         }
-        if (inc == 1000) {
-            setTime( hour()+1, minute(),0,day(),month(),year());
-        }
-    }
-
-    void decreaseClock(int inc = 1) {
-        if (inc == 1 && minute() > 0) {
-            setTime( hour(), minute() - 1,0,day(),month(),year());
-        }
-        if (inc == 10 && minute() > 10 ) {
-            setTime( hour(), minute() - 10,0,day(),month(),year());
-        }
-        if (inc == 1000 && hour() > 0) {
-            setTime( hour()-1, minute(),0,day(),month(),year());
+        if (inc == 1000)
+        {
+            setTime(hour() + 1, minute(), 0, day(), month(), year());
         }
     }
 
+    void decreaseClock(int inc = 1)
+    {
+        if (inc == 1 && minute() > 0)
+        {
+            setTime(hour(), minute() - 1, 0, day(), month(), year());
+        }
+        if (inc == 10 && minute() > 10)
+        {
+            setTime(hour(), minute() - 10, 0, day(), month(), year());
+        }
+        if (inc == 1000 && hour() > 0)
+        {
+            setTime(hour() - 1, minute(), 0, day(), month(), year());
+        }
+    }
 
     float getSpeed()
     {
@@ -180,22 +225,29 @@ public:
 
     float getAvgSpeed()
     {
-        return this->avgSpeed;
+        return this->Memory.currentAverageSpeed;
+    }
+
+    int speedDiffScale() {
+        float diff = this->speed - this->Memory.currentAverageSpeed;
+        int iDiff = abs(map(diff,-30,30,-9,9));
+        if (iDiff>9) iDiff = 9;
+        return abs(iDiff);
     }
 
     bool isFaster()
     {
-        return this->speed > this->avgSpeed;
+        return this->speed > this->Memory.currentAverageSpeed;
     }
 
-    float getMaxSpeed()
+    float getCurrentMaxSpeed()
     {
-        return this->maxSpeed;
+        return this->Memory.currentMaxSpeed;
     }
 
-    float getDistance()
+    float getCurrentDistance()
     {
-        return this->distance / 1000;
+        return this->Memory.currentDistance / 1000;
     }
 
     float getDayDistance()
@@ -203,13 +255,42 @@ public:
         return this->Memory.dayDistance / 1000;
     }
 
-    float getTripDistance()
+    // int getLengthDistance() {
+    //     return int(this->Memory.currentDistance*100) % BIKE_LENGTH;
+    // }
+
+    float getTripDistance(int trip = 1)
     {
-        return this->Memory.tripDistance / 1000;
+        float dist = 0;
+        switch (trip)
+        {
+        case 1:
+            dist = this->Memory.tripDistance1;
+            break;
+        case 2:
+            dist = this->Memory.tripDistance2;
+            break;
+        case 3:
+            dist = this->Memory.tripDistance3;
+            break;
+        }
+        return dist / 1000;
     }
 
-    void resetTripDistance() {
-        this->Memory.tripDistance = 0;
+    void resetTripDistance(int trip = 1)
+    {
+        switch (trip)
+        {
+        case 1:
+            this->Memory.tripDistance1 = 0;
+            break;
+        case 2:
+            this->Memory.tripDistance2 = 0;
+            break;
+        case 3:
+            this->Memory.tripDistance3 = 0;
+            break;
+        }
     }
 
     unsigned long getTotalDistance()
@@ -217,44 +298,63 @@ public:
         return (int)this->Memory.totalDistance / 1000;
     }
 
-    void increaseTotal( int inc = 1 ) {
+    void increaseTotal(int inc = 1)
+    {
         this->Memory.totalDistance += (inc * 1000.0);
     }
 
-    void decreaseTotal(int inc = 1) {
-        this->increaseTotal( - inc );
-    }
-
-    float getPrevDistance() {
-        return this->Memory.prevDayDistance / 1000;
-    }
-
-    float getPrevAvgSpeed() {
-        return this->Memory.prevDayAverage;
-    }
-
-    float getPrevMaxSpeed() {
-        return this->Memory.prevDayMaxSpeed;
-    }
-
-    unsigned long getTripTime()
+    void decreaseTotal(int inc = 1)
     {
-        return this->tripTimeMs;
+        this->increaseTotal(-inc);
+    }
+
+    float getPrevDistance()
+    {
+        return this->Memory.prevDistance / 1000;
+    }
+
+    float getPrevAvgSpeed()
+    {
+        return this->Memory.prevAverageSpeed;
+    }
+
+    float getPrevMaxSpeed()
+    {
+        return this->Memory.prevMaxSpeed;
+    }
+
+    unsigned long getCurrentTime()
+    {
+        return this->Memory.currentTime;
     }
 
     unsigned long getTotalTime()
     {
-        return millis() - this->startTimeMs;
+        return millis() - this->Memory.currentStartTime;
     }
 
     void loop()
     {
         unsigned long now = millis();
 
-        if (TEST) {
+        if (TEST)
+        {
             // Dummy speed
             int value = analogRead(PIN_TEST_SPEED);
-            this->speed = map( value,0,1023,0,100);
+            unsigned long sensorTime = map(value,0,1023,10000, 1);
+            // this->speed = map(value, 0, 1023, 0, 100);
+            // if (DEBUG)
+            // {
+            //     Serial.print("READ: ");
+            //     Serial.print(value);
+            //     Serial.print(" \t ");
+            //     Serial.print(sensorTime);
+            // }
+
+            for (size_t i = 0; i < SENSOR_BUFF; i++)
+            {
+                this->sensorTimesMs[i] = sensorTime;
+            }
         }
 
         // Read & clear sensor buffers
@@ -276,101 +376,130 @@ public:
                 buffLength--;
             }
         }
-        if ( TEST ) {
-            movedDistance = this->speed * 1000 / 60 / 60;
+
+        // if (DEBUG)
+        // {
+        //     Serial.print("MOVED:");
+        //     Serial.println(movedDistance);
+        // }
+
+
+        // start
+        if (movedDistance > 0 && !this->started)
+        {
+            this->start();
         }
 
-        // Add moved to all distances
-        if ( movedDistance > 0 && !this->started )
+        if (!this->started)
         {
-            this->started = true;
-            this->paused = false;
-            this->startTimeMs = now;
-            this->runningTimeMs = now;
+            return;
         }
-        this->distance += movedDistance;
+
+        // if (DEBUG) {
+        //     Serial.print(movedDistance);
+        //     Serial.print("\t");
+        // }
+
+        // Add moved distance to all distances
+        this->Memory.currentDistance += movedDistance;
         this->Memory.dayDistance += movedDistance;
-        this->Memory.tripDistance += movedDistance;
-        this->Memory.totalDistance += movedDistance;
+        this->Memory.tripDistance1 += movedDistance;
+        this->Memory.tripDistance2 += movedDistance;
+        this->Memory.tripDistance3 += movedDistance;
+        this->Memory.totalDistance += (int) movedDistance;
 
-        if ( this->started )
+        // Calc speeds
+        unsigned long avgSensorTime = 0;
+        this->speed = 0.0;
+        if (buffLength > 0 && totalSensorTime > 0)
         {
-
-            // Calc speed
-            if ( !TEST ) {
-                unsigned long avgSensorTime = 0;
-                this->speed = 0.0;
-                if (buffLength > 0 && totalSensorTime > 0)
-                {
-                    avgSensorTime = totalSensorTime / buffLength;
-                    float Speed_meter_sec = this->Memory.wheelCircumference / (avgSensorTime / 1000.0);
-                    this->speed = Speed_meter_sec * 3.6;
-                }
-            }
-
-            // if ( DEBUG ) {
-            //     Serial.print("Speed:\t");
-            //     Serial.print(this->speed);
-            //     Serial.print("\tBuffer");
-            //     Serial.print(buffLength);
-            //     Serial.println();
-            // }
-
-            // Calc AVG & MAX
-            this->avgSpeed = this->distance / (this->tripTimeMs / 1000.0) * 3.6;
-            if (this->speed < 10000000 && this->speed >= this->maxSpeed)
-            {
-                this->maxSpeed = this->speed;
-            }
-
-            // Paused??
-            if ( this->speed <= 2.0 )
-            {
-                if ( !this->paused )
-                {
-                    this->paused = true;
-                    this->storeMemory();
-                }
-            }
-
+            avgSensorTime = totalSensorTime / buffLength;
+            float Speed_meter_sec = this->Memory.wheelCircumference / (avgSensorTime / 1000.0);
+            this->speed = Speed_meter_sec * 3.6;
         }
 
-        // Pause & TrimTime & SpeedSensor
-        if ( this->speed > 2.0 )
-        {
-            if ( this->paused ) {
-                this->paused = false;
-                this->runningTimeMs = now;
+        // Calc AVG & MAX
+        if (this->Memory.currentDistance > 0.1 && this->Memory.currentTime > 1000) {
+            this->Memory.currentAverageSpeed = this->Memory.currentDistance / (this->Memory.currentTime / 1000.0) * 3.6;
+            if (this->speed < 120.0 && this->speed >= this->Memory.currentMaxSpeed)
+            {
+                this->Memory.currentMaxSpeed = this->speed;
             }
-            this->tripTimeMs += (now - this->runningTimeMs);
-            this->runningTimeMs = now;
+            if (this->Memory.currentAverageSpeed > this->Memory.currentMaxSpeed) {
+                this->Memory.currentAverageSpeed = this->Memory.currentMaxSpeed;
+            }
+        }
+
+        // Pause??
+        if (this->speed <= PAUSE_THRESHOLD)
+        {
+            this->pauseCurrent();
+        }
+
+        if (this->speed > PAUSE_THRESHOLD)
+        {
+            if (this->paused)
+            {
+                this->unPauseCurrent();
+            }
+            this->Memory.currentTime += (now - this->tempTimeMs);
+            this->tempTimeMs = now;
             this->SpeedSensor = !this->SpeedSensor;
         }
 
-        // Only store ODO if it has changed, so EEPROM is only written when needed
-        unsigned long oldOdo = (int)this->readMemory().totalDistance;
-        unsigned long currentOdo = (int)this->Memory.totalDistance;
+        // Only store ODO if it has changed (per 100m), so EEPROM is only written when needed
+        unsigned long oldOdo = (int)this->readMemory().totalDistance / 100;
+        unsigned long currentOdo = (int)this->Memory.totalDistance / 100;
         if (currentOdo != oldOdo)
         {
             this->storeMemory();
         }
+
+        if ( DEBUG ) {
+            this->_printMemory("LOOP");
+        }
+
     }
 
     void storeMemory()
     {
         this->Memory.timestamp = now();
-        this->Memory.dayTimeMovedSecs = this->tripTimeMs / 1000;
-        this->Memory.dayAverageSpeed = this->avgSpeed;
-        this->Memory.dayMaxSpeed = this->maxSpeed;
-        EEPROM.put(MEM_ADDRESS, this->Memory);
-        EEPROM.put(ODO_ADDRESS, this->Memory.totalDistance);
+        EEPROM.put(NEW_ADDRESS, this->Memory);
     }
 
     MemoryStruct readMemory()
     {
         MemoryStruct tmpMemory;
-        EEPROM.get(MEM_ADDRESS, tmpMemory);
+        EEPROM.get(NEW_ADDRESS, tmpMemory);
         return tmpMemory;
+    }
+
+    void _printMemory(const char message[]) {
+        Serial.print(message);
+        Serial.print("\t");
+        Serial.print("now: ");Serial.print(now());Serial.print("\t");
+        Serial.print("stamp: ");Serial.print(this->Memory.timestamp);Serial.print("\t");
+        Serial.print("diff (sec): ");Serial.print(now() - this->Memory.timestamp);Serial.print("\t");
+        Serial.print("totalDistance: ");Serial.print(this->Memory.totalDistance);Serial.print("\t");
+        // Serial.print("tripDistance: ");Serial.print(this->Memory.tripDistance/ 1000);Serial.print("\t");
+        Serial.print("dayDistance: ");Serial.print(this->Memory.dayDistance/1000);Serial.print("\t");
+        // Serial.print("dayTime: ");Serial.print(this->Memory.dayTime);Serial.print("\t");
+        // Serial.print("dayAverageSpeed: ");Serial.print(this->Memory.dayAverageSpeed);Serial.print("\t");
+
+        Serial.print("Speed: ");Serial.print(this->speed);Serial.print("\t");
+        Serial.print("currentDistance: ");Serial.print(this->Memory.currentDistance/1000);Serial.print("\t");
+        Serial.print("currentTime: ");Serial.print(this->Memory.currentTime);Serial.print("\t");
+        // Serial.print("CurrentAvgSpeed: ");Serial.print(this->Memory.currentAverageSpeed);Serial.print("\t");
+        // Serial.print("CurrentMaxSpeed: ");Serial.print(this->Memory.currentMaxSpeed);Serial.print("\t");
+
+        // Serial.print("dayMaxSpeed: ");Serial.print(this->Memory.dayMaxSpeed);Serial.print("\t");
+        // Serial.print("prevDistance: ");Serial.print(this->Memory.prevDistance);Serial.print("\t");
+        // Serial.print("prevAverageSpeed: ");Serial.print(this->Memory.prevAverageSpeed);Serial.print("\t");
+        // Serial.print("prevMaxSpeed: ");Serial.print(this->Memory.prevMaxSpeed);Serial.print("\t");
+
+        // Serial.print("wheelCircumference: ");Serial.print(this->Memory.wheelCircumference);Serial.print("\t");
+
+        Serial.println();
     }
 
     void sensorTrigger()

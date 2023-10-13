@@ -1,7 +1,7 @@
 #pragma once
 
-#define DEBUG false // [default = false] - set to true for Serial output
-#define TEST false   // [default = false] - set to true for local test environment
+#define DEBUG true  // [default = false] - set to true for Serial output
+#define TEST true   // [default = false] - set to true for local test environment
 
 /*
   WHEELS
@@ -31,21 +31,41 @@ Wheel Wheels[NR_ETRTO_WHEELS] = {
     {"56-406", 1.625},
 };
 
-#define BIKE_DISTANCE_START         8060
+#define BIKE_LENGTH                 285 // cm
 
+#define BIKE_DISTANCE_START         8060
+#define MAX_TIME_SHORT_BRAKE        21600 // 6 hours = 60*60*6 seconds
+
+// total bytes = 4 * 20 = 80 bytes
 typedef struct {
-    unsigned long   timestamp;              // Time when data is stored
-    unsigned long   totalDistance;
-    float           tripDistance;
-    float           dayDistance;
-    unsigned long   dayTimeMovedSecs;
+    unsigned long   timestamp;                  // Time when data is stored
+
+    unsigned long   totalDistance;              // ODO (meters)
+    float           tripDistance1;              // sub total 1..3
+    float           tripDistance2;
+    float           tripDistance3;
+
+    float           currentDistance;            // current trip
+    unsigned long   currentStartTime;
+    unsigned long   currentTime;
+    float           currentAverageSpeed;
+    float           currentMaxSpeed;
+
+    float           dayDistance;                // day totals
+    unsigned long   dayStartTime;
+    unsigned long   dayTime;
     float           dayAverageSpeed;
     float           dayMaxSpeed;
-    float           prevDayDistance;
-    float           prevDayAverage;
-    float           prevDayMaxSpeed;
-    float           wheelCircumference;
+
+    float           prevDistance;               // prev day
+    unsigned long   prevTime;
+    float           prevAverageSpeed;
+    float           prevMaxSpeed;
+
+    float           wheelCircumference;         // config
 } MemoryStruct;
+
+
 
 
 /*
@@ -53,14 +73,18 @@ typedef struct {
 */
 
 #define HEAD_LED_OFF_INTENSITY      0
-#define HEAD_LED_LOW_INTENSITY      16
-#define HEAD_LED_MEDIUM_INTENSITY   92
-#define HEAD_LED_MAX_INTENSITY      255
+#define HEAD_LED_DIM_INTENSITY      0
+#define HEAD_LED_ON_INTENSITY       4   // 4 = minimum light
+#define HEAD_LED_NORMAL_INTENSITY   92
+#define HEAD_LED_BEAM_INTENSITY     140 // 140 = maximum light
+#define HEAD_LED_FOG_INTENSITY      140
 
 #define REAR_LED_OFF_INTENSITY      0
-#define REAR_LED_LOW_INTENSITY      2
-#define REAR_LED_MEDIUM_INTENSITY   32
-#define REAR_LED_MAX_INTENSITY      128
+#define REAR_LED_DIM_INTENSITY      4
+#define REAR_LED_ON_INTENSITY       16
+#define REAR_LED_NORMAL_INTENSITY   32
+#define REAR_LED_BEAM_INTENSITY     64
+#define REAR_LED_FOG_INTENSITY      140 // 140 = max
 
 
 /*
@@ -98,8 +122,8 @@ typedef struct {
  */
 #define DISPLAY_WELCOME     0
 #define DISPLAY_HOME        1
-#define DISPLAY_TODAY       2
-#define DISPLAY_SPEEDS      3
+#define DISPLAY_SPEEDS      2
+#define DISPLAY_TODAY       3
 #define DISPLAY_TOTALS      4
 #define DISPLAY_TIME        5 // CHANGE WITH DISPLAY_TOTALS IF NEEDED
 #define DISPLAY_PREV_DIST   6 // CHANGE WITH DISPLAY_TOTALS IF NEEDED
@@ -119,17 +143,19 @@ typedef struct {
 #define BRIGHTNESS 255
 #define FRAMES_PER_SECOND 100
 #if TEST
-#define NUM_LEDS 12
-#define NUM_LIGHT_LEDS 3
-#define NUM_LIGHT_LEDS_BACK 3
-#define NUM_INDICATOR_LEDS 3
+#define NUM_LEDS                12
+#define NUM_LIGHT_LEDS_FRONT    3
+#define NUM_LIGHT_LEDS_BACK     3
+#define NUM_INDICATOR_LEDS      3
+#define NUM_SPEED_LEDS          1
 #define MAX_MILLIAMPS 400
 #else
-#define NUM_LEDS 169 // 2,85 m * 66 = 188
-#define NUM_LIGHT_LEDS 36
-#define NUM_LIGHT_LEDS_BACK 48
-#define NUM_INDICATOR_LEDS 56
-#define MAX_MILLIAMPS 1500
+#define NUM_LEDS                169 // 2,85 m * 66 = 188
+#define NUM_LIGHT_LEDS_FRONT    36
+#define NUM_LIGHT_LEDS_BACK     48
+#define NUM_INDICATOR_LEDS      70
+#define NUM_SPEED_LEDS          10
+#define MAX_MILLIAMPS           2000
 #endif
 
 #define LEFT -1
