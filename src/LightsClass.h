@@ -5,6 +5,7 @@
 #include "settings.h"
 
 #include "BatteryClass.h"
+#include "SpeedClass.h"
 #include "LedClass.h"
 
 #define LIGHTS_OFF 0
@@ -19,6 +20,7 @@ class LightsClass
 
 private:
     BatteryClass *Battery;
+    SpeedClass *Speed;
     LedClass *HeadLightLeft, *HeadLightRight, *RearLight;
     int lights = LIGHTS_OFF;
     bool brake = false;
@@ -26,15 +28,16 @@ private:
 
 public:
 
-    void init(BatteryClass *battery, LedClass *left, LedClass *right, LedClass *rear, LedClass *brake) {
+    void init(BatteryClass *battery, SpeedClass *speed, LedClass *left, LedClass *right, LedClass *rear, LedClass *brake) {
         this->Battery = battery;
+        this->Speed = speed;
         this->HeadLightLeft = left;
         this->HeadLightRight = right;
         this->RearLight = rear;
         // this->BrakeLight = brake;
     }
 
-    void _set() {
+    void loop() {
         int lights = this->lights;
         if ( this->Battery->isVeryLow() or this->Battery->isAlmostDead() ) {
             if ( lights>=LIGHTS_BEAM ) {
@@ -82,7 +85,7 @@ public:
             }
         }
 
-        if ( this->brake ) {
+        if ( this->getBrake() ) {
             this->RearLight->setIntensity(REAR_LED_BEAM_INTENSITY);
         }
 
@@ -90,7 +93,6 @@ public:
 
     void resetLights() {
         this->lights = LIGHTS_OFF;
-        this->_set();
     }
 
     void increaseLights()
@@ -99,7 +101,6 @@ public:
         if ( this->lights > LIGHTS_FOG ) {
             this->lights = LIGHTS_FOG;
         }
-        this->_set();
     }
 
     void decreaseLights()
@@ -108,7 +109,6 @@ public:
         if ( this->lights < LIGHTS_OFF ) {
             this->lights = LIGHTS_OFF;
         }
-        this->_set();
     }
 
     void setFogLight() {
@@ -117,25 +117,23 @@ public:
 
     void setBrake(bool b)
     {
-        if ( !this->Battery->isVeryLow() && !this->Battery->isAlmostDead() ) {
-            this->brake = b;
-        }
-        this->_set();
+        this->brake = b;
     }
 
     bool getBrake()
     {
-        return this->brake;
+        if (this->brake && !this->Speed->isPaused()  && !this->Battery->isVeryLow() && !this->Battery->isAlmostDead()) {
+            return true;
+        }
+        return false;
     }
 
     void setBeam(bool b) {
         this->beam = b;
-        this->_set();
     }
 
     void off() {
         this->lights = LIGHTS_OFF;
-        this->_set();
     }
 
     int getLights()

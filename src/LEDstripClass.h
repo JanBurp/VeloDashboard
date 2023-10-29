@@ -231,7 +231,7 @@ public:
                 break;
         }
 
-        if (this->Lights->getBrake() && !this->Speed->isPaused() )
+        if (this->Lights->getBrake())
         {
             red = RED_FULL;
         }

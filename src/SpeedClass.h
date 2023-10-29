@@ -101,7 +101,7 @@ public:
         return (time.Day != day() || time.Month != month());
     }
 
-    bool IsShortBrake() {
+    bool IsShortPause() {
         return (now() - this->Memory.timestamp) < MAX_TIME_SHORT_BRAKE;
     }
 

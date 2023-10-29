@@ -107,19 +107,21 @@ void setup()
     Battery.loop();
     IdleTimer.action();
 
+    Speed.init();
+
     LedHeadLightLeft.init(PIN_HEAD_LIGHT_LEFT);
     LedHeadLightRight.init(PIN_HEAD_LIGHT_RIGHT);
     LedRearLight.init(PIN_REAR_LIGHT);
     LedBrakeLight.init(PIN_BRAKE_LIGHT);
-    Lights.init(&Battery, &LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
+    Lights.init(&Battery, &Speed, &LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
+
+    Indicators.init();
+    LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer,&Speed);
 
     // Buzzer
     pinMode(PIN_BUZZER, OUTPUT);
     buzzer(false);
 
-    Speed.init();
-    Indicators.init();
-    LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer,&Speed);
 
 
     Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights, &LEDstrips);
@@ -135,7 +137,7 @@ void setup()
         Speed.startDay();
     }
     else {
-        if ( Speed.IsShortBrake() ) {
+        if ( Speed.IsShortPause() ) {
             Display.askStartupQuestion();
             Display.show();
             Dashboard.waitForButtonPress();
@@ -306,6 +308,7 @@ void loop()
     }
     else {
         LEDstrips.loop();
+        Lights.loop();
         Display.show();
     }
 
