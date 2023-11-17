@@ -312,6 +312,8 @@ void loop()
         Display.show();
     }
 
-    Battery.loop();
+    if ( !Dashboard.isBrake() ) {
+        Battery.loop();
+    }
 
 }

@@ -4,7 +4,7 @@
 
 #define VREF        3300
 #define V_SAMPLES   25
-#define V_TIME      1000
+#define V_TIME      6000
 
 #define ADJUST_REF  4200
 #if TEST
