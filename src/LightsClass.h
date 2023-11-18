@@ -122,7 +122,7 @@ public:
 
     bool getBrake()
     {
-        if (this->brake && !this->Speed->isPaused()  && !this->Battery->isVeryLow() && !this->Battery->isAlmostDead()) {
+        if (this->brake && !this->Battery->isVeryLow() && !this->Battery->isAlmostDead()) {
             return true;
         }
         return false;
