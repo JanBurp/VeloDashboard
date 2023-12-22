@@ -1,7 +1,7 @@
 #pragma once
 
-#define DEBUG false  // [default = false] - set to true for Serial output
-#define TEST false   // [default = false] - set to true for local test environment
+#define DEBUG true  // [default = false] - set to true for Serial output
+#define TEST true   // [default = false] - set to true for local test environment
 
 /*
   WHEELS
@@ -175,8 +175,41 @@ typedef struct {
  * PINS (south L->R)
  */
 
-// 0 - unused
-// 1 - unused
+#if TEST
+
+// 0 - unused -> future extra strips?
+// 1 - unused -> future extra strips?
+#define PIN_LEFT_STRIP          2
+#define PIN_RIGHT_STRIP         3
+#define PIN_SPEED               4
+#define PIN_POWER_OFF           5
+#define PIN_BUZZER              6
+// 7 - unused
+#define PIN_HEAD_LIGHT_LEFT     8
+#define PIN_HEAD_LIGHT_RIGHT    9
+#define PIN_REAR_LIGHT          10
+#define PIN_BRAKE_LIGHT         11
+// 12 - unused
+
+/*
+ * PINS (north L-R)
+ */
+// 23 unused
+// 22 unused
+// 21 - unused
+// 20 - unused
+// 19 - DISPLAY SCL
+// 18 - DISPLAY SDA
+// 17 - SDA 1
+// 16 - SLC 1
+#define PIN_DASHBOARD           15
+#define PIN_BATTERY_METER       14
+#define INTERNAL_LED            13              // 13 - unused - OFF
+
+#else
+
+// 0 - unused -> future extra strips?
+// 1 - unused -> future extra strips?
 #define PIN_LEFT_STRIP          2
 #define PIN_RIGHT_STRIP         3
 #define PIN_SPEED               4
@@ -198,18 +231,21 @@ typedef struct {
 // 20 - unused
 // 19 - DISPLAY SCL
 // 18 - DISPLAY SDA
-// 17 - unused
-// 16 - unused
+// 17 - SDA 1
+// 16 - SLC 1
 #define PIN_TEST_SPEED          15              // 15 - unused, but used for testing
 // #define PIN_HORN                14
 #define INTERNAL_LED            13              // 13 - unused - OFF
+
+
+#endif
 
 /**
  * Unused PINS
  */
 #if TEST
-#define UNUSED_PINS         {0,1,7,12,14,16,17,20,21}
-#define NR_UNUSED_PINS      9
+#define UNUSED_PINS         {0,1,7,12,16,17,20,21}
+#define NR_UNUSED_PINS      8
 #else
 #define UNUSED_PINS         {0,1,7,12,14,15,16,17,20,21}
 #define NR_UNUSED_PINS      10

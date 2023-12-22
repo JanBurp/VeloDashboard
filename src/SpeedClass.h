@@ -339,18 +339,8 @@ public:
 
         if (TEST)
         {
-            // Dummy speed
-            int value = analogRead(PIN_TEST_SPEED);
-            unsigned long sensorTime = map(value,0,1023,10000, 1);
-            // this->speed = map(value, 0, 1023, 0, 100);
-            // if (DEBUG)
-            // {
-            //     Serial.print("READ: ");
-            //     Serial.print(value);
-            //     Serial.print(" \t ");
-            //     Serial.print(sensorTime);
-            // }
-
+            // Dummy speed (random)
+            unsigned long sensorTime = random(0,500);
             for (size_t i = 0; i < SENSOR_BUFF; i++)
             {
                 this->sensorTimesMs[i] = sensorTime;
@@ -475,31 +465,31 @@ public:
     }
 
     void _printMemory(const char message[]) {
-        Serial.print(message);
-        Serial.print("\t");
-        Serial.print("now: ");Serial.print(now());Serial.print("\t");
-        Serial.print("stamp: ");Serial.print(this->Memory.timestamp);Serial.print("\t");
-        Serial.print("diff (sec): ");Serial.print(now() - this->Memory.timestamp);Serial.print("\t");
-        Serial.print("totalDistance: ");Serial.print(this->Memory.totalDistance);Serial.print("\t");
-        // Serial.print("tripDistance: ");Serial.print(this->Memory.tripDistance/ 1000);Serial.print("\t");
-        Serial.print("dayDistance: ");Serial.print(this->Memory.dayDistance/1000);Serial.print("\t");
-        // Serial.print("dayTime: ");Serial.print(this->Memory.dayTime);Serial.print("\t");
-        // Serial.print("dayAverageSpeed: ");Serial.print(this->Memory.dayAverageSpeed);Serial.print("\t");
+        // Serial.print(message);
+        // Serial.print("\t");
+        // Serial.print("now: ");Serial.print(now());Serial.print("\t");
+        // Serial.print("stamp: ");Serial.print(this->Memory.timestamp);Serial.print("\t");
+        // Serial.print("diff (sec): ");Serial.print(now() - this->Memory.timestamp);Serial.print("\t");
+        // Serial.print("totalDistance: ");Serial.print(this->Memory.totalDistance);Serial.print("\t");
+        // // Serial.print("tripDistance: ");Serial.print(this->Memory.tripDistance/ 1000);Serial.print("\t");
+        // Serial.print("dayDistance: ");Serial.print(this->Memory.dayDistance/1000);Serial.print("\t");
+        // // Serial.print("dayTime: ");Serial.print(this->Memory.dayTime);Serial.print("\t");
+        // // Serial.print("dayAverageSpeed: ");Serial.print(this->Memory.dayAverageSpeed);Serial.print("\t");
 
-        Serial.print("Speed: ");Serial.print(this->speed);Serial.print("\t");
-        Serial.print("currentDistance: ");Serial.print(this->Memory.currentDistance/1000);Serial.print("\t");
-        Serial.print("currentTime: ");Serial.print(this->Memory.currentTime);Serial.print("\t");
-        // Serial.print("CurrentAvgSpeed: ");Serial.print(this->Memory.currentAverageSpeed);Serial.print("\t");
-        // Serial.print("CurrentMaxSpeed: ");Serial.print(this->Memory.currentMaxSpeed);Serial.print("\t");
+        // Serial.print("Speed: ");Serial.print(this->speed);Serial.print("\t");
+        // Serial.print("currentDistance: ");Serial.print(this->Memory.currentDistance/1000);Serial.print("\t");
+        // Serial.print("currentTime: ");Serial.print(this->Memory.currentTime);Serial.print("\t");
+        // // Serial.print("CurrentAvgSpeed: ");Serial.print(this->Memory.currentAverageSpeed);Serial.print("\t");
+        // // Serial.print("CurrentMaxSpeed: ");Serial.print(this->Memory.currentMaxSpeed);Serial.print("\t");
 
-        // Serial.print("dayMaxSpeed: ");Serial.print(this->Memory.dayMaxSpeed);Serial.print("\t");
-        // Serial.print("prevDistance: ");Serial.print(this->Memory.prevDistance);Serial.print("\t");
-        // Serial.print("prevAverageSpeed: ");Serial.print(this->Memory.prevAverageSpeed);Serial.print("\t");
-        // Serial.print("prevMaxSpeed: ");Serial.print(this->Memory.prevMaxSpeed);Serial.print("\t");
+        // // Serial.print("dayMaxSpeed: ");Serial.print(this->Memory.dayMaxSpeed);Serial.print("\t");
+        // // Serial.print("prevDistance: ");Serial.print(this->Memory.prevDistance);Serial.print("\t");
+        // // Serial.print("prevAverageSpeed: ");Serial.print(this->Memory.prevAverageSpeed);Serial.print("\t");
+        // // Serial.print("prevMaxSpeed: ");Serial.print(this->Memory.prevMaxSpeed);Serial.print("\t");
 
-        // Serial.print("wheelCircumference: ");Serial.print(this->Memory.wheelCircumference);Serial.print("\t");
+        // // Serial.print("wheelCircumference: ");Serial.print(this->Memory.wheelCircumference);Serial.print("\t");
 
-        Serial.println();
+        // Serial.println();
     }
 
     void sensorTrigger()
