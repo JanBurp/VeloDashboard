@@ -13,13 +13,19 @@ PeriodicTimer indicatorTimer(TCK);
 class IndicatorClass {
 
     private:
+        int leftLED;
+        int rightLED;
         int function;
         bool stateLeft;
         bool stateRight;
 
 	public:
 
-		void init() {
+		void init(int left, int right) {
+            this->leftLED = left;
+            this->rightLED = right;
+            pinMode(this->leftLED, OUTPUT);
+            pinMode(this->rightLED, OUTPUT);
             indicatorTimer.begin( [this] { this->loop(); } , INDICATOR_TIMER, false );
             this->reset();
 		}
@@ -28,6 +34,8 @@ class IndicatorClass {
             this->function = INDICATORS_OFF;
             this->stateLeft = false;
             this->stateRight = false;
+            digitalWrite(this->leftLED, this->stateLeft);
+            digitalWrite(this->rightLED, this->stateRight);
             indicatorTimer.stop();
         }
 
@@ -82,9 +90,11 @@ class IndicatorClass {
         void loop() {
             if ( this->function == INDICATORS_LEFT || this->function == INDICATORS_BOTH ) {
                 this->stateLeft = ! this->stateLeft;
+                digitalWrite(this->leftLED, this->stateLeft);
             }
             if ( this->function == INDICATORS_RIGHT || this->function == INDICATORS_BOTH ) {
                 this->stateRight = ! this->stateRight;
+                digitalWrite(this->rightLED, this->stateRight);
             }
         }
 

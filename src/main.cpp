@@ -115,7 +115,7 @@ void setup()
     LedBrakeLight.init(PIN_BRAKE_LIGHT);
     Lights.init(&Battery, &Speed, &LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
 
-    Indicators.init();
+    Indicators.init(PIN_LED_LEFT,PIN_LED_RIGHT);
     LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer,&Speed);
 
     // Buzzer
