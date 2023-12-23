@@ -102,7 +102,7 @@ void setup()
     setSyncProvider(getTeensy3Time);
 
     // Knobs & Buttons
-    Dashboard.init(PIN_DASHBOARD);
+    Dashboard.init(PIN_BRAKE,PIN_BUTTONS_LEFT,PIN_BUTTONS_RIGHT);
     Battery.init(PIN_BATTERY_METER,PIN_POWER_OFF);
     Battery.loop();
     IdleTimer.action();
@@ -234,14 +234,14 @@ void readButtons()
             if ( Dashboard.isLightsUp() )  {
                 Display.setDisplayModeHome();
                 Lights.increaseLights();
-                if ( Dashboard.isLongPress() ) {
+                if ( Dashboard.isLongPressed() ) {
                     Lights.setFogLight();
                 }
             }
             if ( Dashboard.isLightsDown() )  {
                 Display.setDisplayModeHome();
                 Lights.decreaseLights();
-                if ( Dashboard.isLongPress() ) {
+                if ( Dashboard.isLongPressed() ) {
                     Lights.resetLights();
                 }
             }
@@ -251,7 +251,7 @@ void readButtons()
         if (Dashboard.isDisplay()) {
             Display.nextDisplayMode();
         }
-        if ( Dashboard.isDisplay() && Dashboard.isLongPress() ) {
+        if ( Dashboard.isDisplay() && Dashboard.isLongPressed() ) {
             Display.toggleSettings();
         }
 

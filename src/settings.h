@@ -194,14 +194,14 @@ typedef struct {
 /*
  * PINS (north L-R)
  */
-// 23 unused
-// 22 unused
-// 21 - unused
-// 20 - unused
-// 19 - DISPLAY SCL
-// 18 - DISPLAY SDA
-// 17 - SDA 1
-// 16 - SLC 1
+#define PIN_LED_LEFT            22
+#define PIN_LED_RIGHT           23
+// 21 - unused BRAKE LED??
+#define PIN_BRAKE               20
+#define PIN_BUTTONS_RIGHT       19
+#define PIN_BUTTONS_LEFT        18
+// 17 - DISPLAY SDA 1
+// 16 - DISPLAY SCL 1
 #define PIN_DASHBOARD           15
 #define PIN_BATTERY_METER       14
 #define INTERNAL_LED            13              // 13 - unused - OFF

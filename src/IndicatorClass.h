@@ -13,15 +13,15 @@ PeriodicTimer indicatorTimer(TCK);
 class IndicatorClass {
 
     private:
-        int leftLED;
-        int rightLED;
+        byte leftLED;
+        byte rightLED;
         int function;
         bool stateLeft;
         bool stateRight;
 
 	public:
 
-		void init(int left, int right) {
+		void init(byte left, byte right) {
             this->leftLED = left;
             this->rightLED = right;
             pinMode(this->leftLED, OUTPUT);
