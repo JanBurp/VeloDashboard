@@ -89,6 +89,8 @@ void setup()
         Serial.println(F_CPU_ACTUAL / 1000000);
     }
 
+    pinMode(PIN_LED_BRAKE, OUTPUT);
+
     // Disable unused pins (saves a bit current)
     pinMode(INTERNAL_LED,OUTPUT);
     digitalWrite(INTERNAL_LED,LOW);
@@ -170,6 +172,7 @@ void readButtons()
 
     // Break & Beam
     Lights.setBrake( Dashboard.isBrake() );
+    digitalWrite(PIN_LED_BRAKE, Dashboard.isBrake());
     Lights.setBeam( Dashboard.isBeam() );
 
     // Others
