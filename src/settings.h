@@ -245,7 +245,7 @@ typedef struct {
  */
 #if TEST
 #define UNUSED_PINS         {0,1,7,12,16,17}
-#define NR_UNUSED_PINS      8
+#define NR_UNUSED_PINS      6
 #else
 #define UNUSED_PINS         {0,1,7,12,14,15,16,17,20,21}
 #define NR_UNUSED_PINS      10
