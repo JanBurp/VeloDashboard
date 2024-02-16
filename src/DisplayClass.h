@@ -18,6 +18,8 @@
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
+#define DISPLAY_DIMMED_LOOP_COUNT   2;
+
 enum DisplayType {
     settings,
     three,
@@ -36,6 +38,7 @@ private:
     bool settingsMenu = false;
     bool startupQuestion = false;
     int cursorPosition = 0;
+    int loopCounter = 0;
 
     SpeedClass *Speed;
     BatteryClass *Battery;
@@ -659,58 +662,66 @@ public:
         OLED.clearDisplay();
         this->show_indicators();
 
-        if ( this->settingsMenu ) {
-            switch (this->displayMode)
-            {
-                case DISPLAY_SETTINGS_TRIP:
-                    this->showSettingsMode("TRIP");
-                    this->showResetTrip();
-                    break;
-                case DISPLAY_SETTINGS_CLOCK:
-                    this->showSettingsMode("CLOCK");
-                    this->showSetTime();
-                    break;
-                case DISPLAY_SETTINGS_TYRE:
-                    this->showSettingsMode("TYRE");
-                    this->showTyreEdit();
-                    break;
-                case DISPLAY_SETTINGS_TOTAL:
-                    this->showSettingsMode("BIKE");
-                    this->showTotalEdit();
-                    break;
+        bool dimmed = this->Lights->getLights() > LIGHTS_NORMAL;
+        if ( !dimmed or this->loopCounter<DISPLAY_DIMMED_LOOP_COUNT ) {
+
+            if ( this->settingsMenu ) {
+                switch (this->displayMode)
+                {
+                    case DISPLAY_SETTINGS_TRIP:
+                        this->showSettingsMode("TRIP");
+                        this->showResetTrip();
+                        break;
+                    case DISPLAY_SETTINGS_CLOCK:
+                        this->showSettingsMode("CLOCK");
+                        this->showSetTime();
+                        break;
+                    case DISPLAY_SETTINGS_TYRE:
+                        this->showSettingsMode("TYRE");
+                        this->showTyreEdit();
+                        break;
+                    case DISPLAY_SETTINGS_TOTAL:
+                        this->showSettingsMode("BIKE");
+                        this->showTotalEdit();
+                        break;
+                }
+            }
+            else {
+                switch (this->displayMode)
+                {
+                    case DISPLAY_WELCOME :
+                        this->show_welcome();
+                        break;
+                    case DISPLAY_HOME:
+                        if ( !this->IdleTimer->warning() ) {
+                            this->show_speed();
+                            this->show_lights();
+                            this->show_distance();
+                            this->show_battery();
+                        }
+                        this->show_time();
+                        break;
+                    case DISPLAY_TODAY:
+                        this->show_today_distances();
+                        break;
+                    case DISPLAY_SPEEDS:
+                        this->show_today_speeds();
+                        break;
+                    // case DISPLAY_TRIPS:
+                    //     this->show_trips();
+                    //     break;
+                    case DISPLAY_TOTALS:
+                        this->show_totals();
+                        break;
+                }
             }
         }
         else {
-            switch (this->displayMode)
-            {
-                case DISPLAY_WELCOME :
-                    this->show_welcome();
-                    break;
-                case DISPLAY_HOME:
-                    if ( !this->IdleTimer->warning() ) {
-                        this->show_speed();
-                        this->show_lights();
-                        this->show_distance();
-                        this->show_battery();
-                    }
-                    this->show_time();
-                    break;
-                case DISPLAY_TODAY:
-                    this->show_today_distances();
-                    break;
-                case DISPLAY_SPEEDS:
-                    this->show_today_speeds();
-                    break;
-                // case DISPLAY_TRIPS:
-                //     this->show_trips();
-                //     break;
-                case DISPLAY_TOTALS:
-                    this->show_totals();
-                    break;
-            }
+            this->loopCounter = 0;
         }
 
         OLED.display();
+        this->loopCounter++;
     }
 
     void toggleSettings() {
