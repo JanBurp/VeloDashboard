@@ -18,7 +18,7 @@
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-#define DISPLAY_DIMMED_LOOP_COUNT   2;
+#define DISPLAY_DIMMED_LOOP_COUNT   2
 
 enum DisplayType {
     settings,
@@ -664,7 +664,6 @@ public:
 
         bool dimmed = this->Lights->getLights() > LIGHTS_NORMAL;
         if ( !dimmed or this->loopCounter<DISPLAY_DIMMED_LOOP_COUNT ) {
-
             if ( this->settingsMenu ) {
                 switch (this->displayMode)
                 {
