@@ -662,9 +662,10 @@ public:
         OLED.clearDisplay();
         this->show_indicators();
 
-        // bool dimmed = this->Lights->getLights() > LIGHTS_ON;
-        bool dimmed = false;
-        if ( !dimmed or this->loopCounter<DISPLAY_DIMMED_LOOP_COUNT ) {
+        bool dimmed = this->Lights->getLights() > LIGHTS_ON;
+        this->dim(dimmed);
+        // bool dimmed = false;
+        // if ( !dimmed or this->loopCounter<DISPLAY_DIMMED_LOOP_COUNT ) {
             if ( this->settingsMenu ) {
                 switch (this->displayMode)
                 {
@@ -715,13 +716,13 @@ public:
                         break;
                 }
             }
-        }
-        else {
-            this->loopCounter = 0;
-        }
+        // }
+        // else {
+        //     this->loopCounter = 0;
+        // }
 
         OLED.display();
-        this->loopCounter++;
+        // this->loopCounter++;
     }
 
     void toggleSettings() {
@@ -761,6 +762,11 @@ public:
         OLED.ssd1306_command(SSD1306_SETCONTRAST);
         OLED.ssd1306_command(contrast);
     }
+
+    void dim(bool dim = true) {
+        OLED.dim(dim);
+    }
+
 
 
 };
