@@ -662,7 +662,8 @@ public:
         OLED.clearDisplay();
         this->show_indicators();
 
-        bool dimmed = this->Lights->getLights() > LIGHTS_ON;
+        // bool dimmed = this->Lights->getLights() > LIGHTS_ON;
+        bool dimmed = false;
         if ( !dimmed or this->loopCounter<DISPLAY_DIMMED_LOOP_COUNT ) {
             if ( this->settingsMenu ) {
                 switch (this->displayMode)
