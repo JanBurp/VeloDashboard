@@ -63,7 +63,7 @@ Others:
 
 I have a working prototype since december 2022, with several improvements and new featuers since then. Still in beta/prototype fase. Results and images will follow in the future...
 
-## Main components
+## Hardware
 
 ### Teensy 4.0
 
@@ -84,5 +84,20 @@ Here is a guide for using [WS2812B LEDstrips](https://randomnerdtutorials.com/gu
 
 For driving the front, rear, brake (and maybe blinker) LED's i use [Meanwell LDD Led drivers](https://www.meanwell.com/webapp/product/search.aspx?prod=LDD-L) (LDD-700 for now).
 
+## Schematics
+
+The raw schematics can be found in the [kicad folder](./kicad)
+
+## Software
+
+For developing i used [VScode](https://code.visualstudio.com/) with [PlatformIO](https://platformio.org/). Once setup, i found this much easier to develop with compared to the Arduino IDE. But thats a software developer speaking ;-)
+
+## 3D print
+
+A STL file for 3D printing the console can be found in the [3D folder](./3d).
+
+# Roadmap
+
+...
 
 
