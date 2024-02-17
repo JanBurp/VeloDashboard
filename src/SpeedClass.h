@@ -3,7 +3,9 @@
 #include "Arduino.h"
 #include <EEPROM.h>
 
-#define PAUSE_THRESHOLD 1.0
+#define PAUSE_THRESHOLD         1.0
+#define SPEED_FILTER_THRESHOLD  15.0
+#define SPEED_FILTER_RATIO      2.0
 
 // #define MEM_ADDRESS 4
 #define NEW_ADDRESS 50
@@ -399,13 +401,20 @@ public:
         this->Memory.totalDistance += (int) movedDistance;
 
         // Calc speeds
-        unsigned long avgSensorTime = 0;
+        float lastSpeed = this->speed;
         this->speed = 0.0;
+        unsigned long avgSensorTime = 0;
         if (buffLength > 0 && totalSensorTime > 0)
         {
             avgSensorTime = totalSensorTime / buffLength;
             float Speed_meter_sec = this->Memory.wheelCircumference / (avgSensorTime / 1000.0);
             this->speed = Speed_meter_sec * 3.6;
+        }
+        // Filter strange change in speed (possibly due to double trigger of sensor)
+        if (this->speed >= SPEED_FILTER_THRESHOLD) {
+            if (this->speed >= SPEED_FILTER_RATIO * lastSpeed) {
+                this->speed = this->speed / SPEED_FILTER_RATIO;
+            }
         }
 
         // Calc AVG & MAX

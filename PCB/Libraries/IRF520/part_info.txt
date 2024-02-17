@@ -1,9 +1,0 @@
-Manufacturer=STMicroelectronics
-PartNumber=IRF520
-PartCategory=MOSFET (N-Channel)
-PackageCategory=Transistor Outline, Vertical
-PinCount=3
-Version=1.2
-Released=2021-03-02 13:03:40
-Downloaded=2023-03-06 12:19:25
-3D=Y

@@ -128,7 +128,6 @@ void setup()
 
     Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights, &LEDstrips);
     Display.setDisplayMode(DISPLAY_WELCOME);
-    Display.setContrast(1);
     Display.show();
 
     if ( !Battery.isDead() ) {
