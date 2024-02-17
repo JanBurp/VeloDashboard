@@ -11,7 +11,7 @@ But it was missing blinkers, had a 6V system on board, and two headlights which 
 That could be done better.
 
 And i struggled finding the 'perfect' bicycle computer to keep track of at least my current speed, average speed, maximum speed, time, time of the trip, distance, and at least two seperate distance counters.
-The most anoying were the small screen, the not so ideal combination of functions, button combo's etc. And a GPS one took too long to recognise my location so i allways missed a few km's.
+The most anoying things were small screens, the not so ideal combination of functions, button combo's etc. And a GPS one took too long to recognise my location so i allways missed a few km's.
 
 I took some inspiration found online from other velonauts. Such as:
 - [VeloPuter](https://veloputer.wordpress.com/about/)
