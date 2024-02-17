@@ -98,6 +98,8 @@ A STL file for 3D printing the console can be found in the [3D folder](./3d).
 
 # Roadmap
 
-...
+- New design of dashboard console with UTP connection to computer and Led's for indicators and brake light.
+- For now i soldered everything of protoryping breadboard. But real PCB's would be nice.
+- ...
 
 
