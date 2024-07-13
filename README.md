@@ -5,13 +5,13 @@ A bicycle computer made for velomobiles.
 ## Reasons
 
 In the summer of 2022 i bought a second hand [Quest](https://www.velomobiel.nl/quest/) velomobile.
-It was in very good shape, had only driven 8000km while 10 years old and fits my budget.
+It was in very good shape, had only driven 8000km while only 10 years old, and it fits my budget.
 
 But it was missing blinkers, had a 6V system on board, and two headlights which could be turned on independent from eachother. Which results in my Quest looking cross-eyed :-(
 That could be done better.
 
-And i struggled finding the 'perfect' bicycle computer to keep track of at least my current speed, average speed, maximum speed, time, time of the trip, distance, and at least two seperate distance counters.
-The most anoying things were small screens, the not so ideal combination of functions, button combo's etc. And a GPS one took too long to recognise my location so i allways missed a few km's.
+I also struggled finding the 'perfect' bicycle computer to keep track of at least my current speed, average speed, maximum speed, time, time of the trip, distance, and at least two seperate distance counters.
+The most anoying things of these computers are the small screens, the not so ideal combination of functions, button combo's etc. And a GPS one took too long to recognise my location (possibly due to the carbon body).
 
 I took some inspiration found online from other velonauts. Such as:
 - [VeloPuter](https://veloputer.wordpress.com/about/)
@@ -20,17 +20,17 @@ I took some inspiration found online from other velonauts. Such as:
 
 ## Features
 
-My take on a bicycle computer for my velomibile must have at least this features:
+My take on a bicycle computer for my velomibile must have at least these features:
 
 Lighting:
 - Drive the normal LED lights that are standard in most velombiles (rear light, brake light, fog light and blinkers if present)
-- Drive the double front lights in several steps (off, dim, normal, beam, fog)
-- Drive LED strips on each side of the velomobile. For blinkers (with nice animation!), and normal light for visibility (front, rear and brake light).
+- Drive the (double) head light(s) in several steps (off, dim, normal, beam, fog)
+- Drive LED strips on each side of the velomobile. For blinkers (with nice animation!), and normal light for visibility (front, rear and brake lights).
 
 Knobs & Display:
 - Big OLED display so i can see it easy.
 - All controls should be on the steering wheel (with a 3D printed console).
-- Knobs for the blinkers, lights, horn and switching through several pages on the display.
+- Knobs for the blinkers, lights and switching through several pages on the display.
 
 Speed & Distance:
 - Current speed
@@ -67,7 +67,7 @@ I have a working prototype since december 2022, with several improvements and ne
 
 ### Teensy 4.0
 
-The computer is based around a [Teensy 4.0](https://www.pjrc.com/store/teensy40.html). My first attempt was made with a Arduino nano, which is cheaper and uses less power. But i want a clock and the combination of driving LED strips and having an OLED screen was impossible (as far as i know) with te Arduino. The Teensy 4.0 has multiple i2c (OLED) and interrupts. And has a build in RTC (Real Time Clock) with power options for a small coin battery to keep the state of the clock. The Teensy has also lots of room for improvements or future additions (SD card storage for example).
+The computer is based around a [Teensy 4.0](https://www.pjrc.com/store/teensy40.html). My first attempt was made with a Arduino nano, which is cheaper and uses less power. But i wanted a clock. And the combination of driving LED strips and having an OLED screen was impossible (as far as i know) with te Arduino. The Teensy 4.0 has multiple i2c (OLED) and interrupts. And it also has a build in RTC (Real Time Clock) with power options for a small coin battery to keep the state of the clock. The Teensy has also lots of room for improvements or future additions (SD card storage for example).
 
 ### IP67 LEDstrips WS2812B
 
@@ -76,7 +76,7 @@ Here is a guide for using [WS2812B LEDstrips](https://randomnerdtutorials.com/gu
 
 ### Power
 
-- For power i choose Lipo batteries of 12.6 Volts. Other batteries are possible if they fill in the range the power regulator can handle.
+- For power i choose Lipo batteries of 12.6 Volts. Other batteries are possible.
 - [Polo Mini Pushbutton Power Switch](https://www.pololu.com/product/2809) is a on/off switch, whith reverse protection and more.
 - Power regulator to 5V. The Teensy has it's own regulator for 5V to 3.3V.
 
@@ -90,16 +90,16 @@ The raw schematics can be found in the [kicad folder](./kicad)
 
 ## Software
 
-For developing i used [VScode](https://code.visualstudio.com/) with [PlatformIO](https://platformio.org/). Once setup, i found this much easier to develop with compared to the Arduino IDE. But thats a software developer speaking ;-)
+For developing i used [VScode](https://code.visualstudio.com/) with [PlatformIO](https://platformio.org/). Once setup, i found this much easier for developling compared the Arduino IDE. But thats a software developer speaking ;-)
 
 ## 3D print
 
 A STL file for 3D printing the console can be found in the [3D folder](./3d).
 
-# Roadmap
+# Next steps:
 
-- New design of dashboard console with UTP connection to computer and Led's for indicators and brake light.
-- For now i soldered everything of protoryping breadboard. But real PCB's would be nice.
+- Hardware design with connectors for easy disconnecting the computer and the dashboard.
+- New design for the dashboard console with more wires to the computer (more and better options for the buttons and the brake sensor) and Led's for indicators.
+- For now i soldered everything on prototyping breadboards. But real PCB's would be nice.
 - ...
-
 
