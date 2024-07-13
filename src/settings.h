@@ -86,6 +86,11 @@ typedef struct {
 #define REAR_LED_BEAM_INTENSITY     64
 #define REAR_LED_FOG_INTENSITY      140 // 140 = max
 
+#define BRAKE_LEDS_OFF              0
+#define BRAKE_LEDS_FOG              64
+#define BRAKE_LEDS_ON               140
+
+
 
 /*
     TIMERS

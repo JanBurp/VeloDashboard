@@ -21,7 +21,7 @@ class LightsClass
 private:
     BatteryClass *Battery;
     SpeedClass *Speed;
-    LedClass *HeadLightLeft, *HeadLightRight, *RearLight;
+    LedClass *HeadLightLeft, *HeadLightRight, *RearLight, *BrakeLight;
     int lights = LIGHTS_OFF;
     bool brake = false;
     bool beam = false;
@@ -34,7 +34,7 @@ public:
         this->HeadLightLeft = left;
         this->HeadLightRight = right;
         this->RearLight = rear;
-        // this->BrakeLight = brake;
+        this->BrakeLight = brake;
     }
 
     void loop() {
@@ -44,6 +44,8 @@ public:
                 lights = LIGHTS_NORMAL;
             }
         }
+
+        this->BrakeLight->setIntensity(BRAKE_LEDS_OFF);
 
         if ( this->beam ) {
             this->HeadLightLeft->setIntensity(HEAD_LED_BEAM_INTENSITY);
@@ -81,12 +83,14 @@ public:
                     this->HeadLightLeft->setIntensity(HEAD_LED_FOG_INTENSITY);
                     this->HeadLightRight->setIntensity(HEAD_LED_FOG_INTENSITY);
                     this->RearLight->setIntensity(REAR_LED_FOG_INTENSITY);
+                    this->BrakeLight->setIntensity(BRAKE_LEDS_FOG);
                     break;
             }
         }
 
         if ( this->getBrake() ) {
-            this->RearLight->setIntensity(REAR_LED_BEAM_INTENSITY);
+            // this->RearLight->setIntensity(REAR_LED_BEAM_INTENSITY);
+            this->BrakeLight->setIntensity(BRAKE_LEDS_ON);
         }
 
     }
