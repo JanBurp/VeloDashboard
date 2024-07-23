@@ -52,21 +52,6 @@ time_t getTeensy3Time()
 }
 
 /**
- * buzzer
- */
-void buzzer(bool state)
-{
-    if (state)
-    {
-        tone(PIN_BUZZER, BUZZER_TONE);
-    }
-    else
-    {
-        noTone(PIN_BUZZER);
-    }
-}
-
-/**
  * Speed sensor trigger
  *
  */
@@ -89,8 +74,6 @@ void setup()
         Serial.println(F_CPU_ACTUAL / 1000000);
     }
 
-    pinMode(PIN_LED_BRAKE, OUTPUT);
-
     // Disable unused pins (saves a bit current)
     pinMode(INTERNAL_LED,OUTPUT);
     digitalWrite(INTERNAL_LED,LOW);
@@ -104,7 +87,7 @@ void setup()
     setSyncProvider(getTeensy3Time);
 
     // Knobs & Buttons
-    Dashboard.init(PIN_BRAKE,PIN_BUTTONS_LEFT,PIN_BUTTONS_RIGHT);
+    Dashboard.init(DASHBOARD_BREAK,DASHBOARD_BUTTONS_LEFT,DASHBOARD_BUTTONS_RIGHT);
     Battery.init(PIN_BATTERY_METER,PIN_POWER_OFF);
     Battery.loop();
     IdleTimer.action();
@@ -117,13 +100,8 @@ void setup()
     LedBrakeLight.init(PIN_BRAKE_LIGHT);
     Lights.init(&Battery, &Speed, &LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
 
-    Indicators.init(PIN_LED_LEFT,PIN_LED_RIGHT);
+    Indicators.init(DASHBOARD_LED_LEFT,DASHBOARD_LED_RIGHT);
     LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer,&Speed);
-
-    // Buzzer
-    pinMode(PIN_BUZZER, OUTPUT);
-    buzzer(false);
-
 
 
     Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights, &LEDstrips);
@@ -171,7 +149,6 @@ void readButtons()
 
     // Break & Beam
     Lights.setBrake( Dashboard.isBrake() );
-    digitalWrite(PIN_LED_BRAKE, Dashboard.isBrake());
     Lights.setBeam( Dashboard.isBeam() );
 
     // Others
@@ -266,20 +243,6 @@ void readButtons()
 
 }
 
-/*
-  Set buzzer on or off
-*/
-void updateBuzzer()
-{
-    if (Indicators.isActive())
-    {
-        buzzer(Indicators.getStateLeft() || Indicators.getStateRight());
-    }
-    else
-    {
-        buzzer(false);
-    }
-}
 
 /*
 
@@ -289,7 +252,6 @@ void updateBuzzer()
 void loop()
 {
     readButtons();
-    updateBuzzer();
 
     if ( IdleTimer.ended() ) {
         Speed.storeMemory();

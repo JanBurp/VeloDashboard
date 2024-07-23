@@ -1,7 +1,7 @@
 #pragma once
 
 #define DEBUG true  // [default = false] - set to true for Serial output
-#define TEST false   // [default = false] - set to true for local test environment
+#define TEST true   // [default = false] - set to true for local test environment
 
 /*
   WHEELS
@@ -229,10 +229,10 @@ typedef struct {
  * PINS (north L-R)
  */
 #define DASHBOARD_BREAK         23
-#define DASHBOARD_BUTTONS_RIGHT 22
-#define DASHBOARD_BUTTONS_LEFT  21
-#define DASHBOARD_LED_RIGHT     20
-#define DASHBOARD_LED_LEFT      19
+#define DASHBOARD_BUTTONS_LEFT  22
+#define DASHBOARD_BUTTONS_RIGHT 21
+#define DASHBOARD_LED_RIGHT     19
+#define DASHBOARD_LED_LEFT      20
 #define PIN_BATTERY_METER       18
 // 17 - DISPLAY SCL
 // 16 - DISPLAY SDA

@@ -2,13 +2,13 @@
 
 #include "Arduino.h"
 
-#define SWITCH_BRAKE 0
-#define BUTTON_LEFT 1
-#define BUTTON_DOWN 2
-#define BUTTON_UP 3
-#define BUTTON_ALARM 4
-#define BUTTON_DISPLAY 5
-#define BUTTON_RIGHT 6
+#define SWITCH_BRAKE    0
+#define BUTTON_LEFT     1
+#define BUTTON_DOWN     2
+#define BUTTON_UP       3
+#define BUTTON_ALARM    4
+#define BUTTON_DISPLAY  5
+#define BUTTON_RIGHT    6
 
 #define NUM_BUTTONS 7
 
@@ -66,12 +66,15 @@ public:
         Values[2] = {this->pinButtonsR, 0};
 
         Buttons[0] = {0, 0, BRAKE_THRESHOLD, SWITCH_BRAKE};
-        Buttons[1] = {1, 0, LOW_THRESHOLD, BUTTON_LEFT};
-        Buttons[2] = {1, LOW_THRESHOLD, MID_THRESHOLD, BUTTON_DOWN};
-        Buttons[3] = {1, MID_THRESHOLD, HIGH_THRESHOLD, BUTTON_UP};
-        Buttons[4] = {2, MID_THRESHOLD, HIGH_THRESHOLD, BUTTON_ALARM};
-        Buttons[5] = {2, LOW_THRESHOLD, MID_THRESHOLD, BUTTON_DISPLAY};
-        Buttons[6] = {2, 0, LOW_THRESHOLD, BUTTON_RIGHT};
+
+        Buttons[1] = {2, MID_THRESHOLD, HIGH_THRESHOLD, BUTTON_RIGHT};
+        Buttons[2] = {2, LOW_THRESHOLD, MID_THRESHOLD, BUTTON_DISPLAY};
+        Buttons[3] = {2, 0, LOW_THRESHOLD, BUTTON_ALARM};
+
+        Buttons[4] = {1, 0, LOW_THRESHOLD, BUTTON_UP};
+        Buttons[5] = {1, LOW_THRESHOLD, MID_THRESHOLD, BUTTON_DOWN};
+        Buttons[6] = {1, MID_THRESHOLD, HIGH_THRESHOLD, BUTTON_LEFT};
+
 
         this->debouncing = false;
         this->longPress = false;
