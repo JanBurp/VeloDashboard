@@ -1,7 +1,7 @@
 #pragma once
 
 #define DEBUG true  // [default = false] - set to true for Serial output
-#define TEST true   // [default = false] - set to true for local test environment
+#define TEST false   // [default = false] - set to true for local test environment
 
 /*
   WHEELS
@@ -180,70 +180,67 @@ typedef struct {
  * PINS (south L->R)
  */
 
-#if TEST
+// OLD BOARD:
+//
+// // 0 - unused -> future extra strips?
+// // 1 - unused -> future extra strips?
+// #define PIN_LEFT_STRIP          2
+// #define PIN_RIGHT_STRIP         3
+// #define PIN_SPEED               4
+// #define PIN_POWER_OFF           5
+// #define PIN_BUZZER              6
+// // 7 - unused
+// #define PIN_HEAD_LIGHT_LEFT     8
+// #define PIN_HEAD_LIGHT_RIGHT    9
+// #define PIN_REAR_LIGHT          10
+// #define PIN_BRAKE_LIGHT         11
+// // 12 - unused
+// /*
+//  * PINS (north L-R)
+//  */
+// #define PIN_BATTERY_METER       23
+// #define PIN_DASHBOARD           22
+// // 21 - unused
+// // 20 - unused
+// // 19 - DISPLAY SCL
+// // 18 - DISPLAY SDA
+// // 17 - SDA 1
+// // 16 - SLC 1
+// #define PIN_TEST_SPEED          15              // 15 - unused, but used for testing
+// // #define PIN_HORN                14
+// #define INTERNAL_LED            13              // 13 - unused - OFF
 
-// 0 - unused -> future extra strips?
-// 1 - unused -> future extra strips?
+
+// 0 - unused -> extra LEDstrips
+// 1 - unused -> extra LEDstrips
 #define PIN_LEFT_STRIP          2
 #define PIN_RIGHT_STRIP         3
-#define PIN_SPEED               4
+// 4 - unused -> addon
 #define PIN_POWER_OFF           5
-#define PIN_BUZZER              6
-// 7 - unused
-#define PIN_HEAD_LIGHT_LEFT     8
-#define PIN_HEAD_LIGHT_RIGHT    9
-#define PIN_REAR_LIGHT          10
-#define PIN_BRAKE_LIGHT         11
+#define PIN_BLINK_LEFT          6
+#define PIN_BLINK_RIGHT         7
+#define PIN_REAR_LIGHT          8
+#define PIN_BRAKE_LIGHT         9
+#define PIN_HEAD_LIGHT_LEFT     10
+#define PIN_HEAD_LIGHT_RIGHT    11
 // 12 - unused
 
 /*
  * PINS (north L-R)
  */
-#define PIN_LED_RIGHT           23
-#define PIN_LED_LEFT            22
-#define PIN_LED_BRAKE           21
-#define PIN_BRAKE               20
-#define PIN_BUTTONS_RIGHT       19
-#define PIN_BUTTONS_LEFT        18
-// 17 - DISPLAY SDA 1
-// 16 - DISPLAY SCL 1
-#define PIN_DASHBOARD           15
-#define PIN_BATTERY_METER       14
-#define INTERNAL_LED            13              // 13 - unused - OFF
-
-#else
-
-// 0 - unused -> future extra strips?
-// 1 - unused -> future extra strips?
-#define PIN_LEFT_STRIP          2
-#define PIN_RIGHT_STRIP         3
-#define PIN_SPEED               4
-#define PIN_POWER_OFF           5
-#define PIN_BUZZER              6
-// 7 - unused
-#define PIN_HEAD_LIGHT_LEFT     8
-#define PIN_HEAD_LIGHT_RIGHT    9
-#define PIN_REAR_LIGHT          10
-#define PIN_BRAKE_LIGHT         11
-// 12 - unused
-
-/*
- * PINS (north L-R)
- */
-#define PIN_BATTERY_METER       23
-#define PIN_DASHBOARD           22
-// 21 - unused
-// 20 - unused
-// 19 - DISPLAY SCL
-// 18 - DISPLAY SDA
-// 17 - SDA 1
-// 16 - SLC 1
-#define PIN_TEST_SPEED          15              // 15 - unused, but used for testing
-// #define PIN_HORN                14
+#define DASHBOARD_BREAK         23
+#define DASHBOARD_BUTTONS_RIGHT 22
+#define DASHBOARD_BUTTONS_LEFT  21
+#define DASHBOARD_LED_RIGHT     20
+#define DASHBOARD_LED_LEFT      19
+#define PIN_BATTERY_METER       18
+// 17 - DISPLAY SCL
+// 16 - DISPLAY SDA
+#define PIN_CADANS              15              // 15 - unused
+#define PIN_SPEED               14
 #define INTERNAL_LED            13              // 13 - unused - OFF
 
 
-#endif
 
 /**
  * Unused PINS
@@ -252,8 +249,8 @@ typedef struct {
 #define UNUSED_PINS         {0,1,7,12,16,17}
 #define NR_UNUSED_PINS      6
 #else
-#define UNUSED_PINS         {0,1,7,12,14,15,16,17,20,21}
-#define NR_UNUSED_PINS      10
+#define UNUSED_PINS         {0,1,4,12,13,15, 16,17}
+#define NR_UNUSED_PINS      8
 #endif
 
 
