@@ -86,6 +86,9 @@ typedef struct {
 #define REAR_LED_BEAM_INTENSITY     64
 #define REAR_LED_FOG_INTENSITY      140 // 140 = max
 
+#define BLINK_OFF                   0
+#define BLINK_ON                    140
+
 #define BRAKE_LEDS_OFF              0
 #define BRAKE_LEDS_FOG              64
 #define BRAKE_LEDS_ON               140
@@ -180,37 +183,6 @@ typedef struct {
  * PINS (south L->R)
  */
 
-// OLD BOARD:
-//
-// // 0 - unused -> future extra strips?
-// // 1 - unused -> future extra strips?
-// #define PIN_LEFT_STRIP          2
-// #define PIN_RIGHT_STRIP         3
-// #define PIN_SPEED               4
-// #define PIN_POWER_OFF           5
-// #define PIN_BUZZER              6
-// // 7 - unused
-// #define PIN_HEAD_LIGHT_LEFT     8
-// #define PIN_HEAD_LIGHT_RIGHT    9
-// #define PIN_REAR_LIGHT          10
-// #define PIN_BRAKE_LIGHT         11
-// // 12 - unused
-// /*
-//  * PINS (north L-R)
-//  */
-// #define PIN_BATTERY_METER       23
-// #define PIN_DASHBOARD           22
-// // 21 - unused
-// // 20 - unused
-// // 19 - DISPLAY SCL
-// // 18 - DISPLAY SDA
-// // 17 - SDA 1
-// // 16 - SLC 1
-// #define PIN_TEST_SPEED          15              // 15 - unused, but used for testing
-// // #define PIN_HORN                14
-// #define INTERNAL_LED            13              // 13 - unused - OFF
-
-
 // 0 - unused -> extra LEDstrips
 // 1 - unused -> extra LEDstrips
 #define PIN_LEFT_STRIP          2
@@ -240,18 +212,8 @@ typedef struct {
 #define PIN_SPEED               14
 #define INTERNAL_LED            13              // 13 - unused - OFF
 
-
-
 /**
  * Unused PINS
  */
-#if TEST
-#define UNUSED_PINS         {0,1,7,12,16,17}
-#define NR_UNUSED_PINS      6
-#else
 #define UNUSED_PINS         {0,1,4,12,13,15, 16,17}
 #define NR_UNUSED_PINS      8
-#endif
-
-
-

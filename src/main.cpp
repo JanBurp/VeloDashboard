@@ -41,7 +41,7 @@ IndicatorClass Indicators;
 LightsClass Lights;
 SpeedClass Speed;
 LEDstripClass LEDstrips;
-LedClass LedHeadLightLeft,LedHeadLightRight,LedRearLight,LedBrakeLight;
+LedClass LedHeadLightLeft,LedHeadLightRight, LedRearLight,LedBrakeLight, LedBlinkLeft,LedBlinkRight;
 
 /**
  * Get the Teensy3 Time object
@@ -98,11 +98,12 @@ void setup()
     LedHeadLightRight.init(PIN_HEAD_LIGHT_RIGHT);
     LedRearLight.init(PIN_REAR_LIGHT);
     LedBrakeLight.init(PIN_BRAKE_LIGHT);
+    LedBlinkLeft.init(PIN_BLINK_LEFT);
+    LedBlinkRight.init(PIN_BLINK_RIGHT);
     Lights.init(&Battery, &Speed, &LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
 
-    Indicators.init(DASHBOARD_LED_LEFT,DASHBOARD_LED_RIGHT);
+    Indicators.init(DASHBOARD_LED_LEFT,DASHBOARD_LED_RIGHT,&LedBlinkLeft,&LedBlinkRight);
     LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer,&Speed);
-
 
     Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights, &LEDstrips);
     Display.setDisplayMode(DISPLAY_WELCOME);
