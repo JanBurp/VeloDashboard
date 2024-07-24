@@ -70,13 +70,15 @@ void setup()
     {
         Serial.begin(115200);
         Serial.println("\n");
+        Serial.println("\n");
+        Serial.println("TEENSY ALIVE!\n\n");
         Serial.print("F_CPU_ACTUAL = (Mhz)\t");
         Serial.println(F_CPU_ACTUAL / 1000000);
     }
 
     // Disable unused pins (saves a bit current)
     pinMode(INTERNAL_LED,OUTPUT);
-    digitalWrite(INTERNAL_LED,LOW);
+    digitalWrite(INTERNAL_LED,HIGH);
     int unusedPins[] = UNUSED_PINS;
     for (size_t pin = 0; pin < NR_UNUSED_PINS; pin++)
     {

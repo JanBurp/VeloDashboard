@@ -215,5 +215,5 @@ typedef struct {
 /**
  * Unused PINS
  */
-#define UNUSED_PINS         {0,1,4,12,13,15, 16,17}
-#define NR_UNUSED_PINS      8
+#define UNUSED_PINS         {0,1,4,12,15, 16,17}
+#define NR_UNUSED_PINS      7
