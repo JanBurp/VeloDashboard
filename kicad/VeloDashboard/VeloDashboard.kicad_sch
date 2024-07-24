@@ -5553,10 +5553,6 @@
 		(uuid "895900c0-f351-47c9-8373-54694a5a6b3b")
 	)
 	(no_connect
-		(at 154.94 132.08)
-		(uuid "8c4411d3-09ac-49f5-92da-36879a9412d5")
-	)
-	(no_connect
 		(at 154.94 50.8)
 		(uuid "96255e40-c4ad-40eb-a82a-cdb5dc07ee20")
 	)
@@ -5591,10 +5587,6 @@
 	(no_connect
 		(at 99.06 68.58)
 		(uuid "c2bb5a8f-d3b8-4176-8967-984531baab08")
-	)
-	(no_connect
-		(at 152.4 132.08)
-		(uuid "cb1c4434-b417-45a7-86ac-1e8acf5715a7")
 	)
 	(no_connect
 		(at 154.94 63.5)
@@ -6914,7 +6906,7 @@
 	)
 	(wire
 		(pts
-			(xy 157.48 129.54) (xy 157.48 132.08)
+			(xy 152.4 129.54) (xy 152.4 132.08)
 		)
 		(stroke
 			(width 0)
@@ -7674,7 +7666,7 @@
 	)
 	(wire
 		(pts
-			(xy 170.18 129.54) (xy 157.48 129.54)
+			(xy 170.18 129.54) (xy 152.4 129.54)
 		)
 		(stroke
 			(width 0)
@@ -8277,8 +8269,8 @@
 		(uuid 74c552b7-9145-4977-9408-38fa5c04b0b8)
 	)
 	(rectangle
-		(start 130.81 132.08)
-		(end 165.1 152.4)
+		(start 132.08 132.08)
+		(end 160.02 149.86)
 		(stroke
 			(width 0)
 			(type default)
@@ -8392,7 +8384,7 @@
 	)
 	(text "Dashboard connector"
 		(exclude_from_sim no)
-		(at 138.43 148.59 0)
+		(at 135.89 148.59 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12678,91 +12670,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:Conn_01x08_Pin")
-		(at 147.32 137.16 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "6a60646e-1eaf-4cf5-a16f-a36dfb076d3d")
-		(property "Reference" "J3"
-			(at 148.59 138.8317 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "To Dashboard"
-			(at 148.59 140.7527 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Horizontal"
-			(at 147.32 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 147.32 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x08, script generated"
-			(at 147.32 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "c611d098-0355-4270-8670-fc7c9f9ec8af")
-		)
-		(pin "2"
-			(uuid "519a8cc9-27f1-46bb-ab0a-1d810db66f19")
-		)
-		(pin "3"
-			(uuid "776f0c7f-2e28-4f23-a876-046a5398e7e2")
-		)
-		(pin "4"
-			(uuid "fecd438f-8e42-47c0-ba5e-b268ce45b3b2")
-		)
-		(pin "5"
-			(uuid "14a0172d-9d7a-43aa-8b91-d25526257f2f")
-		)
-		(pin "6"
-			(uuid "c6fd982d-8891-4b3c-bffe-08e122c2c277")
-		)
-		(pin "7"
-			(uuid "0d42f0db-b6a7-427b-8889-d0ea80eaeef5")
-		)
-		(pin "8"
-			(uuid "53fa3415-1508-4372-b87a-980b7022eab9")
-		)
-		(instances
-			(project "VeloDashboard"
-				(path "/2446985a-a6e1-44ac-a22d-63b6c5e9fbf1"
-					(reference "J3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 55.88 69.85 0)
 		(unit 1)
@@ -13031,6 +12938,86 @@
 			(project "VeloDashboard"
 				(path "/2446985a-a6e1-44ac-a22d-63b6c5e9fbf1"
 					(reference "#PWR033")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x06_Pin")
+		(at 144.78 137.16 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7c727cec-024d-4af4-abc8-d1afd6d6cfc5")
+		(property "Reference" "J13"
+			(at 146.05 139.7 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "To Dashboard"
+			(at 146.05 142.24 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 144.78 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 144.78 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x06, script generated"
+			(at 144.78 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "291f4c74-6674-430d-af4f-03b426de4f68")
+		)
+		(pin "3"
+			(uuid "2cd7c0f0-1bf3-4360-a57b-17ada48a1b47")
+		)
+		(pin "2"
+			(uuid "61a1ae42-be6e-4ae4-98f9-ca70ca47d27a")
+		)
+		(pin "4"
+			(uuid "55f90749-d603-4240-bffd-34e964767913")
+		)
+		(pin "5"
+			(uuid "1f8317ad-6e76-4758-9217-dcdbaf004a77")
+		)
+		(pin "6"
+			(uuid "33117f8b-0931-4b4d-a9f9-7dd931c660b1")
+		)
+		(instances
+			(project ""
+				(path "/2446985a-a6e1-44ac-a22d-63b6c5e9fbf1"
+					(reference "J13")
 					(unit 1)
 				)
 			)
