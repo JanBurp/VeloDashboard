@@ -76,7 +76,6 @@ public:
                 this->stateRight = true;
             }
             indicatorTimer.start();
-            // this->loop();
         }
     }
 
