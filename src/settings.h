@@ -98,10 +98,10 @@ typedef struct {
 /*
     TIMERS
 */
-#define INDICATOR_TIMER             500ms
-#define INDICATOR_TIMER_INT         500
-#define INDICATOR_TIMER_STEP        50ms
-#define ALARM_TIMER                 250ms
+#define INDICATOR_TIMER             350ms
+#define INDICATOR_TIMER_INT         350
+#define INDICATOR_TIMER_STEP        35ms
+#define ALARM_TIMER                 350ms
 
 
 #if TEST

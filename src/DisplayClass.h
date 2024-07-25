@@ -130,6 +130,13 @@ public:
         }
     }
 
+    void show_test()
+    {
+        OLED.setTextSize(1);
+        OLED.setCursor(100,39);
+        OLED.print("TEST");
+    }
+
     void show_speed()
     {
         OLED.setTextColor(WHITE);
@@ -754,6 +761,10 @@ public:
                     this->show_lights();
                     this->show_distance();
                     this->show_battery();
+
+                    #if TEST
+                    this->show_test();
+                    #endif
                 }
                 this->show_time();
                 break;
