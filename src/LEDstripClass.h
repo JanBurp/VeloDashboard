@@ -9,6 +9,8 @@
 
 PeriodicTimer stripTimer(TCK);
 
+CRGB gradient_colors[NUM_LEDS];
+
 /**
  * LED STRIPS
  */
@@ -31,7 +33,6 @@ private:
     bool turnedOff = false;
     int indicatorStrip = 0;
     unsigned int indicatorTimer = 0;
-    // unsigned int speedLeds = 0;
     IndicatorClass *Indicators;
     LightsClass *Lights;
     BatteryClass *Battery;
@@ -45,6 +46,7 @@ public:
         FastLED.addLeds<WS2812B, PIN_RIGHT_STRIP, GRB>(this->leds_right, NUM_LEDS);
         FastLED.setBrightness(BRIGHTNESS);
         FastLED.setMaxPowerInVoltsAndMilliamps(5, MAX_MILLIAMPS);
+        fill_gradient_RGB(gradient_colors, 0, WHITE, NUM_LEDS, RED);
     }
 
     void init(IndicatorClass *indicators, LightsClass *lights, BatteryClass *battery, IdleClass *idle, SpeedClass *speed)
@@ -152,11 +154,6 @@ public:
 
     void blink_animation_start(int strip = BOTH)
     {
-        // if (DEBUG)
-        // {
-        //     Serial.print("START");
-        //     Serial.println();
-        // }
         this->indicatorStrip = strip;
         if (this->indicatorTimer == 0)
         {
@@ -248,21 +245,20 @@ public:
         this->set(strip, numLEDSfront, NUM_LEDS - numLEDSback, BLACK);
         this->set(strip, NUM_LEDS - numLEDSback, NUM_LEDS, red);
 
+
         // SPEED INDICATOR
-        // float speed = this->Speed->getSpeed() / 1000.0; // m/sec
-        // float length = fmod(dist,BIKE_LENGTH);
-        // int start_LEDS = int(length / float(BIKE_LENGTH) * float(NUM_LEDS));
-        // if (DEBUG) {
-        //     Serial.print(dist);
-        //     Serial.print("\t");
-        //     Serial.print(length);
-        //     Serial.print("\t");
-        //     Serial.println(start_LEDS);
-
-        // }
-
-        // this->set(strip, start_LEDS, start_LEDS + NUM_SPEED_LEDS, BLUE);
-
+        if ( !this->Speed->isPaused() ) {
+            float dist = this->Speed->getCurrentDistance() * 1000; // dist in meter
+            float bike_dist = (dist*100) / float(BIKE_LENGTH);
+            int led_nr = int(bike_dist * float(NUM_LEDS)) % NUM_LEDS;
+            CRGB color = gradient_colors[led_nr];
+            if (this->Lights->getLights() > 0) {
+                if (led_nr < NUM_LIGHT_LEDS_FRONT || led_nr > (NUM_LEDS - NUM_LIGHT_LEDS_BACK)) {
+                    color = BLACK;
+                }
+            }
+            this->set(strip, led_nr, led_nr + NUM_SPEED_LEDS, color);
+        }
 
         FastLED.show();
     }
@@ -313,29 +309,7 @@ public:
     // This uses delay, so stops all other actions...
     void startup_animation()
     {
-        unsigned long delayMs = 200 / NUM_LEDS;
-        const int NUM_GRADIENT_LEDS = NUM_LEDS - 2 * NUM_LIGHT_LEDS_FRONT;
-        CRGB colors[NUM_LEDS];
-        CRGB gradient_colors[NUM_GRADIENT_LEDS];
-        fill_gradient_RGB(gradient_colors, 0, WHITE, NUM_GRADIENT_LEDS, RED);
-        for (int i = 0; i < NUM_LEDS; ++i)
-        {
-            if (i <= NUM_LIGHT_LEDS_FRONT)
-            {
-                colors[i] = WHITE;
-            }
-            else
-            {
-                if (i > NUM_LIGHT_LEDS_FRONT && i < (NUM_LEDS - NUM_LIGHT_LEDS_FRONT))
-                {
-                    colors[i] = gradient_colors[i - NUM_LIGHT_LEDS_FRONT];
-                }
-                else
-                {
-                    colors[i] = RED;
-                }
-            }
-        }
+        unsigned long delayMs = WELCOME_ANIMATION / NUM_LEDS;
 
         for (int t = 0; t < WELCOME_LENGTH; ++t)
         {
@@ -343,8 +317,8 @@ public:
             int i;
             for (i = 0; i < NUM_LEDS; ++i)
             {
-                this->leds_left[i] = colors[i];
-                this->leds_right[i] = colors[i];
+                this->leds_left[i] = gradient_colors[i];
+                this->leds_right[i] = gradient_colors[i];
                 if (i >= NUM_LIGHT_LEDS_FRONT)
                 {
                     this->leds_left[i - NUM_LIGHT_LEDS_FRONT] = BLACK;

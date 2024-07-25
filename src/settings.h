@@ -31,7 +31,14 @@ Wheel Wheels[NR_ETRTO_WHEELS] = {
     {"56-406", 1.625},
 };
 
+
+#if TEST
+#define BIKE_LENGTH                 15 // cm
+#else
 #define BIKE_LENGTH                 285 // cm
+#endif
+
+
 
 #define BIKE_DISTANCE_START         8060
 #define MAX_TIME_SHORT_BRAKE        21600 // 6 hours = 60*60*6 seconds
@@ -102,7 +109,11 @@ typedef struct {
 #define INDICATOR_TIMER_INT         350
 #define INDICATOR_TIMER_STEP        35ms
 #define ALARM_TIMER                 350ms
-
+#if TEST
+#define WELCOME_ANIMATION           1500
+#else
+#define WELCOME_ANIMATION           250
+#endif
 
 #if TEST
 #define IDLE_TIMER 120
@@ -111,7 +122,7 @@ typedef struct {
 #define IDLE_TIMER 180           // seconds
 #define IDLE_WARNING_TIMER 30    // seconds
 #endif
-#define SPEED_CALCULATION_TIMER 1000ms
+#define SPEED_CALCULATION_TIMER 50ms
 #define BUZZER_TONE 660
 
 /*
@@ -162,7 +173,7 @@ typedef struct {
 #define NUM_LIGHT_LEDS_FRONT    36
 #define NUM_LIGHT_LEDS_BACK     48
 #define NUM_INDICATOR_LEDS      70
-#define NUM_SPEED_LEDS          10
+#define NUM_SPEED_LEDS          3
 #define MAX_MILLIAMPS           2000
 #endif
 
@@ -178,6 +189,7 @@ typedef struct {
 #define MIN_SENSOR_TIME 75
 #define MAX_SENSOR_TIME 3000
 #define MIN_SPEED 2
+
 
 /*
  * PINS (south L->R)

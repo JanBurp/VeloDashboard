@@ -332,7 +332,7 @@ public:
         if (TEST)
         {
             // Dummy speed (random)
-            unsigned long sensorTime = random(40,60);
+            unsigned long sensorTime = random(100,700);
             for (size_t i = 0; i < SENSOR_BUFF; i++)
             {
                 this->sensorTimesMs[i] = sensorTime;

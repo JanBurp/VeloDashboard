@@ -96,16 +96,16 @@ public:
         {
             Values[i].value = analogRead(Values[i].pin);
         }
-        if (DEBUG)
-        {
-            Serial.print("Brake:\t");
-            Serial.print(Values[0].value);
-            Serial.print("     \tLeft:\t");
-            Serial.print(Values[1].value);
-            Serial.print("     \tRight:\t");
-            Serial.print(Values[2].value);
-            Serial.print("     \r");
-        }
+        // if (DEBUG)
+        // {
+        //     Serial.print("Brake:\t");
+        //     Serial.print(Values[0].value);
+        //     Serial.print("     \tLeft:\t");
+        //     Serial.print(Values[1].value);
+        //     Serial.print("     \tRight:\t");
+        //     Serial.print(Values[2].value);
+        //     Serial.print("     \r");
+        // }
     }
 
     bool _setButtonAccordingToValues()
@@ -173,13 +173,13 @@ public:
         this->debouncing = false;
         this->pressedButton = button;
 
-        if (DEBUG && this->pressedButton >= 0)
-        {
-            Serial.println();
-            Serial.print("\tBUTTON:\t");
-            Serial.print(this->pressedButton);
-            Serial.println();
-        }
+        // if (DEBUG && this->pressedButton >= 0)
+        // {
+        //     Serial.println();
+        //     Serial.print("\tBUTTON:\t");
+        //     Serial.print(this->pressedButton);
+        //     Serial.println();
+        // }
 
         return true;
     }
