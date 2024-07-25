@@ -16,11 +16,11 @@
 #include <Adafruit_SSD1306.h>
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-#if TEST
+// #if TEST
 Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, -1);  // on test board, we use second i2c port on pins 16 & 17
-#else
-Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
-#endif
+// #else
+// Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+// #endif
 
 #define DISPLAY_DIMMED_LOOP_COUNT 2
 
