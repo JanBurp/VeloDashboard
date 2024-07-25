@@ -15,7 +15,7 @@
 #define BRAKE_THRESHOLD 250 // 930
 #define LOW_THRESHOLD 100 // 7
 #define MID_THRESHOLD 175 // 147
-#define HIGH_THRESHOLD 250 // 198
+#define HIGH_THRESHOLD 275 // 198
 
 #define DEBOUNCE 50
 #define LONG_PRESS 1500
@@ -89,16 +89,16 @@ public:
         {
             Values[i].value = analogRead(Values[i].pin);
         }
-        // if (DEBUG && (Values[0].value < 1000 || Values[1].value < 300 || Values[2].value < 300))
-        // {
-        //     Serial.print("Brake:\t");
-        //     Serial.print(Values[0].value);
-        //     Serial.print("\tLeft:\t");
-        //     Serial.print(Values[1].value);
-        //     Serial.print("\tRight:\t");
-        //     Serial.print(Values[2].value);
-        //     Serial.println();
-        // }
+        if (DEBUG)
+        {
+            Serial.print("Brake:\t   ");
+            Serial.print(Values[0].value);
+            Serial.print("\tLeft:\t   ");
+            Serial.print(Values[1].value);
+            Serial.print("\tRight:\t   ");
+            Serial.print(Values[2].value);
+            Serial.print("\r");
+        }
     }
 
     bool _setButtonAccordingToValues()
@@ -160,6 +160,7 @@ public:
 
         if (DEBUG && this->pressedButton >= 0)
         {
+            Serial.println();
             Serial.print("\tBUTTON:\t");
             Serial.print(this->pressedButton);
             Serial.println();
