@@ -195,10 +195,12 @@ public:
 
     bool waitForButtonPress()
     {
+        #if !TEST
         while (!this->read())
         {
             ;
         }
+        #endif
         return true;
     }
 
