@@ -14,8 +14,13 @@
 
 #define BRAKE_THRESHOLD 250 // 930
 #define LOW_THRESHOLD 100 // 7
-#define MID_THRESHOLD 175 // 147
-#define HIGH_THRESHOLD 275 // 198
+#define MID_THRESHOLD 175 // 147 // 695
+#define HIGH_THRESHOLD 275 // 198 // 800
+
+// Hack to make high resistors work (for first press)
+#define START_THRESHOLD 500
+#define START_MID_THRESHOLD 725
+#define START_HIGHT_THRESHOLD 900
 
 #define DEBOUNCE 50
 #define LONG_PRESS 1500
@@ -33,6 +38,8 @@ struct DashboardButton
     byte pin;
     int min;
     int max;
+    int startmin;
+    int startmax;
     int button;
 };
 
@@ -65,15 +72,15 @@ public:
         Values[1] = {this->pinButtonsL, 0};
         Values[2] = {this->pinButtonsR, 0};
 
-        Buttons[0] = {0, 0, BRAKE_THRESHOLD, SWITCH_BRAKE};
+        Buttons[0] = {0, 0, BRAKE_THRESHOLD, 0, BRAKE_THRESHOLD, SWITCH_BRAKE};
 
-        Buttons[1] = {2, MID_THRESHOLD, HIGH_THRESHOLD, BUTTON_RIGHT};
-        Buttons[2] = {2, LOW_THRESHOLD, MID_THRESHOLD, BUTTON_DISPLAY};
-        Buttons[3] = {2, 0, LOW_THRESHOLD, BUTTON_ALARM};
+        Buttons[1] = {2, MID_THRESHOLD, HIGH_THRESHOLD, START_MID_THRESHOLD, START_HIGHT_THRESHOLD, BUTTON_RIGHT};
+        Buttons[2] = {2, LOW_THRESHOLD, MID_THRESHOLD, LOW_THRESHOLD, START_MID_THRESHOLD, BUTTON_DISPLAY};
+        Buttons[3] = {2, 0, LOW_THRESHOLD, 0, LOW_THRESHOLD, BUTTON_ALARM};
 
-        Buttons[4] = {1, 0, LOW_THRESHOLD, BUTTON_UP};
-        Buttons[5] = {1, LOW_THRESHOLD, MID_THRESHOLD, BUTTON_DOWN};
-        Buttons[6] = {1, MID_THRESHOLD, HIGH_THRESHOLD, BUTTON_LEFT};
+        Buttons[4] = {1, 0, LOW_THRESHOLD, 0, LOW_THRESHOLD, BUTTON_UP};
+        Buttons[5] = {1, LOW_THRESHOLD, MID_THRESHOLD, LOW_THRESHOLD, START_MID_THRESHOLD, BUTTON_DOWN};
+        Buttons[6] = {1, MID_THRESHOLD, HIGH_THRESHOLD, START_MID_THRESHOLD, START_HIGHT_THRESHOLD, BUTTON_LEFT};
 
 
         this->debouncing = false;
@@ -91,13 +98,13 @@ public:
         }
         if (DEBUG)
         {
-            Serial.print("Brake:\t   ");
+            Serial.print("Brake:\t");
             Serial.print(Values[0].value);
-            Serial.print("\tLeft:\t   ");
+            Serial.print("     \tLeft:\t");
             Serial.print(Values[1].value);
-            Serial.print("\tRight:\t   ");
+            Serial.print("     \tRight:\t");
             Serial.print(Values[2].value);
-            Serial.print("\r");
+            Serial.print("     \r");
         }
     }
 
@@ -109,9 +116,17 @@ public:
         for (size_t i = 0; i < NUM_BUTTONS; i++)
         {
             int value = Values[Buttons[i].pin].value;
-            if (value >= Buttons[i].min && value < Buttons[i].max)
-            {
-                button = Buttons[i].button;
+            if (value > START_THRESHOLD) {
+                if (value >= Buttons[i].startmin && value < Buttons[i].startmax)
+                {
+                    button = Buttons[i].button;
+                }
+            }
+            else {
+                if (value >= Buttons[i].min && value < Buttons[i].max)
+                {
+                    button = Buttons[i].button;
+                }
             }
         }
 
