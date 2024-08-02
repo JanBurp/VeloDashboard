@@ -52,14 +52,20 @@ time_t getTeensy3Time()
 }
 
 /**
- * Speed sensor trigger
- *
+ * Sensor triggers
  */
-void sensorChange()
+void speedSensorChange()
 {
-    Speed.sensorTrigger();
+    Speed.speedTrigger();
     IdleTimer.action();
 }
+
+void cadansSensorChange()
+{
+    Speed.cadansTrigger();
+    IdleTimer.action();
+}
+
 
 /**
  * ==== SETUP ====
@@ -139,7 +145,10 @@ void setup()
     Display.show();
 
     pinMode(PIN_SPEED, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(PIN_SPEED), sensorChange, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(PIN_SPEED), speedSensorChange, CHANGE);
+
+    pinMode(PIN_CADANS, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(PIN_CADANS), cadansSensorChange, CHANGE);
 
     speedCalculationTimer.begin([]{ Speed.loop(); },SPEED_CALCULATION_TIMER);
 }

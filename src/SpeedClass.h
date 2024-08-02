@@ -22,6 +22,11 @@ private:
     volatile unsigned long lastSensorTimeMs = 0;
     volatile unsigned long sensorTimesMs[SENSOR_BUFF] = {0};
 
+    // Cadans sensor
+    volatile unsigned long lastCadansTimeMs = 0;
+    volatile unsigned long cadansTimesMs[SENSOR_BUFF] = {0};
+    unsigned int cadans = 0;
+
     MemoryStruct Memory;
 
     unsigned long tempTimeMs = 0;
@@ -215,6 +220,11 @@ public:
         return this->speed;
     }
 
+    float getCadans()
+    {
+        return this->cadans;
+    }
+
     float getAvgSpeed()
     {
         return this->Memory.currentAverageSpeed;
@@ -339,6 +349,7 @@ public:
             }
         }
 
+        // SPEED
         // Read & clear sensor buffers
         // & Calc sensor time average (only those that are larger than 0)
         // & Calc moved distance
@@ -359,12 +370,31 @@ public:
             }
         }
 
-        // if (DEBUG)
-        // {
-        //     Serial.print("MOVED:");
-        //     Serial.println(movedDistance);
-        // }
-
+        // CADANS (test)
+        buffLength = SENSOR_BUFF;
+        unsigned long totalCadansTime = 0;
+        unsigned long cadansTriggers = 0;
+        for (size_t i = 0; i < SENSOR_BUFF; i++)
+        {
+            if (this->cadansTimesMs[i] > 0)
+            {
+                totalCadansTime += this->cadansTimesMs[i];
+                cadansTriggers++;
+                this->cadansTimesMs[i] = 0;
+            }
+            else
+            {
+                buffLength--;
+            }
+        }
+        this->cadans = cadansTriggers * (MINUTE / totalCadansTime);
+        if (DEBUG)
+        {
+            Serial.print("COUNTER:");
+            Serial.print(cadansTriggers);
+            Serial.print("\tCADANS:\t");
+            Serial.println(this->cadans);
+        }
 
         // start
         if (movedDistance > 0 && !this->started)
@@ -376,11 +406,6 @@ public:
         {
             return;
         }
-
-        // if (DEBUG) {
-        //     Serial.print(movedDistance);
-        //     Serial.print("\t");
-        // }
 
         // Add moved distance to all distances
         this->Memory.currentDistance += movedDistance;
@@ -493,7 +518,7 @@ public:
         Serial.print("\r");
     }
 
-    void sensorTrigger()
+    void speedTrigger()
     {
         unsigned long now = millis();
         unsigned long sensorTime = now - this->lastSensorTimeMs;
@@ -509,4 +534,23 @@ public:
             this->sensorTimesMs[SENSOR_BUFF - 1] = sensorTime;
         }
     }
+
+    void cadansTrigger()
+    {
+        unsigned long now = millis();
+        unsigned long cadansTime = now - this->lastCadansTimeMs;
+        if (cadansTime > MIN_SENSOR_TIME)
+        {
+            this->lastCadansTimeMs = now;
+            // Shift sensor times
+            for (size_t i = 0; i < SENSOR_BUFF - 1; i++)
+            {
+                this->cadansTimesMs[i] = this->cadansTimesMs[i + 1];
+            }
+            // Add new sensor time
+            this->cadansTimesMs[SENSOR_BUFF - 1] = cadansTime;
+        }
+    }
+
+
 };

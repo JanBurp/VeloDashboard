@@ -189,6 +189,13 @@ public:
                     OLED.fillTriangle(x, y, x + w / 2, y + h, x + w, y, WHITE);
                 }
             }
+
+            // Cadans
+            // char cadansStr[3];
+            // snprintf(cadansStr, 3, "%3i", this->Speed->getCadans());
+            OLED.setTextSize(1);
+            OLED.setCursor(100,39);
+            OLED.print(this->Speed->getCadans());
         }
     }
 
