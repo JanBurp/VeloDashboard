@@ -192,17 +192,17 @@ public:
         }
     }
 
-    // void show_indicators()
-    // {
-    //     if (this->Indicators->getStateLeft())
-    //     {
-    //         OLED.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH - 2, 0, SCREEN_HALF_WIDTH - 2, SCREEN_HEIGHT, WHITE);
-    //     }
-    //     if (this->Indicators->getStateRight())
-    //     {
-    //         OLED.fillTriangle(SCREEN_HALF_WIDTH + 2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH + 2, SCREEN_HEIGHT, WHITE);
-    //     }
-    // }
+    void show_indicators()
+    {
+        if (this->Indicators->getStateLeft())
+        {
+            OLED.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH - 2, 0, SCREEN_HALF_WIDTH - 2, SCREEN_HEIGHT, WHITE);
+        }
+        if (this->Indicators->getStateRight())
+        {
+            OLED.fillTriangle(SCREEN_HALF_WIDTH + 2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH + 2, SCREEN_HEIGHT, WHITE);
+        }
+    }
 
     void show_time()
     {
@@ -720,7 +720,7 @@ public:
     void show()
     {
         OLED.clearDisplay();
-        // this->show_indicators();
+        this->show_indicators();
 
         bool dimmed = this->Lights->getLights() > LIGHTS_ON;
         this->dim(dimmed);
