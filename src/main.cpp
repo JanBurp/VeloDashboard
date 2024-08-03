@@ -137,6 +137,7 @@ void setup()
 
     Display.setDisplayMode(DISPLAY_HOME);
     Display.show();
+    digitalWrite(INTERNAL_LED,LOW);
 
     pinMode(PIN_SPEED, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(PIN_SPEED), sensorChange, CHANGE);
