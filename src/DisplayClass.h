@@ -133,7 +133,7 @@ public:
     void show_test()
     {
         OLED.setTextSize(1);
-        OLED.setCursor(50,54);
+        OLED.setCursor(0,0);
         OLED.print("TST");
     }
 
@@ -147,22 +147,25 @@ public:
             int decis = (int)speed;
             int precision = (speed - decis) * 10;
 
-            int x = SCREEN_HALF_WIDTH - 16;
+            int x = SCREEN_HALF_WIDTH - 30;
+            int y = 36;
+
+            OLED.drawCircle(SCREEN_HALF_WIDTH-1, SCREEN_HALF_HEIGHT + 18, 36, WHITE);
 
             // Big
-            OLED.setTextSize(5);
+            OLED.setTextSize(4);
             char speedStr[3];
             snprintf(speedStr, 3, "%2i", decis);
-            OLED.setCursor(x, 0);
+            OLED.setCursor(x, y);
             OLED.print(speedStr);
             // Small digit
+            OLED.setTextSize(2);
             snprintf(speedStr, 3, "%1i", precision);
-            OLED.setTextSize(3);
-            OLED.setCursor(SCREEN_WIDTH - 18, 14);
+            OLED.setCursor(x + 50, y+15);
             OLED.print(speedStr);
             // Sensor
             OLED.setTextSize(1);
-            OLED.setCursor(x + 55, 28);
+            OLED.setCursor(x + 44, y+22);
             if (this->Speed->getSpeedSensor())
             {
                 OLED.print(".");
@@ -176,8 +179,9 @@ public:
             if (!this->Speed->isPaused() && (millis() / 500) % 2 == 0)
             {
                 // int diff = this->Speed->speedDiffScale();
-                int x = SCREEN_WIDTH - 18;
-                int y = 0;
+                // int x = SCREEN_WIDTH - 18;
+                // int y = 0;
+                x = x + 46;
                 int w = 14;
                 int h = 10;
                 if (this->Speed->isFaster())
@@ -190,7 +194,9 @@ public:
                 }
             }
         }
-        // Cadans
+    }
+
+    void show_cadans() {
         char cadansStr[4];
         snprintf(cadansStr, 4, "%3i", this->Speed->getCadans());
         OLED.setTextSize(1);
@@ -213,8 +219,8 @@ public:
     void show_time()
     {
         OLED.setTextColor(WHITE);
-        int x = SCREEN_HALF_WIDTH + 8;
-        int y = SCREEN_HALF_HEIGHT + 17;
+        int x = SCREEN_HALF_WIDTH + 12;
+        int y = 0;
         char hourStr[3];
         char minStr[3];
         if (this->IdleTimer->warning())
@@ -235,13 +241,13 @@ public:
             OLED.setCursor(x, y);
             OLED.print(hourStr);
         }
-        OLED.setCursor(x + 32, y);
+        OLED.setCursor(x + 28, y);
         OLED.print(minStr);
 
         if (!this->IdleTimer->warning())
         {
             OLED.setTextSize(2);
-            OLED.setCursor(x + 22, y + 4);
+            OLED.setCursor(x + 20, 4);
             if ((millis() / 500) % 2 == 0)
             {
                 OLED.print(":");
@@ -256,7 +262,7 @@ public:
     void show_distance()
     {
         int x = 0;
-        int y = SCREEN_HALF_HEIGHT + 17;
+        int y = SCREEN_HALF_HEIGHT + 24;
         std::string format = "%-6.2f";
         if (this->Speed->getDayDistance() >= 100)
         {
@@ -265,7 +271,7 @@ public:
         char distStr[9];
         snprintf(distStr, 10, format.c_str(), this->Speed->getCurrentDistance());
         OLED.setTextColor(WHITE);
-        OLED.setTextSize(2);
+        OLED.setTextSize(1);
         OLED.setCursor(x, y);
         OLED.print(distStr);
     }
@@ -764,9 +770,10 @@ public:
                 if (!this->IdleTimer->warning())
                 {
                     this->show_speed();
-                    this->show_lights();
+                    // this->show_cadans();
+                    // this->show_lights();
                     this->show_distance();
-                    this->show_battery();
+                    // this->show_battery();
 
                     #if TEST
                     this->show_test();
