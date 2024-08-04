@@ -62,6 +62,40 @@ void sensorChange()
 }
 
 /**
+ * buzzer
+ */
+void buzzer(bool state)
+{
+    // if (DEBUG) {
+    //     Serial.print("BUZZER:");
+    //     Serial.println(state);
+    // }
+    if (state)
+    {
+        tone(PIN_BUZZER, BUZZER_TONE);
+    }
+    else
+    {
+        noTone(PIN_BUZZER);
+    }
+}
+
+/*
+  Set buzzer on or off
+*/
+void updateBuzzer()
+{
+    if (Indicators.isActive())
+    {
+        buzzer(Indicators.getStateLeft() || Indicators.getStateRight());
+    }
+    else
+    {
+        buzzer(false);
+    }
+}
+
+/**
  * ==== SETUP ====
  */
 void setup()
@@ -251,37 +285,6 @@ void readButtons()
         Lights.resetLights();
     }
 
-}
-
-
-/**
- * buzzer
- */
-void buzzer(bool state)
-{
-    if (state)
-    {
-        tone(PIN_BUZZER, BUZZER_TONE);
-    }
-    else
-    {
-        noTone(PIN_BUZZER);
-    }
-}
-
-/*
-  Set buzzer on or off
-*/
-void updateBuzzer()
-{
-    if (Indicators.isActive())
-    {
-        buzzer(Indicators.getStateLeft() || Indicators.getStateRight());
-    }
-    else
-    {
-        buzzer(false);
-    }
 }
 
 
