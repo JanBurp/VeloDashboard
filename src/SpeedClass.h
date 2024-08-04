@@ -342,7 +342,7 @@ public:
         if (TEST)
         {
             // Dummy speed
-            unsigned long sensorTime = (cos(millis()/5000) + 1) * 700 + 200;
+            unsigned long sensorTime = (cos(millis()/5000) + 1) * 600;
             for (size_t i = 0; i < SENSOR_BUFF; i++)
             {
                 this->sensorTimesMs[i] = sensorTime;
