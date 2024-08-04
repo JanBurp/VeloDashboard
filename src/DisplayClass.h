@@ -16,7 +16,11 @@
 #include <Adafruit_SSD1306.h>
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+// #if TEST
+Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, -1);  // on test board, we use second i2c port on pins 16 & 17
+// #else
+// Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+// #endif
 
 #define DISPLAY_DIMMED_LOOP_COUNT 2
 
@@ -126,6 +130,13 @@ public:
         }
     }
 
+    void show_test()
+    {
+        OLED.setTextSize(1);
+        OLED.setCursor(100,39);
+        OLED.print("TEST");
+    }
+
     void show_speed()
     {
         OLED.setTextColor(WHITE);
@@ -179,6 +190,12 @@ public:
                 }
             }
         }
+        // Cadans
+        char cadansStr[4];
+        snprintf(cadansStr, 4, "%3i", this->Speed->getCadans());
+        OLED.setTextSize(1);
+        OLED.setCursor(110,39);
+        OLED.print(cadansStr);
     }
 
     void show_indicators()
@@ -750,6 +767,10 @@ public:
                     this->show_lights();
                     this->show_distance();
                     this->show_battery();
+
+                    #if TEST
+                    this->show_test();
+                    #endif
                 }
                 this->show_time();
                 break;

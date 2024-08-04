@@ -31,7 +31,14 @@ Wheel Wheels[NR_ETRTO_WHEELS] = {
     {"56-406", 1.625},
 };
 
+
+#if TEST
+#define BIKE_LENGTH                 15 // cm
+#else
 #define BIKE_LENGTH                 285 // cm
+#endif
+
+
 
 #define BIKE_DISTANCE_START         8060
 #define MAX_TIME_SHORT_BRAKE        21600 // 6 hours = 60*60*6 seconds
@@ -86,15 +93,27 @@ typedef struct {
 #define REAR_LED_BEAM_INTENSITY     64
 #define REAR_LED_FOG_INTENSITY      140 // 140 = max
 
+#define BLINK_OFF                   0
+#define BLINK_ON                    140
+
+#define BRAKE_LEDS_OFF              0
+#define BRAKE_LEDS_FOG              64
+#define BRAKE_LEDS_ON               140
+
+
 
 /*
     TIMERS
 */
-#define INDICATOR_TIMER             500ms
-#define INDICATOR_TIMER_INT         500
-#define INDICATOR_TIMER_STEP        50ms
-#define ALARM_TIMER                 250ms
-
+#define INDICATOR_TIMER             350ms
+#define INDICATOR_TIMER_INT         350
+#define INDICATOR_TIMER_STEP        35ms
+#define ALARM_TIMER                 350ms
+#if TEST
+#define WELCOME_ANIMATION           1500
+#else
+#define WELCOME_ANIMATION           250
+#endif
 
 #if TEST
 #define IDLE_TIMER 120
@@ -104,6 +123,8 @@ typedef struct {
 #define IDLE_WARNING_TIMER 30    // seconds
 #endif
 #define SPEED_CALCULATION_TIMER 1000ms
+#define SPEED_CALCULATION_TIME  1000
+#define MINUTE 60000
 #define BUZZER_TONE 660
 
 /*
@@ -154,7 +175,7 @@ typedef struct {
 #define NUM_LIGHT_LEDS_FRONT    36
 #define NUM_LIGHT_LEDS_BACK     48
 #define NUM_INDICATOR_LEDS      70
-#define NUM_SPEED_LEDS          10
+#define NUM_SPEED_LEDS          3
 #define MAX_MILLIAMPS           2000
 #endif
 
@@ -171,49 +192,42 @@ typedef struct {
 #define MAX_SENSOR_TIME 3000
 #define MIN_SPEED 2
 
+
 /*
  * PINS (south L->R)
  */
 
-// 0 - unused
-// 1 - unused
+// 0 - unused -> extra LEDstrips
+// 1 - unused -> extra LEDstrips
 #define PIN_LEFT_STRIP          2
 #define PIN_RIGHT_STRIP         3
-#define PIN_SPEED               4
+// 4 - unused -> addon
 #define PIN_POWER_OFF           5
-#define PIN_BUZZER              6
-// 7 - unused
-#define PIN_HEAD_LIGHT_LEFT     8
-#define PIN_HEAD_LIGHT_RIGHT    9
-#define PIN_REAR_LIGHT          10
-#define PIN_BRAKE_LIGHT         11
-// 12 - unused
+#define PIN_BLINK_LEFT          6
+#define PIN_BLINK_RIGHT         7
+#define PIN_REAR_LIGHT          8
+#define PIN_BRAKE_LIGHT         9
+#define PIN_HEAD_LIGHT_LEFT     10
+#define PIN_HEAD_LIGHT_RIGHT    11
+#define PIN_BUZZER              12
 
 /*
  * PINS (north L-R)
  */
-#define PIN_BATTERY_METER       23
-#define PIN_DASHBOARD           22
-// 21 - unused
-// 20 - unused
-// 19 - DISPLAY SCL
-// 18 - DISPLAY SDA
-// 17 - unused
-// 16 - unused
-#define PIN_TEST_SPEED          15              // 15 - unused, but used for testing
-// #define PIN_HORN                14
+#define DASHBOARD_BREAK         23
+#define DASHBOARD_BUTTONS_LEFT  22
+#define DASHBOARD_BUTTONS_RIGHT 21
+#define DASHBOARD_LED_RIGHT     19
+#define DASHBOARD_LED_LEFT      20
+#define PIN_BATTERY_METER       18
+// 17 - DISPLAY SCL
+// 16 - DISPLAY SDA
+#define PIN_CADANS              15              // 15 - unused
+#define PIN_SPEED               14
 #define INTERNAL_LED            13              // 13 - unused - OFF
 
 /**
  * Unused PINS
  */
-#if TEST
-#define UNUSED_PINS         {0,1,7,12,14,16,17,20,21}
-#define NR_UNUSED_PINS      9
-#else
-#define UNUSED_PINS         {0,1,7,12,14,15,16,17,20,21}
-#define NR_UNUSED_PINS      10
-#endif
-
-
-
+#define UNUSED_PINS         {0,1,4,15, 16,17}
+#define NR_UNUSED_PINS      6

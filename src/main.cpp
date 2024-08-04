@@ -41,7 +41,7 @@ IndicatorClass Indicators;
 LightsClass Lights;
 SpeedClass Speed;
 LEDstripClass LEDstrips;
-LedClass LedHeadLightLeft,LedHeadLightRight,LedRearLight,LedBrakeLight;
+LedClass LedHeadLightLeft,LedHeadLightRight, LedRearLight,LedBrakeLight, LedBlinkLeft,LedBlinkRight;
 
 /**
  * Get the Teensy3 Time object
@@ -52,10 +52,30 @@ time_t getTeensy3Time()
 }
 
 /**
+ * Sensor triggers
+ */
+void speedSensorChange()
+{
+    Speed.speedTrigger();
+    IdleTimer.action();
+}
+
+void cadansSensorChange()
+{
+    Speed.cadansTrigger();
+    IdleTimer.action();
+}
+
+
+/**
  * buzzer
  */
 void buzzer(bool state)
 {
+    // if (DEBUG) {
+    //     Serial.print("BUZZER:");
+    //     Serial.println(state);
+    // }
     if (state)
     {
         tone(PIN_BUZZER, BUZZER_TONE);
@@ -66,14 +86,19 @@ void buzzer(bool state)
     }
 }
 
-/**
- * Speed sensor trigger
- *
- */
-void sensorChange()
+/*
+  Set buzzer on or off
+*/
+void updateBuzzer()
 {
-    Speed.sensorTrigger();
-    IdleTimer.action();
+    if (Indicators.isActive())
+    {
+        buzzer(Indicators.getStateLeft() || Indicators.getStateRight());
+    }
+    else
+    {
+        buzzer(false);
+    }
 }
 
 /**
@@ -85,13 +110,15 @@ void setup()
     {
         Serial.begin(115200);
         Serial.println("\n");
+        Serial.println("\n");
+        Serial.println("TEENSY ALIVE!\n\n");
         Serial.print("F_CPU_ACTUAL = (Mhz)\t");
         Serial.println(F_CPU_ACTUAL / 1000000);
     }
 
     // Disable unused pins (saves a bit current)
     pinMode(INTERNAL_LED,OUTPUT);
-    digitalWrite(INTERNAL_LED,LOW);
+    digitalWrite(INTERNAL_LED,HIGH);
     int unusedPins[] = UNUSED_PINS;
     for (size_t pin = 0; pin < NR_UNUSED_PINS; pin++)
     {
@@ -102,32 +129,34 @@ void setup()
     setSyncProvider(getTeensy3Time);
 
     // Knobs & Buttons
-    Dashboard.init(PIN_DASHBOARD);
+    Dashboard.init(DASHBOARD_BREAK,DASHBOARD_BUTTONS_LEFT,DASHBOARD_BUTTONS_RIGHT);
     Battery.init(PIN_BATTERY_METER,PIN_POWER_OFF);
     Battery.loop();
     IdleTimer.action();
 
     Speed.init();
 
+    // Lights & LEDs
     LedHeadLightLeft.init(PIN_HEAD_LIGHT_LEFT);
     LedHeadLightRight.init(PIN_HEAD_LIGHT_RIGHT);
     LedRearLight.init(PIN_REAR_LIGHT);
     LedBrakeLight.init(PIN_BRAKE_LIGHT);
+    LedBlinkLeft.init(PIN_BLINK_LEFT);
+    LedBlinkRight.init(PIN_BLINK_RIGHT);
     Lights.init(&Battery, &Speed, &LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
-
-    Indicators.init();
+    Indicators.init(DASHBOARD_LED_LEFT,DASHBOARD_LED_RIGHT,&LedBlinkLeft,&LedBlinkRight);
     LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer,&Speed);
 
     // Buzzer
     pinMode(PIN_BUZZER, OUTPUT);
     buzzer(false);
 
-
-
+    // Display
     Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights, &LEDstrips);
     Display.setDisplayMode(DISPLAY_WELCOME);
     Display.show();
 
+    // Startup
     if ( !Battery.isDead() ) {
         LEDstrips.startup_animation();
     }
@@ -154,9 +183,13 @@ void setup()
 
     Display.setDisplayMode(DISPLAY_HOME);
     Display.show();
+    digitalWrite(INTERNAL_LED,LOW);
 
     pinMode(PIN_SPEED, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(PIN_SPEED), sensorChange, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(PIN_SPEED), speedSensorChange, CHANGE);
+
+    pinMode(PIN_CADANS, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(PIN_CADANS), cadansSensorChange, CHANGE);
 
     speedCalculationTimer.begin([]{ Speed.loop(); },SPEED_CALCULATION_TIMER);
 }
@@ -233,14 +266,14 @@ void readButtons()
             if ( Dashboard.isLightsUp() )  {
                 Display.setDisplayModeHome();
                 Lights.increaseLights();
-                if ( Dashboard.isLongPress() ) {
+                if ( Dashboard.isLongPressed() ) {
                     Lights.setFogLight();
                 }
             }
             if ( Dashboard.isLightsDown() )  {
                 Display.setDisplayModeHome();
                 Lights.decreaseLights();
-                if ( Dashboard.isLongPress() ) {
+                if ( Dashboard.isLongPressed() ) {
                     Lights.resetLights();
                 }
             }
@@ -250,7 +283,7 @@ void readButtons()
         if (Dashboard.isDisplay()) {
             Display.nextDisplayMode();
         }
-        if ( Dashboard.isDisplay() && Dashboard.isLongPress() ) {
+        if ( Dashboard.isDisplay() && Dashboard.isLongPressed() ) {
             Display.toggleSettings();
         }
 
@@ -263,20 +296,6 @@ void readButtons()
 
 }
 
-/*
-  Set buzzer on or off
-*/
-void updateBuzzer()
-{
-    if (Indicators.isActive())
-    {
-        buzzer(Indicators.getStateLeft() || Indicators.getStateRight());
-    }
-    else
-    {
-        buzzer(false);
-    }
-}
 
 /*
 

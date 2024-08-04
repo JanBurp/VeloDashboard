@@ -3,5 +3,6 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
-/kicad/VeloDashboard/VeloDashboard-backups
-/kicad/Libraries
+kicad/VeloDashboard/VeloDashboard-backups
+kicad/VeloDashboard/~*
+kicad/Libraries
