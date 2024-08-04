@@ -148,7 +148,7 @@ public:
             int precision = (speed - decis) * 10;
 
             int x = SCREEN_HALF_WIDTH - 32;
-            int y = 30;
+            int y = 31;
 
             OLED.drawCircle(SCREEN_HALF_WIDTH-1, SCREEN_HALF_HEIGHT + 19, 38, WHITE);
 
@@ -178,8 +178,8 @@ public:
             // Faster / Slower than average | flash every second
             if (!this->Speed->isPaused() && (millis() / 500) % 2 == 0)
             {
-                x = x + 26;
-                y = y - 13;
+                x = SCREEN_HALF_WIDTH - 7;
+                y = 0;
                 int w = 12;
                 int h = 10;
                 if (this->Speed->isFaster())
@@ -212,8 +212,9 @@ public:
     void show_cadans() {
         char cadansStr[4];
         snprintf(cadansStr, 4, "%3i", this->Speed->getCadans());
-        OLED.setTextSize(1);
-        OLED.setCursor(110,39);
+        OLED.setTextSize(2);
+        // OLED.setCursor(92,17);
+        OLED.setCursor(45,16);
         OLED.print(cadansStr);
     }
 
@@ -295,9 +296,9 @@ public:
         int toppad = 3;
         int innerpad = 2;
         int x = 0;
-        int y = 0;
+        int y = 19;
         int w = 16;
-        int h = 26;
+        int h = 31;
         OLED.drawRect(x + toppad, y, x + w - 2 * toppad, toppad, WHITE);
         OLED.drawRect(x, y + toppad - 1, x + w, h, WHITE);
 
@@ -312,31 +313,27 @@ public:
             OLED.drawLine(x + innerpad, y + 1 + innerpad + h / 4 * 3, x + w - innerpad, y + 1 + innerpad + h / 4 * 3, BLACK);
 
             // print cell voltage
-            int cellMilliV = this->Battery->getCellVoltage();
-            int cellV = cellMilliV / 1000;
-            int cellM = (cellMilliV - (1000 * cellV)) / 10;
-            char cellMstr[4];
-            snprintf(cellMstr, 3, "%02i", cellM);
+            // int cellMilliV = this->Battery->getCellVoltage();
+            // int cellV = cellMilliV / 1000;
+            // int cellM = (cellMilliV - (1000 * cellV)) / 10;
+            // char cellMstr[4];
+            // snprintf(cellMstr, 3, "%02i", cellM);
 
+            // OLED.setTextSize(2);
+            // OLED.setCursor(x + 20, y + 10 + toppad);
+            // OLED.print(cellV);
             // OLED.setTextSize(1);
-            // OLED.setCursor(x + 28, y + 28 + toppad);
-            // OLED.print( cellMilliV );
-
-            OLED.setTextSize(2);
-            OLED.setCursor(x + 20, y + 10 + toppad);
-            OLED.print(cellV);
-            OLED.setTextSize(1);
-            OLED.setCursor(x + 31, y + 17 + toppad);
-            OLED.print(cellMstr);
+            // OLED.setCursor(x + 31, y + 17 + toppad);
+            // OLED.print(cellMstr);
 
             // print percentage
-            if (percentage > 99)
-                percentage = 99;
-            char percStr[5];
-            snprintf(percStr, 5, "%-i%%", percentage);
-            OLED.setTextSize(1);
-            OLED.setCursor(x + 20, y + toppad);
-            OLED.print(percStr);
+            // if (percentage > 99)
+            //     percentage = 99;
+            // char percStr[5];
+            // snprintf(percStr, 5, "%-i%%", percentage);
+            // OLED.setTextSize(1);
+            // OLED.setCursor(x + 20, y + toppad);
+            // OLED.print(percStr);
             // OLED.print("%");
         }
         else
@@ -785,9 +782,9 @@ public:
                     this->show_speed();
                     this->show_distance();
                     this->show_avg_max();
-                    // this->show_cadans();
-                    // this->show_lights();
-                    // this->show_battery();
+                    this->show_cadans();
+                    this->show_lights();
+                    this->show_battery();
 
                     #if TEST
                     this->show_test();
