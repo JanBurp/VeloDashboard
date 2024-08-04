@@ -207,7 +207,7 @@ typedef struct {
 #define PIN_BRAKE_LIGHT         9
 #define PIN_HEAD_LIGHT_LEFT     10
 #define PIN_HEAD_LIGHT_RIGHT    11
-// 12 - unused
+#define PIN_BUZZER              12
 
 /*
  * PINS (north L-R)
@@ -227,5 +227,5 @@ typedef struct {
 /**
  * Unused PINS
  */
-#define UNUSED_PINS         {0,1,4,12,15, 16,17}
-#define NR_UNUSED_PINS      7
+#define UNUSED_PINS         {0,1,4,15, 16,17}
+#define NR_UNUSED_PINS      6
