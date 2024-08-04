@@ -133,8 +133,8 @@ public:
     void show_test()
     {
         OLED.setTextSize(1);
-        OLED.setCursor(0,56);
-        OLED.print("TEST");
+        OLED.setCursor(56,0);
+        OLED.print("TST");
     }
 
     void show_speed()
@@ -195,13 +195,18 @@ public:
     }
 
     void show_avg_max() {
-        this->show_item_float(four, 1, "Avg", "%-6.1f", this->Speed->getAvgSpeed());
-        this->show_item_float(four, 2, "Max", "% 6.1f", this->Speed->getCurrentMaxSpeed());
-
-
+        char avStr[6];
+        // avg
+        snprintf(avStr, 7, "%-6.1f", this->Speed->getAvgSpeed());
         OLED.setTextSize(1);
         OLED.setCursor(0,56);
-        OLED.print("TEST");
+        OLED.print(avStr);
+        // max
+        char maxStr[6];
+        snprintf(maxStr, 7, "%6.1f", this->Speed->getCurrentMaxSpeed());
+        OLED.setTextSize(1);
+        OLED.setCursor(92,56);
+        OLED.print(maxStr);
     }
 
     void show_cadans() {
@@ -778,9 +783,10 @@ public:
                 if (!this->IdleTimer->warning())
                 {
                     this->show_speed();
+                    this->show_distance();
+                    this->show_avg_max();
                     // this->show_cadans();
                     // this->show_lights();
-                    this->show_distance();
                     // this->show_battery();
 
                     #if TEST
