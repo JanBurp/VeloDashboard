@@ -1,7 +1,7 @@
 #pragma once
 
 #define DEBUG true  // [default = false] - set to true for Serial output
-#define TEST true   // [default = false] - set to true for local test environment
+#define TEST false   // [default = false] - set to true for local test environment
 
 /*
   WHEELS
@@ -112,7 +112,7 @@ typedef struct {
 #if TEST
 #define WELCOME_ANIMATION           1500
 #else
-#define WELCOME_ANIMATION           1000
+#define WELCOME_ANIMATION           250
 #endif
 
 #if TEST
@@ -122,9 +122,10 @@ typedef struct {
 #define IDLE_TIMER 180           // seconds
 #define IDLE_WARNING_TIMER 30    // seconds
 #endif
-#define SPEED_CALCULATION_TIMER 50ms
-#define SPEED_CALCULATION_TIME  50
+#define SPEED_CALCULATION_TIMER 1000ms
+#define SPEED_CALCULATION_TIME  1000
 #define MINUTE 60000
+#define BUZZER_TONE 660
 
 /*
     DISPLAY
@@ -208,7 +209,7 @@ typedef struct {
 #define PIN_BRAKE_LIGHT         9
 #define PIN_HEAD_LIGHT_LEFT     10
 #define PIN_HEAD_LIGHT_RIGHT    11
-// 12 - unused
+#define PIN_BUZZER              12
 
 /*
  * PINS (north L-R)
@@ -228,5 +229,5 @@ typedef struct {
 /**
  * Unused PINS
  */
-#define UNUSED_PINS         {0,1,4,12,16,17}
+#define UNUSED_PINS         {0,1,4,15, 16,17}
 #define NR_UNUSED_PINS      6

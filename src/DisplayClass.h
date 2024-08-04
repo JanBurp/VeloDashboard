@@ -189,27 +189,26 @@ public:
                     OLED.fillTriangle(x, y, x + w / 2, y + h, x + w, y, WHITE);
                 }
             }
-
-            // Cadans
-            // char cadansStr[3];
-            // snprintf(cadansStr, 3, "%3i", this->Speed->getCadans());
-            OLED.setTextSize(1);
-            OLED.setCursor(100,39);
-            OLED.print(this->Speed->getCadans());
         }
+        // Cadans
+        char cadansStr[4];
+        snprintf(cadansStr, 4, "%3i", this->Speed->getCadans());
+        OLED.setTextSize(1);
+        OLED.setCursor(110,39);
+        OLED.print(cadansStr);
     }
 
-    // void show_indicators()
-    // {
-    //     if (this->Indicators->getStateLeft())
-    //     {
-    //         OLED.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH - 2, 0, SCREEN_HALF_WIDTH - 2, SCREEN_HEIGHT, WHITE);
-    //     }
-    //     if (this->Indicators->getStateRight())
-    //     {
-    //         OLED.fillTriangle(SCREEN_HALF_WIDTH + 2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH + 2, SCREEN_HEIGHT, WHITE);
-    //     }
-    // }
+    void show_indicators()
+    {
+        if (this->Indicators->getStateLeft())
+        {
+            OLED.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH - 2, 0, SCREEN_HALF_WIDTH - 2, SCREEN_HEIGHT, WHITE);
+        }
+        if (this->Indicators->getStateRight())
+        {
+            OLED.fillTriangle(SCREEN_HALF_WIDTH + 2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH + 2, SCREEN_HEIGHT, WHITE);
+        }
+    }
 
     void show_time()
     {
@@ -727,7 +726,7 @@ public:
     void show()
     {
         OLED.clearDisplay();
-        // this->show_indicators();
+        this->show_indicators();
 
         bool dimmed = this->Lights->getLights() > LIGHTS_ON;
         this->dim(dimmed);

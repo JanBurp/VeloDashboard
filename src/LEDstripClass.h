@@ -246,19 +246,19 @@ public:
         this->set(strip, NUM_LEDS - numLEDSback, NUM_LEDS, red);
 
 
-        // SPEED INDICATOR
-        if ( !this->Speed->isPaused() ) {
-            float dist = this->Speed->getCurrentDistance() * 1000; // dist in meter
-            float bike_dist = (dist*100) / float(BIKE_LENGTH);
-            int led_nr = int(bike_dist * float(NUM_LEDS)) % NUM_LEDS;
-            CRGB color = gradient_colors[led_nr];
-            if (this->Lights->getLights() > 0) {
-                if (led_nr < NUM_LIGHT_LEDS_FRONT || led_nr > (NUM_LEDS - NUM_LIGHT_LEDS_BACK)) {
-                    color = BLACK;
-                }
-            }
-            this->set(strip, led_nr, led_nr + NUM_SPEED_LEDS, color);
-        }
+        // SPEED INDICATOR - TODO
+        // if ( !this->Speed->isPaused() ) {
+        //     float dist = this->Speed->getCurrentDistance() * 1000; // dist in meter
+        //     float bike_dist = (dist*100) / float(BIKE_LENGTH);
+        //     int led_nr = int(bike_dist * float(NUM_LEDS)) % NUM_LEDS;
+        //     CRGB color = gradient_colors[led_nr];
+        //     if (this->Lights->getLights() > 0) {
+        //         if (led_nr < NUM_LIGHT_LEDS_FRONT || led_nr > (NUM_LEDS - NUM_LIGHT_LEDS_BACK)) {
+        //             color = BLACK;
+        //         }
+        //     }
+        //     this->set(strip, led_nr, led_nr + NUM_SPEED_LEDS, color);
+        // }
 
         FastLED.show();
     }

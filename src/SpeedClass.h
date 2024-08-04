@@ -220,7 +220,7 @@ public:
         return this->speed;
     }
 
-    float getCadans()
+    int getCadans()
     {
         return this->cadans;
     }
@@ -371,7 +371,7 @@ public:
         }
 
         // CADANS (test)
-        buffLength = SENSOR_BUFF;
+        int cadansBuffLength = SENSOR_BUFF;
         unsigned long totalCadansTime = 0;
         unsigned long cadansTriggers = 0;
         for (size_t i = 0; i < SENSOR_BUFF; i++)
@@ -384,17 +384,23 @@ public:
             }
             else
             {
-                buffLength--;
+                cadansBuffLength--;
             }
         }
-        this->cadans = cadansTriggers * (MINUTE / totalCadansTime);
-        if (DEBUG)
-        {
-            Serial.print("COUNTER:");
-            Serial.print(cadansTriggers);
-            Serial.print("\tCADANS:\t");
-            Serial.println(this->cadans);
+        this->cadans = 0;
+        float avgCadansTime = 0;
+        if (cadansBuffLength > 0 && totalCadansTime > 0) {
+            avgCadansTime = totalCadansTime / cadansBuffLength;
+            this->cadans = int(float(SPEED_CALCULATION_TIME) / avgCadansTime * float(MINUTE/SPEED_CALCULATION_TIME));
         }
+        // if (DEBUG)
+        // {
+        //     Serial.print("avgCadansTime:");
+        //     Serial.print(avgCadansTime);
+        //     Serial.print("\tCADANS:\t");
+        //     Serial.println(this->cadans);
+        // }
+
 
         // start
         if (movedDistance > 0 && !this->started)

@@ -68,6 +68,40 @@ void cadansSensorChange()
 
 
 /**
+ * buzzer
+ */
+void buzzer(bool state)
+{
+    // if (DEBUG) {
+    //     Serial.print("BUZZER:");
+    //     Serial.println(state);
+    // }
+    if (state)
+    {
+        tone(PIN_BUZZER, BUZZER_TONE);
+    }
+    else
+    {
+        noTone(PIN_BUZZER);
+    }
+}
+
+/*
+  Set buzzer on or off
+*/
+void updateBuzzer()
+{
+    if (Indicators.isActive())
+    {
+        buzzer(Indicators.getStateLeft() || Indicators.getStateRight());
+    }
+    else
+    {
+        buzzer(false);
+    }
+}
+
+/**
  * ==== SETUP ====
  */
 void setup()
@@ -102,6 +136,7 @@ void setup()
 
     Speed.init();
 
+    // Lights & LEDs
     LedHeadLightLeft.init(PIN_HEAD_LIGHT_LEFT);
     LedHeadLightRight.init(PIN_HEAD_LIGHT_RIGHT);
     LedRearLight.init(PIN_REAR_LIGHT);
@@ -109,14 +144,19 @@ void setup()
     LedBlinkLeft.init(PIN_BLINK_LEFT);
     LedBlinkRight.init(PIN_BLINK_RIGHT);
     Lights.init(&Battery, &Speed, &LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
-
     Indicators.init(DASHBOARD_LED_LEFT,DASHBOARD_LED_RIGHT,&LedBlinkLeft,&LedBlinkRight);
     LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer,&Speed);
 
+    // Buzzer
+    pinMode(PIN_BUZZER, OUTPUT);
+    buzzer(false);
+
+    // Display
     Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights, &LEDstrips);
     Display.setDisplayMode(DISPLAY_WELCOME);
     Display.show();
 
+    // Startup
     if ( !Battery.isDead() ) {
         LEDstrips.startup_animation();
     }
@@ -143,6 +183,7 @@ void setup()
 
     Display.setDisplayMode(DISPLAY_HOME);
     Display.show();
+    digitalWrite(INTERNAL_LED,LOW);
 
     pinMode(PIN_SPEED, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(PIN_SPEED), speedSensorChange, CHANGE);
@@ -264,6 +305,7 @@ void readButtons()
 void loop()
 {
     readButtons();
+    updateBuzzer();
 
     if ( IdleTimer.ended() ) {
         Speed.storeMemory();
