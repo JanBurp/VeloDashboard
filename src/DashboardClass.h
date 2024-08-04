@@ -195,12 +195,18 @@ public:
 
     bool waitForButtonPress()
     {
+        if (DEBUG) {
+            Serial.println("\rKeep distance?\r");
+        }
         #if !TEST
         while (!this->read())
         {
             ;
         }
         #endif
+        if (DEBUG) {
+            Serial.println("================");
+        }
         return true;
     }
 
