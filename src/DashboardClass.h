@@ -14,7 +14,7 @@
 
 #define BRAKE_THRESHOLD 250 // 930
 #define LOW_THRESHOLD 100 // 7
-#define MID_THRESHOLD 175 // 147 // 695
+#define MID_THRESHOLD 165 // 140 // 695
 #define HIGH_THRESHOLD 275 // 198 // 800
 
 // Hack to make high resistors work (for first press)
