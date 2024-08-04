@@ -1,7 +1,7 @@
 #pragma once
 
-#define DEBUG false  // [default = false] - set to true for Serial output
-#define TEST false   // [default = false] - set to true for local test environment
+#define DEBUG true  // [default = false] - set to true for Serial output
+#define TEST true   // [default = false] - set to true for local test environment
 
 /*
   WHEELS
@@ -110,7 +110,7 @@ typedef struct {
 #define INDICATOR_TIMER_STEP        35ms
 #define ALARM_TIMER                 350ms
 #if TEST
-#define WELCOME_ANIMATION           1500
+#define WELCOME_ANIMATION           250
 #else
 #define WELCOME_ANIMATION           250
 #endif

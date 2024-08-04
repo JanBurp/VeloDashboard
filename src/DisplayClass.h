@@ -133,8 +133,8 @@ public:
     void show_test()
     {
         OLED.setTextSize(1);
-        OLED.setCursor(100,39);
-        OLED.print("TEST");
+        OLED.setCursor(50,54);
+        OLED.print("TST");
     }
 
     void show_speed()
