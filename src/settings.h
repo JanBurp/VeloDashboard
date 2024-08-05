@@ -1,7 +1,7 @@
 #pragma once
 
-#define DEBUG true  // [default = false] - set to true for Serial output
-#define TEST true   // [default = false] - set to true for local test environment
+#define DEBUG false  // [default = false] - set to true for Serial output
+#define TEST false   // [default = false] - set to true for local test environment
 
 /*
   WHEELS
