@@ -110,7 +110,7 @@ typedef struct {
 #define INDICATOR_TIMER_STEP        35ms
 #define ALARM_TIMER                 350ms
 #if TEST
-#define WELCOME_ANIMATION           1500
+#define WELCOME_ANIMATION           250
 #else
 #define WELCOME_ANIMATION           250
 #endif

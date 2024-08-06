@@ -40,8 +40,8 @@ public:
     void loop() {
         int lights = this->lights;
         if ( this->Battery->isVeryLow() or this->Battery->isAlmostDead() ) {
-            if ( lights>=LIGHTS_BEAM ) {
-                lights = LIGHTS_NORMAL;
+            if (lights == LIGHTS_FOG) {
+                lights = LIGHTS_BEAM;
             }
         }
 
@@ -89,9 +89,21 @@ public:
         }
 
         if ( this->getBrake() ) {
-            // this->RearLight->setIntensity(REAR_LED_BEAM_INTENSITY);
             this->BrakeLight->setIntensity(BRAKE_LEDS_ON);
         }
+
+        // animation allways on??
+        // int timingPhase = (millis() / 75) % 12;
+        // switch (timingPhase)
+        // {
+        //     case 0:
+        //         this->BrakeLight->setIntensity(BRAKE_LEDS_FOG);
+        //         break;
+        //     case 2:
+        //     case 3:
+        //         this->RearLight->setIntensity(REAR_LED_NORMAL_INTENSITY);
+        //         break;
+        // }
 
     }
 
@@ -126,7 +138,7 @@ public:
 
     bool getBrake()
     {
-        if (this->brake && !this->Battery->isVeryLow() && !this->Battery->isAlmostDead()) {
+        if (this->brake && !this->Battery->isAlmostDead()) {
             return true;
         }
         return false;
@@ -142,7 +154,7 @@ public:
 
     int getLights()
     {
-        if (this->beam && !this->Battery->isVeryLow() && !this->Battery->isAlmostDead() ) {
+        if (this->beam) {
             return LIGHTS_BEAM;
         }
         return this->lights;

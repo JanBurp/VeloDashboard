@@ -341,11 +341,17 @@ public:
 
         if (TEST)
         {
-            // Dummy speed (random)
-            unsigned long sensorTime = random(100,700);
+            // Dummy speed
+            unsigned long sensorTime = (cos(millis()/5000) + 1) * 600;
             for (size_t i = 0; i < SENSOR_BUFF; i++)
             {
                 this->sensorTimesMs[i] = sensorTime;
+            }
+            // Dummy cadans
+            sensorTime = (cos(millis()/5000) + 1) * 400 + 300;
+            for (size_t i = 0; i < SENSOR_BUFF; i++)
+            {
+                this->cadansTimesMs[i] = sensorTime;
             }
         }
 
@@ -483,8 +489,10 @@ public:
 
     void storeMemory()
     {
-        this->Memory.timestamp = now();
-        EEPROM.put(NEW_ADDRESS, this->Memory);
+        if ( ! TEST) {
+            this->Memory.timestamp = now();
+            EEPROM.put(NEW_ADDRESS, this->Memory);
+        }
     }
 
     MemoryStruct readMemory()
