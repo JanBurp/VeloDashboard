@@ -206,27 +206,31 @@ public:
     }
 
     void show_avg_max() {
-        char avStr[6];
-        // avg
-        snprintf(avStr, 7, "%-6.1f", this->Speed->getAvgSpeed());
-        OLED.setFont(&FreeSans9pt7b);
-        OLED.setCursor(0,62);
-        OLED.print(avStr);
-        // max
-        char maxStr[6];
-        snprintf(maxStr, 7, "%6.1f", this->Speed->getCurrentMaxSpeed());
-        OLED.setCursor(84,62);
-        OLED.print(maxStr);
-        OLED.setFont();
+        if (this->Speed->getAvgSpeed()>0) {
+            char avStr[6];
+            snprintf(avStr, 7, "%-6.1f", this->Speed->getAvgSpeed());
+            OLED.setFont(&FreeSans9pt7b);
+            OLED.setCursor(0,62);
+            OLED.print(avStr);
+        }
+        if (this->Speed->getCurrentMaxSpeed()>0) {
+            char maxStr[6];
+            snprintf(maxStr, 7, "%6.1f", this->Speed->getCurrentMaxSpeed());
+            OLED.setCursor(84,62);
+            OLED.print(maxStr);
+            OLED.setFont();
+        }
     }
 
     void show_cadans() {
-        char cadansStr[4];
-        snprintf(cadansStr, 4, "%3i", this->Speed->getCadans());
-        OLED.setFont(&FreeSans9pt7b);
-        OLED.setCursor(48,62);
-        OLED.print(cadansStr);
-        OLED.setFont();
+        if (this->Speed->getCadans() > 0) {
+            char cadansStr[4];
+            snprintf(cadansStr, 4, "%3i", this->Speed->getCadans());
+            OLED.setFont(&FreeSans9pt7b);
+            OLED.setCursor(48,62);
+            OLED.print(cadansStr);
+            OLED.setFont();
+        }
     }
 
     void show_indicators()
@@ -290,20 +294,22 @@ public:
 
     void show_distance()
     {
-        int x = 0;
-        int y = 12;
-        std::string format = "%-6.2f";
-        if (this->Speed->getDayDistance() >= 100)
-        {
-            format = "%-6.1f";
+        if (this->Speed->getCurrentDistance()>0) {
+            int x = 0;
+            int y = 12;
+            std::string format = "%-6.2f";
+            if (this->Speed->getCurrentDistance() >= 100)
+            {
+                format = "%-6.1f";
+            }
+            char distStr[9];
+            snprintf(distStr, 10, format.c_str(), this->Speed->getCurrentDistance());
+            OLED.setTextSize(1);
+            OLED.setFont(&FreeSans9pt7b);
+            OLED.setCursor(x, y);
+            OLED.print(distStr);
+            OLED.setFont();
         }
-        char distStr[9];
-        snprintf(distStr, 10, format.c_str(), this->Speed->getCurrentDistance());
-        OLED.setTextSize(1);
-        OLED.setFont(&FreeSans9pt7b);
-        OLED.setCursor(x, y);
-        OLED.print(distStr);
-        OLED.setFont();
     }
 
     void show_battery(bool off = false)
@@ -403,10 +409,10 @@ public:
 
     void show_today_distances()
     {
-        this->show_item_float(four, 1, "", "%-6.1f", this->Speed->getCurrentDistance());
-        this->show_item_float(four, 2, "Day", "% 6.1f", this->Speed->getDayDistance());
+        this->show_item_float(four, 1, "Dist", "%-6.1f", this->Speed->getCurrentDistance());
+        this->show_item_float(four, 2, "Today", "% 6.1f", this->Speed->getDayDistance());
         this->show_item_float(four, 3, "Prev", "%-6.1f", this->Speed->getPrevDistance());
-        this->show_item_float(four, 4, "Trip", "% 6.1f", this->Speed->getTripDistance());
+        this->show_item_float(four, 4, "Trip 1", "% 6.1f", this->Speed->getTripDistance());
     }
 
     void show_today_speeds()
