@@ -133,8 +133,8 @@ public:
     void show_test()
     {
         OLED.setTextSize(1);
-        OLED.setCursor(94,18);
-        OLED.print("TST");
+        OLED.setCursor(102,32);
+        OLED.print("T");
     }
 
     void show_graphics_home() {
@@ -222,13 +222,17 @@ public:
 
     void show_indicators()
     {
+        int x = 26;
+        int y = 16;
+        int size = 5;
         if (this->Indicators->getStateLeft())
         {
-            OLED.fillTriangle(0, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH - 2, 0, SCREEN_HALF_WIDTH - 2, SCREEN_HEIGHT, WHITE);
+            OLED.fillTriangle(x, y + size, x + size, y, x+ size, y + 2 * size, WHITE);
         }
         if (this->Indicators->getStateRight())
         {
-            OLED.fillTriangle(SCREEN_HALF_WIDTH + 2, 0, SCREEN_WIDTH, SCREEN_HALF_HEIGHT, SCREEN_HALF_WIDTH + 2, SCREEN_HEIGHT, WHITE);
+            x = SCREEN_WIDTH - x;
+            OLED.fillTriangle(x - size - 2, y, x - 2, y + size, x - size - 2, y + 2 * size, WHITE);
         }
     }
 
@@ -348,6 +352,7 @@ public:
 
     void show_lights()
     {
+
         // headlights
         int x = 0;
         int y = SCREEN_HALF_HEIGHT - 12;
