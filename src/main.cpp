@@ -152,7 +152,7 @@ void setup()
     buzzer(false);
 
     // Display
-    Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights, &LEDstrips);
+    Display.init(&Speed, &Battery, &IdleTimer, &Indicators, &Lights);
     Display.setDisplayMode(DISPLAY_WELCOME);
     Display.show();
 
@@ -325,7 +325,12 @@ void loop()
         }
     }
     else {
-        LEDstrips.loop();
+        if (Battery.isLow()) {
+            LEDstrips.off();
+        }
+        else {
+            LEDstrips.loop();
+        }
         Lights.loop();
         Display.show();
     }

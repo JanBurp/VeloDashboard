@@ -52,17 +52,15 @@ private:
     IdleClass *IdleTimer;
     IndicatorClass *Indicators;
     LightsClass *Lights;
-    LEDstripClass *LEDstrips;
 
 public:
-    void init(SpeedClass *speed, BatteryClass *battery, IdleClass *idle, IndicatorClass *indicators, LightsClass *lights, LEDstripClass *LEDstrips)
+    void init(SpeedClass *speed, BatteryClass *battery, IdleClass *idle, IndicatorClass *indicators, LightsClass *lights)
     {
         this->Speed = speed;
         this->Battery = battery;
         this->IdleTimer = idle;
         this->Indicators = indicators;
         this->Lights = lights;
-        this->LEDstrips = LEDstrips;
         // Address 0x3D for 128x64
         if (!OLED.begin(SSD1306_SWITCHCAPVCC, 0x3C))
         {
@@ -328,7 +326,14 @@ public:
         {
             int percentage = this->Battery->getBatteryPercentage();
             int juiceHeight = (h - innerpad * 2) * (percentage / 100.0);
-            OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight) - 2, w - 2 * innerpad, juiceHeight, WHITE);
+            int color = WHITE;
+            if (this->Battery->isLow()) {
+                if ((millis() / 333) % 2 == 0)
+                {
+                    color = BLACK;
+                }
+            }
+            OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight) - 2, w - 2 * innerpad, juiceHeight, color);
 
             OLED.drawLine(x + innerpad, y + 1 + innerpad + h / 4, x + w - innerpad, y + 1 + innerpad + h / 4, BLACK);
             OLED.drawLine(x + innerpad, y + 0 + innerpad + h / 2, x + w - innerpad, y + 0 + innerpad + h / 2, BLACK);
@@ -764,7 +769,7 @@ public:
     void show()
     {
         OLED.clearDisplay();
-        bool dimmed = this->Lights->getLights() > LIGHTS_ON;
+        bool dimmed = (this->Lights->getLights() > LIGHTS_ON) || this->Battery->isLow();
         this->dim(dimmed);
 
         if (this->settingsMenu)
