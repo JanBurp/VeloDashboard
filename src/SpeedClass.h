@@ -489,8 +489,10 @@ public:
 
     void storeMemory()
     {
-        this->Memory.timestamp = now();
-        EEPROM.put(NEW_ADDRESS, this->Memory);
+        if ( ! TEST) {
+            this->Memory.timestamp = now();
+            EEPROM.put(NEW_ADDRESS, this->Memory);
+        }
     }
 
     MemoryStruct readMemory()

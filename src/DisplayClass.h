@@ -133,8 +133,12 @@ public:
     void show_test()
     {
         OLED.setTextSize(1);
-        OLED.setCursor(56,0);
+        OLED.setCursor(94,18);
         OLED.print("TST");
+    }
+
+    void show_graphics_home() {
+        OLED.drawCircle(SCREEN_HALF_WIDTH-1, SCREEN_HALF_HEIGHT + 19, 38, WHITE);
     }
 
     void show_speed()
@@ -149,8 +153,6 @@ public:
 
             int x = SCREEN_HALF_WIDTH - 32;
             int y = 31;
-
-            OLED.drawCircle(SCREEN_HALF_WIDTH-1, SCREEN_HALF_HEIGHT + 19, 38, WHITE);
 
             // Big
             OLED.setTextSize(5);
@@ -178,7 +180,7 @@ public:
             // Faster / Slower than average | flash every second
             if (!this->Speed->isPaused() && (millis() / 500) % 2 == 0)
             {
-                x = SCREEN_HALF_WIDTH - 7;
+                x = SCREEN_HALF_WIDTH - 6;
                 y = 0;
                 int w = 12;
                 int h = 10;
@@ -295,18 +297,18 @@ public:
         OLED.setTextColor(WHITE);
         int toppad = 3;
         int innerpad = 2;
-        int x = 0;
+        int x = 111;
         int y = 19;
         int w = 16;
         int h = 31;
-        OLED.drawRect(x + toppad, y, x + w - 2 * toppad, toppad, WHITE);
-        OLED.drawRect(x, y + toppad - 1, x + w, h, WHITE);
+        OLED.drawRect(x + toppad, y, w - 2 * toppad, toppad, WHITE);
+        OLED.drawRect(x, y + toppad - 1, w, h, WHITE);
 
         if (!off)
         {
             int percentage = this->Battery->getBatteryPercentage();
             int juiceHeight = (h - innerpad * 2) * (percentage / 100.0);
-            OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight) - 2, x + w - 2 * innerpad, juiceHeight, WHITE);
+            OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight) - 2, w - 2 * innerpad, juiceHeight, WHITE);
 
             OLED.drawLine(x + innerpad, y + 1 + innerpad + h / 4, x + w - innerpad, y + 1 + innerpad + h / 4, BLACK);
             OLED.drawLine(x + innerpad, y + 0 + innerpad + h / 2, x + w - innerpad, y + 0 + innerpad + h / 2, BLACK);
@@ -348,9 +350,9 @@ public:
     {
         // headlights
         int x = 0;
-        int y = SCREEN_HALF_HEIGHT;
-        int xr = 26;
-        int yr = SCREEN_HALF_HEIGHT + 1;
+        int y = SCREEN_HALF_HEIGHT - 12;
+        int xr = x;
+        int yr = y + 18;
         int w = 24;
         int h = 14;
         switch (this->Lights->getLights())
@@ -632,7 +634,6 @@ public:
         OLED.setTextColor(menuTextColor);
         OLED.print(mode);
         OLED.setTextColor(textColor);
-        // this->show_speed_in_menu();
     }
 
     void showSettingsMode(const char mode[])
@@ -777,6 +778,7 @@ public:
                 this->show_welcome();
                 break;
             case DISPLAY_HOME:
+                this->show_graphics_home();
                 if (!this->IdleTimer->warning())
                 {
                     this->show_speed();
