@@ -168,3 +168,7 @@ For developing i used [VScode](https://code.visualstudio.com/) with [PlatformIO]
 ## 3D print
 
 A STL file for 3D printing the console can be found in the [3D folder](./3d).
+
+![alt text](<3d/Dashboard/Dashboard - 3D - complete.png>)
+
+![alt text](<3d/Computer/Computer - 3D.png>)
