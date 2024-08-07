@@ -249,7 +249,6 @@ public:
 
     void show_time()
     {
-        OLED.setTextColor(WHITE);
         int x = SCREEN_HALF_WIDTH + 18;
         int y = 12;
         char hourStr[3];
