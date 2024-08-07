@@ -325,12 +325,7 @@ void loop()
         }
     }
     else {
-        if (Battery.isLow()) {
-            LEDstrips.off();
-        }
-        else {
-            LEDstrips.loop();
-        }
+        LEDstrips.loop();
         Lights.loop();
         Display.show();
     }

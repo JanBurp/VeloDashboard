@@ -268,13 +268,12 @@ public:
      */
     void loop()
     {
-        if (this->Battery->isVeryLow())
+        if (this->Battery->isLow() || this->Battery->isVeryLow() || this->Battery->isAlmostDead())
         {
-            FastLED.setBrightness(BRIGHTNESS * 0.5);
+            FastLED.setBrightness(0);
         }
-        if (this->Battery->isAlmostDead())
-        {
-            FastLED.setBrightness(BRIGHTNESS * 0.1);
+        else {
+            FastLED.setBrightness(BRIGHTNESS);
         }
 
         if ( !this->Indicators->isActive() )
