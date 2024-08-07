@@ -140,7 +140,7 @@ public:
 
     void show_graphics_home() {
         OLED.drawCircle(SCREEN_HALF_WIDTH-1, SCREEN_HALF_HEIGHT, 37, WHITE);
-        OLED.fillRect(0,0, SCREEN_WIDTH, 16, BLACK);
+        OLED.fillRect(0,-1, SCREEN_WIDTH, 17, BLACK);
         OLED.fillRect(0,SCREEN_HEIGHT - 17, SCREEN_WIDTH, 17, BLACK);
 
         OLED.drawCircle(SCREEN_HALF_WIDTH-1, SCREEN_HEIGHT - 8, 17, WHITE);
@@ -214,7 +214,7 @@ public:
         if (this->Speed->getCurrentMaxSpeed()>0) {
             char maxStr[6];
             snprintf(maxStr, 7, "%6.1f", this->Speed->getCurrentMaxSpeed());
-            OLED.setCursor(84,62);
+            OLED.setCursor(83,62);
             OLED.print(maxStr);
             OLED.setFont();
         }
