@@ -265,6 +265,7 @@ public:
             snprintf(minStr, 3, "%02i", minute());
         }
 
+        OLED.setTextSize(1);
         OLED.setFont(&FreeSans9pt7b);
         if (!this->IdleTimer->warning())
         {
