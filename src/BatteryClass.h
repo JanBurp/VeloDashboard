@@ -17,10 +17,12 @@
 
 #define NUM_CELLS   3
 
-#define BAT_LOW         25
-#define BAT_VERYLOW     20
-#define BAT_ALMOSTDEAD  15
-#define BAT_DEAD        10
+#define BAT_BRIGHTNESS_ADJUST   50
+#define BAT_BRIGHTNESS_OFF      25
+#define BAT_LOW                 25
+#define BAT_VERYLOW             20
+#define BAT_ALMOSTDEAD          15
+#define BAT_DEAD                10
 
 #define POWER_OFF_DELAY 20 // seconds
 
@@ -116,6 +118,22 @@ public:
 
     int getBatteryPercentage() {
         return this->percentage;
+    }
+
+    float getBrightnessPercentage() {
+        int adjust = 100;
+        if (this->percentage <= BAT_BRIGHTNESS_ADJUST) {
+            adjust = map(this->percentage,BAT_BRIGHTNESS_OFF,BAT_BRIGHTNESS_ADJUST,0,100);
+            if (adjust < 0) {
+                adjust = 0;
+            }
+        }
+        if (DEBUG) {
+            Serial.print(this->percentage);
+            Serial.print("\t");
+            Serial.println(adjust);
+        }
+        return float(adjust/100.0);
     }
 
     bool isLow() {
