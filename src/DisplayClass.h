@@ -116,10 +116,12 @@ public:
 
     void show_welcome()
     {
-        OLED.setTextSize(2);
-        OLED.setCursor(0, 0);
+        OLED.setTextSize(1);
+        OLED.setFont(&FreeMonoBold12pt7b);
+        OLED.setCursor(0, 14);
         OLED.print("Quest 631");
         OLED.drawLine(0, 20, SCREEN_WIDTH, 20, WHITE);
+        OLED.setFont();
 
         if (this->startupQuestion)
         {
