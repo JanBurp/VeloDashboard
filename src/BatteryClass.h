@@ -3,26 +3,21 @@
 #include "Arduino.h"
 
 #define VREF        3300
-#define V_SAMPLES   25
-#define V_TIME      500
+#define V_SAMPLES   60000 // filter out sudden changes in battery, take 1 minute
+#define V_TIME      1
 
 #define ADJUST_REF  4200
-#if TEST
-#define ADJUST      2.0 // Was 1.7
-#else
-#define ADJUST      6.0 // Was 1.7
-#endif
-
+#define ADJUST      6.0 // on Test board should be 2.0
 
 
 #define NUM_CELLS   3
 
-#define BAT_BRIGHTNESS_ADJUST   50
-#define BAT_BRIGHTNESS_OFF      25
-#define BAT_LOW                 25
-#define BAT_VERYLOW             20
-#define BAT_ALMOSTDEAD          15
-#define BAT_DEAD                10
+#define BAT_BRIGHTNESS_ADJUST   0.5
+#define BAT_BRIGHTNESS_OFF      0.25
+#define BAT_LOW                 0.25
+#define BAT_VERYLOW             0.20
+#define BAT_ALMOSTDEAD          0.15
+#define BAT_DEAD                0.10
 
 #define POWER_OFF_DELAY 20 // seconds
 
@@ -32,7 +27,7 @@ class BatteryClass
 private:
     byte pin;
     byte pinPower;
-    int percentage;
+    float percentage;
     int cell_mv;
     unsigned long timeMeasurement;
     unsigned long timeDead;
@@ -47,13 +42,14 @@ public:
         pinMode(this->pinPower, OUTPUT);
         digitalWrite(this->pinPower,LOW);
         this->cell_mv = 0;
-        this->percentage = 100;
+        this->percentage = 1.0;
         this->timeMeasurement = millis();
         this->timeDead = 0;
         this->v_counter = 0;
         for (size_t v = 0; v < V_SAMPLES; v++)
         {
-            this->battValues[v] = 1023;
+            int value = analogRead(this->pin);
+            this->battValues[v] = value;
         }
     }
 
@@ -81,31 +77,38 @@ public:
             if (this->cell_mv > ADJUST_REF) this->cell_mv = ADJUST_REF;
 
             const int V[21] = { 4200, 4150, 4110, 4080, 4020, 3980, 3950, 3910, 3870, 3850, 3840, 3820, 3800, 3790, 3770, 3750, 3730, 3710, 3690, 3610, 3270 };  // mV - 12.6 - 12.0 - 11.55 - 11.25 - 10.35 - 10.0
-            const int P[21] = {  100,   95,   90,   85,   80,   75,   70,   65,   60,   55,   50,   45,   40,   35,   30,   25,   20,   15,   10,    5,    0 };  // % capacity
+            const float P[21] = {  1.0,   0.95,   0.90,   0.85,   0.80,   0.75,   0.70,   0.65,   0.60,   0.55,   0.50,   0.45,   0.40,   0.35,   0.30,   0.25,   0.20,   0.15,   0.10,    0.5,    0.0 };  // % capacity
 
-            int percent = 0;
+            float percent = 0.0;
             for (size_t i = 21; i > 1; i--) {
                 if ( this->cell_mv >= V[i] ) {
                     percent = P[i] + (P[i-1] - P[i]) * (this->cell_mv - V[i]) / (V[i-1] - V[i]);
                 }
             }
-            this->percentage = constrain(percent, 0, 100);
 
-            // if ( DEBUG ) {
-            //     Serial.print("value:\t");
-            //     Serial.print(value);
-            //     Serial.print("\t\tmeanValue:\t");
-            //     Serial.print(meanValue);
-            //     Serial.print("\tmV:");
-            //     Serial.print(battery_mv);
-            //     Serial.print("\tmV:");
-            //     Serial.print(this->cell_mv);
-            //     Serial.print("\t%:");
-            //     Serial.print(this->percentage);
-            //     Serial.print("\ttmDead:");
-            //     Serial.print(this->timeDead);
-            //     Serial.println();
-            // }
+            if ( DEBUG && this->percentage != percent) {
+                Serial.print(millis()/1000);
+                Serial.print("\t\tmeanValue:\t");
+                Serial.print(meanValue);
+                Serial.print("\tmV:");
+                Serial.print(battery_mv);
+                Serial.print("\tmV:");
+                Serial.print(this->cell_mv);
+                Serial.print("\t%:");
+                Serial.print(this->percentage);
+                // Serial.print("\t%: [");
+                // Serial.print(percent);
+                // Serial.print("\t: ");
+                // Serial.print(diff);
+
+                // Serial.print("\ttmDead:");
+                // Serial.print(this->timeDead);
+                Serial.println();
+            }
+
+            this->percentage = percent;
+
+
 
 
         }
@@ -116,24 +119,24 @@ public:
         return this->cell_mv;
     }
 
-    int getBatteryPercentage() {
+    float getBatteryPercentage() {
         return this->percentage;
     }
 
     float getBrightnessPercentage() {
-        int adjust = 100;
+        float adjust = 1.0;
         if (this->percentage <= BAT_BRIGHTNESS_ADJUST) {
-            adjust = map(this->percentage,BAT_BRIGHTNESS_OFF,BAT_BRIGHTNESS_ADJUST,0,100);
+            adjust = map(this->percentage,BAT_BRIGHTNESS_OFF,BAT_BRIGHTNESS_ADJUST,0.0,1.0);
             if (adjust < 0) {
                 adjust = 0;
             }
         }
-        if (DEBUG) {
-            Serial.print(this->percentage);
-            Serial.print("\t");
-            Serial.println(adjust);
-        }
-        return float(adjust/100.0);
+        // if (DEBUG) {
+        //     Serial.print(this->percentage);
+        //     Serial.print("\t");
+        //     Serial.println(adjust);
+        // }
+        return adjust;
     }
 
     bool isLow() {

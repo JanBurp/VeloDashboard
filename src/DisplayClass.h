@@ -324,8 +324,8 @@ public:
 
         if (!off)
         {
-            int percentage = this->Battery->getBatteryPercentage();
-            int juiceHeight = (h - innerpad * 2) * (percentage / 100.0);
+            float percentage = this->Battery->getBatteryPercentage();
+            int juiceHeight = (h - innerpad * 2) * percentage;
             int color = WHITE;
             if (this->Battery->isLow()) {
                 if ((millis() / 333) % 2 == 0)
