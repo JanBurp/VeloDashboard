@@ -252,10 +252,40 @@ public:
         return this->Memory.currentDistance / 1000;
     }
 
+    unsigned long getCurrentTime()
+    {
+        return this->Memory.currentTime;
+    }
+
+    unsigned long getTotalTime()
+    {
+        return (now() - this->Memory.currentStartTime) * 1000;
+    }
+
     float getDayDistance()
     {
         return this->Memory.dayDistance / 1000;
     }
+
+    float getDayAvgSpeed() {
+        return this->Memory.dayAverageSpeed;
+    }
+
+    float getDayMaxSpeed() {
+        return this->Memory.dayMaxSpeed;
+    }
+
+    unsigned long getDayTime()
+    {
+        return this->Memory.dayTime;
+    }
+
+    unsigned long getDayTotalTime()
+    {
+        return (now() - this->Memory.dayStartTime) * 1000;
+    }
+
+
 
     // int getLengthDistance() {
     //     return int(this->Memory.currentDistance*100) % BIKE_LENGTH;
@@ -325,15 +355,11 @@ public:
         return this->Memory.prevMaxSpeed;
     }
 
-    unsigned long getCurrentTime()
+    unsigned long getprevTime()
     {
-        return this->Memory.currentTime;
+        return this->Memory.prevTime;
     }
 
-    unsigned long getTotalTime()
-    {
-        return (now() - this->Memory.currentStartTime) * 1000;
-    }
 
     void loop()
     {

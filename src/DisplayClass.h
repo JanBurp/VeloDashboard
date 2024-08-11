@@ -27,6 +27,18 @@ Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, -1);  // on test boar
 
 #define DISPLAY_DIMMED_LOOP_COUNT 2
 
+typedef struct {
+    unsigned int label_x;
+    unsigned int label_y;
+    unsigned int value_x;
+    unsigned int value_y;
+} PositionStruct;
+
+PositionStruct Positions[6];
+
+
+
+
 enum DisplayType
 {
     settings,
@@ -72,6 +84,13 @@ public:
         }
         OLED.clearDisplay();
         OLED.setTextColor(WHITE);
+
+        Positions[0] = {0,15, 18,27};
+        Positions[1] = {64,15, 82,27};
+        Positions[2] = {0,33, 18,45};
+        Positions[3] = {64,33, 82,45};
+        Positions[4] = {0,51, 18,63};
+        Positions[5] = {64,51, 82,63};
     }
 
     void setDisplayModeHome()
@@ -414,41 +433,47 @@ public:
         }
     }
 
-    void show_today_distances()
+    void show_current()
     {
-        this->show_item_float(four, 1, "Dist", "%-6.1f", this->Speed->getCurrentDistance());
-        this->show_item_float(four, 2, "Today", "% 6.1f", this->Speed->getDayDistance());
-        this->show_item_float(four, 3, "Prev", "%-6.1f", this->Speed->getPrevDistance());
-        this->show_item_float(four, 4, "Trip 1", "% 6.1f", this->Speed->getTripDistance());
+        this->show_title("CURRENT:");
+        this->show_item_float(four, 1, "Dst", "%-5.1f", this->Speed->getCurrentDistance());
+        this->show_item_float(four, 2, "Day", "%-5.1f", this->Speed->getDayDistance());
+        this->show_item_float(four, 3, "Avg", "%-5.1f", this->Speed->getAvgSpeed());
+        this->show_item_float(four, 4, "Max", "%-5.1f", this->Speed->getCurrentMaxSpeed());
+        this->show_item_time(four, 5, "Tme", this->Speed->getCurrentTime());
+        this->show_item_time(four, 6, "Tot", this->Speed->getTotalTime(), true);
     }
 
-    void show_today_speeds()
+    void show_today()
     {
-        this->show_item_float(four, 1, "Avg", "%-6.1f", this->Speed->getAvgSpeed());
-        this->show_item_float(four, 2, "Max", "% 6.1f", this->Speed->getCurrentMaxSpeed());
-        this->show_item_time(four, 3, "Time", this->Speed->getCurrentTime());
-        this->show_item_time(four, 4, "Total", this->Speed->getTotalTime(), true);
+        this->show_title("TODAY:");
+        this->show_item_float(four, 1, "Day", "%-5.1f", this->Speed->getCurrentDistance());
+        this->show_item_float(four, 3, "Avg", "%-5.1f", this->Speed->getDayAvgSpeed());
+        this->show_item_float(four, 4, "Max", "%-5.1f", this->Speed->getDayMaxSpeed());
+        this->show_item_time(four, 5, "Tme", this->Speed->getDayTime());
+        this->show_item_time(four, 6, "Tot", this->Speed->getDayTotalTime(), true);
     }
 
-    // void show_trips() {
-    //     this->show_item_float(four,1,"Tocht 1","%-6.1f",this->Speed->getTripDistance(1) );
-    //     this->show_item_float(four,3,"Tocht 2","%-6.1f",this->Speed->getTripDistance(2) );
-    //     this->show_item_float(four,4,"Tocht 3","% 6.1f",this->Speed->getTripDistance(3) );
-    // }
-
-    // void show_prev_speed() {
-    //     this->show_item_float(three,1,"Avg","% 6.1f", this->Speed->getPrevAvgSpeed());
-    //     this->show_item_float(three,2,"Max","% 6.1f", this->Speed->getPrevMaxSpeed());
-    // }
+    void show_prev()
+    {
+        this->show_title("PREVIOUS:");
+        this->show_item_float(four, 1, "Prv", "%-5.1f", this->Speed->getPrevDistance());
+        this->show_item_float(four, 3, "Avg", "%-5.1f", this->Speed->getPrevAvgSpeed());
+        this->show_item_float(four, 4, "Max", "%-5.1f", this->Speed->getPrevMaxSpeed());
+        this->show_item_time(four, 5, "Tme", this->Speed->getprevTime());
+    }
 
     void show_totals()
     {
         int Odo = this->Speed->getTotalDistance();
         int Quest = Odo + BIKE_DISTANCE_START;
-        this->show_item_float(four, 1, "Total", "%-6.0f", Odo);
-        this->show_item_float(four, 2, "Quest", "% 6.0f", Quest);
-        this->show_item_float(four, 3, "Trip 2", "%-6.0f", this->Speed->getTripDistance(2));
-        this->show_item_float(four, 4, "Trip 3", "% 6.0f", this->Speed->getTripDistance(2));
+        char titleStr[30];
+        snprintf(titleStr, 29, "TOTALS: Quest(% 6i)", Quest);
+        this->show_title(titleStr);
+        this->show_item_float(four, 1, "Tot", "%-5.0f", Odo);
+        this->show_item_float(four, 3, "Tr1", "%-5.0f", this->Speed->getTripDistance(1));
+        this->show_item_float(four, 5, "Tr2", "%-5.0f", this->Speed->getTripDistance(2));
+        this->show_item_float(four, 6, "Tr3", "%-5.0f", this->Speed->getTripDistance(3));
     }
 
     void off()
@@ -457,6 +482,14 @@ public:
         this->setDisplayModeHome();
         this->show_battery(true);
         OLED.display();
+    }
+
+
+    void show_title(const char title[]) {
+        OLED.setTextSize(1);
+        OLED.setCursor(0,0);
+        OLED.print(title);
+        OLED.drawLine(0,10,128,10,WHITE);
     }
 
     void show_item_string(DisplayType type, int row, const char label[], const char value[])
@@ -511,91 +544,15 @@ public:
                 OLED.print(value);
             }
         }
-
-        if (type == three)
-        {
-            if (row == 1)
-            {
-                OLED.setTextSize(1);
-                OLED.setCursor(SCREEN_HALF_WIDTH + 4, 0);
-                char labelStr[10];
-                snprintf(labelStr, 11, "%10s", label);
-                OLED.print(labelStr);
-                OLED.setTextSize(2);
-                OLED.setCursor(SCREEN_HALF_WIDTH - 32, 10);
-                char valueStr[8];
-                snprintf(valueStr, 9, "%8s", value);
-                OLED.print(valueStr);
-            }
-            if (row == 2)
-            {
-                OLED.setTextSize(1);
-                OLED.setCursor(0, SCREEN_HALF_HEIGHT + 5);
-                OLED.print(label);
-                OLED.setTextSize(2);
-                OLED.setCursor(0, SCREEN_HEIGHT - 16);
-                OLED.print(value);
-            }
-            if (row == 3)
-            {
-                OLED.setTextSize(1);
-                OLED.setCursor(SCREEN_HALF_WIDTH + 4, SCREEN_HALF_HEIGHT + 5);
-                char labelStr[10];
-                snprintf(labelStr, 11, "%10s", label);
-                OLED.print(labelStr);
-                OLED.setTextSize(2);
-                OLED.setCursor(SCREEN_HALF_WIDTH - 32, SCREEN_HEIGHT - 16);
-                char valueStr[8];
-                snprintf(valueStr, 9, "%8s", value);
-                OLED.print(valueStr);
-            }
-        }
-        if (type == four)
-        {
-            if (row == 1)
-            {
-                OLED.setTextSize(1);
-                OLED.setCursor(0, 0);
-                OLED.print(label);
-                OLED.setTextSize(2);
-                OLED.setCursor(0, 10);
-                OLED.print(value);
-            }
-            if (row == 2)
-            {
-                OLED.setTextSize(1);
-                OLED.setCursor(SCREEN_HALF_WIDTH + 4, 0);
-                char labelStr[10];
-                snprintf(labelStr, 11, "%10s", label);
-                OLED.print(labelStr);
-                OLED.setTextSize(2);
-                OLED.setCursor(SCREEN_HALF_WIDTH - 32, 10);
-                char valueStr[8];
-                snprintf(valueStr, 9, "%8s", value);
-                OLED.print(valueStr);
-            }
-            if (row == 3)
-            {
-                OLED.setTextSize(1);
-                OLED.setCursor(0, SCREEN_HALF_HEIGHT + 5);
-                OLED.print(label);
-                OLED.setTextSize(2);
-                OLED.setCursor(0, SCREEN_HEIGHT - 16);
-                OLED.print(value);
-            }
-            if (row == 4)
-            {
-                OLED.setTextSize(1);
-                OLED.setCursor(SCREEN_HALF_WIDTH + 4, SCREEN_HALF_HEIGHT + 5);
-                char labelStr[10];
-                snprintf(labelStr, 11, "%10s", label);
-                OLED.print(labelStr);
-                OLED.setTextSize(2);
-                OLED.setCursor(SCREEN_HALF_WIDTH - 32, SCREEN_HEIGHT - 16);
-                char valueStr[8];
-                snprintf(valueStr, 9, "%8s", value);
-                OLED.print(valueStr);
-            }
+        else {
+            int pos = row-1;
+            OLED.setTextSize(1);
+            OLED.setCursor(Positions[pos].label_x, Positions[pos].label_y);
+            OLED.print(label);
+            OLED.setFont(&FreeSans9pt7b);
+            OLED.setCursor(Positions[pos].value_x, Positions[pos].value_y);
+            OLED.print(value);
+            OLED.setFont();
         }
     }
 
@@ -821,15 +778,15 @@ public:
                 }
                 this->show_time();
                 break;
+            case DISPLAY_CURRENT:
+                this->show_current();
+            break;
             case DISPLAY_TODAY:
-                this->show_today_distances();
+                this->show_today();
                 break;
-            case DISPLAY_SPEEDS:
-                this->show_today_speeds();
+            case DISPLAY_PREV:
+                this->show_prev();
                 break;
-            // case DISPLAY_TRIPS:
-            //     this->show_trips();
-            //     break;
             case DISPLAY_TOTALS:
                 this->show_totals();
                 break;
