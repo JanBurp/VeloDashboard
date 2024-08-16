@@ -89,8 +89,8 @@ public:
         Positions[1] = {64,15, 82,27};
         Positions[2] = {0,33, 18,45};
         Positions[3] = {64,33, 82,45};
-        Positions[4] = {0,51, 18,63};
-        Positions[5] = {64,51, 82,63};
+        Positions[4] = {0,50, 18,62};
+        Positions[5] = {64,50, 82,62};
     }
 
     void setDisplayModeHome()
@@ -162,10 +162,11 @@ public:
     void show_graphics_home() {
         OLED.drawCircle(SCREEN_HALF_WIDTH-1, SCREEN_HALF_HEIGHT, 37, WHITE);
         OLED.fillRect(0,-1, SCREEN_WIDTH, 17, BLACK);
-        OLED.fillRect(0,SCREEN_HEIGHT - 17, SCREEN_WIDTH, 17, BLACK);
+        OLED.fillRect(0,SCREEN_HEIGHT - 18, SCREEN_WIDTH, 18, BLACK);
 
         OLED.drawCircle(SCREEN_HALF_WIDTH-1, SCREEN_HEIGHT - 8, 17, WHITE);
         OLED.fillRect(SCREEN_HALF_WIDTH - 20,SCREEN_HEIGHT - 36, 40, 21, BLACK);
+        OLED.fillRect(SCREEN_HALF_WIDTH - 20,SCREEN_HEIGHT - 1, 40, 2, BLACK);
     }
 
     void show_speed()
