@@ -72,12 +72,9 @@ void cadansSensorChange()
  */
 void buzzer(bool state)
 {
-    // if (DEBUG) {
-    //     Serial.print("BUZZER:");
-    //     Serial.println(state);
-    // }
     if (state)
     {
+
         tone(PIN_BUZZER, BUZZER_TONE);
     }
     else
