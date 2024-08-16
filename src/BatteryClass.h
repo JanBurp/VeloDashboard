@@ -86,25 +86,25 @@ public:
                 }
             }
 
-            if ( DEBUG && this->percentage != percent) {
-                Serial.print(millis()/1000);
-                Serial.print("\t\tmeanValue:\t");
-                Serial.print(meanValue);
-                Serial.print("\tmV:");
-                Serial.print(battery_mv);
-                Serial.print("\tmV:");
-                Serial.print(this->cell_mv);
-                Serial.print("\t%:");
-                Serial.print(this->percentage);
-                // Serial.print("\t%: [");
-                // Serial.print(percent);
-                // Serial.print("\t: ");
-                // Serial.print(diff);
+            // if ( DEBUG && this->percentage != percent) {
+            //     Serial.print(millis()/1000);
+            //     Serial.print("\t\tmeanValue:\t");
+            //     Serial.print(meanValue);
+            //     Serial.print("\tmV:");
+            //     Serial.print(battery_mv);
+            //     Serial.print("\tmV:");
+            //     Serial.print(this->cell_mv);
+            //     Serial.print("\t%:");
+            //     Serial.print(this->percentage);
+            //     // Serial.print("\t%: [");
+            //     // Serial.print(percent);
+            //     // Serial.print("\t: ");
+            //     // Serial.print(diff);
 
-                // Serial.print("\ttmDead:");
-                // Serial.print(this->timeDead);
-                Serial.println();
-            }
+            //     // Serial.print("\ttmDead:");
+            //     // Serial.print(this->timeDead);
+            //     Serial.println();
+            // }
 
             this->percentage = percent;
 
