@@ -122,10 +122,10 @@ typedef struct {
 #define IDLE_TIMER 180           // seconds
 #define IDLE_WARNING_TIMER 30    // seconds
 #endif
-#define SPEED_CALCULATION_TIMER 100ms
-#define SPEED_CALCULATION_TIME  100
+#define SPEED_CALCULATION_TIMER 1000ms
+#define SPEED_CALCULATION_TIME  1000
 #define MINUTE 60000
-#define BUZZER_TONE 220
+#define BUZZER_TONE 440
 
 /*
     DISPLAY

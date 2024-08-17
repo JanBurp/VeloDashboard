@@ -448,7 +448,7 @@ public:
     void show_today()
     {
         this->show_title("TODAY:");
-        this->show_item_float(four, 1, "Day", "%-5.1f", this->Speed->getCurrentDistance());
+        this->show_item_float(four, 1, "Day", "%-5.1f", this->Speed->getDayDistance());
         this->show_item_float(four, 3, "Avg", "%-5.1f", this->Speed->getDayAvgSpeed());
         this->show_item_float(four, 4, "Max", "%-5.1f", this->Speed->getDayMaxSpeed());
         this->show_item_time(four, 5, "Tme", this->Speed->getDayTime());

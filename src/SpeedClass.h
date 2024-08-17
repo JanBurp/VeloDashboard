@@ -479,8 +479,10 @@ public:
 
         // Calc AVG & MAX
         if (this->Memory.currentDistance > 0.1 && this->Memory.currentTime > 1000) {
-            this->Memory.currentAverageSpeed = this->Memory.currentDistance / (float(this->Memory.currentTime)/1000.0) * 3.6;
-            this->Memory.dayAverageSpeed = this->Memory.dayDistance / (float(this->Memory.dayTime)/1000.0) * 3.6;
+            this->Memory.currentAverageSpeed = this->Memory.currentDistance / (this->Memory.currentTime / 1000.0) * 3.6;
+            this->Memory.dayAverageSpeed = this->Memory.dayDistance / (this->Memory.dayTime / 1000.0) * 3.6;
+            // this->Memory.currentAverageSpeed = this->Memory.currentDistance / (float(this->Memory.currentTime)/1000.0) * 3.6;
+            // this->Memory.dayAverageSpeed = this->Memory.dayDistance / (float(this->Memory.dayTime)/1000.0) * 3.6;
             if (this->speed < 120.0)
             {
                 if (this->speed >= this->Memory.currentMaxSpeed) {
