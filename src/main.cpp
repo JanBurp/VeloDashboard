@@ -141,7 +141,7 @@ void setup()
     LedBlinkLeft.init(PIN_BLINK_LEFT);
     LedBlinkRight.init(PIN_BLINK_RIGHT);
     Lights.init(&Battery, &Speed, &LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
-    Indicators.init(DASHBOARD_LED_LEFT,DASHBOARD_LED_RIGHT,&LedBlinkLeft,&LedBlinkRight);
+    Indicators.init(DASHBOARD_LED_LEFT,DASHBOARD_LED_RIGHT,&LedBlinkLeft,&LedBlinkRight,&Speed);
     LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer,&Speed);
 
     // Buzzer

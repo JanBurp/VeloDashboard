@@ -4,11 +4,14 @@
 #include "settings.h"
 
 #include "LedClass.h"
+#include "SpeedClass.h"
 
 #define INDICATORS_OFF 0
 #define INDICATORS_LEFT 1
 #define INDICATORS_RIGHT 2
 #define INDICATORS_BOTH 4
+
+#define INDICATOR_AUTO_OFF_TIMER 10000
 
 PeriodicTimer indicatorTimer(TCK);
 
@@ -22,9 +25,11 @@ private:
     bool stateLeft;
     bool stateRight;
     LedClass *BlinkLeft, *BlinkRight;
+    SpeedClass *Speed;
+    unsigned long autoOffTime = 0;
 
 public:
-    void init(byte left, byte right, LedClass *LedLeft, LedClass *LedRight)
+    void init(byte left, byte right, LedClass *LedLeft, LedClass *LedRight, SpeedClass *speed)
     {
         this->leftLED = left;
         this->rightLED = right;
@@ -32,6 +37,7 @@ public:
         pinMode(this->rightLED, OUTPUT);
         this->BlinkLeft = LedLeft;
         this->BlinkRight = LedRight;
+        this->Speed = speed;
         indicatorTimer.begin([this]
                              { this->loop(); }, INDICATOR_TIMER, false);
         this->reset();
@@ -47,6 +53,7 @@ public:
         this->BlinkLeft->setIntensity(BLINK_OFF);
         this->BlinkRight->setIntensity(BLINK_OFF);
         indicatorTimer.stop();
+        this->autoOffTime = 0;
     }
 
     void set(int function)
@@ -135,6 +142,16 @@ public:
             else
             {
                 this->BlinkRight->setIntensity(BLINK_OFF);
+            }
+        }
+
+        // Auto Off
+        if (!Speed->isPaused()) {
+            if (this->autoOffTime==0) {
+                this->autoOffTime = millis();
+            }
+            if (millis()-this->autoOffTime > INDICATOR_AUTO_OFF_TIMER) {
+                this->reset();
             }
         }
     }
