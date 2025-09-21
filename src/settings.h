@@ -112,7 +112,7 @@ typedef struct {
 #if TEST
 #define WELCOME_ANIMATION           250
 #else
-#define WELCOME_ANIMATION           250
+#define WELCOME_ANIMATION           50
 #endif
 
 #if TEST
