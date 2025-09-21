@@ -111,6 +111,7 @@ public:
         this->resetCursor();
         if (this->settingsMenu)
         {
+            this->displayMode++;
             if (this->displayMode > this->lastSettingsMode)
             {
                 this->displayMode = this->firstSettingsMode;

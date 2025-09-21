@@ -204,6 +204,7 @@ public:
         {
             setTime(hour() + 1, minute(), 0, day(), month(), year());
         }
+        Teensy3Clock.set(now());
     }
 
     void decreaseClock(int inc = 1)
@@ -220,6 +221,7 @@ public:
         {
             setTime(hour() - 1, minute(), 0, day(), month(), year());
         }
+        Teensy3Clock.set(now());
     }
 
     float getSpeed()
