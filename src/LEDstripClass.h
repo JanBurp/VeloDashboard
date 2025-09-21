@@ -89,18 +89,26 @@ public:
         }
     }
 
-    void set(int strip, int start, int end, CRGB color)
+    void set(int strip, int start, int end, CRGB color, bool dotted = false)
     {
+        bool dot = true;
         for (int x = start; x < end; x++)
         {
-            if (strip == LEFT || strip == BOTH)
-            {
-                this->leds_left[x] = color;
+            if (dot || !dotted) {
+                if (strip == LEFT || strip == BOTH)
+                {
+                    this->leds_left[x] = color;
+                }
+                if (strip == RIGHT || strip == BOTH)
+                {
+                    this->leds_right[x] = color;
+                }
             }
-            if (strip == RIGHT || strip == BOTH)
-            {
-                this->leds_right[x] = color;
+            else {
+                this->leds_left[x] = BLACK;
+                this->leds_right[x] = BLACK;
             }
+            dot = ! dot;
         }
     }
 
@@ -241,7 +249,7 @@ public:
             numLEDSback = int(NUM_LIGHT_LEDS_BACK * this->IdleTimer->remainingPercentage());
         }
 
-        this->set(strip, 0, numLEDSfront, white);
+        this->set(strip, 0, numLEDSfront,white,true);
         this->set(strip, numLEDSfront, NUM_LEDS - numLEDSback, BLACK);
         this->set(strip, NUM_LEDS - numLEDSback, NUM_LEDS, red);
 

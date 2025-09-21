@@ -163,9 +163,9 @@ typedef struct {
 #define FRAMES_PER_SECOND 100
 #if TEST
 #define NUM_LEDS                12
-#define NUM_LIGHT_LEDS_FRONT    3
-#define NUM_LIGHT_LEDS_BACK     3
-#define NUM_INDICATOR_LEDS      3
+#define NUM_LIGHT_LEDS_FRONT    5
+#define NUM_LIGHT_LEDS_BACK     5
+#define NUM_INDICATOR_LEDS      5
 #define NUM_SPEED_LEDS          1
 #define MAX_MILLIAMPS 400
 #else
