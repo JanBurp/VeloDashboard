@@ -186,7 +186,8 @@ typedef struct {
 */
 
 #define SENSOR_BUFF 12
-#define MIN_SENSOR_TIME 75
+#define MIN_SENSOR_TIME 75      // ~ 72 km/h
+// #define MIN_SENSOR_TIME 50      // ~ 100 km/h
 #define MAX_SENSOR_TIME 3000
 #define MIN_SPEED 2
 

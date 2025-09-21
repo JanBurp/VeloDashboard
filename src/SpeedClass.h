@@ -593,7 +593,8 @@ public:
     {
         unsigned long now = millis();
         unsigned long sensorTime = now - this->lastSensorTimeMs;
-        if (sensorTime > MIN_SENSOR_TIME)
+        // Filter double triggers
+        if (sensorTime > MIN_SENSOR_TIME && sensorTime > this->lastSensorTimeMs/2 || sensorTime > MIN_SENSOR_TIME * 2)
         {
             this->lastSensorTimeMs = now;
             // Shift sensor times
