@@ -57,7 +57,7 @@ public:
                 case LIGHTS_OFF:
                     this->HeadLightLeft->setIntensity(HEAD_LED_OFF_INTENSITY);
                     this->HeadLightRight->setIntensity(HEAD_LED_OFF_INTENSITY);
-                    this->RearLight->setIntensity(REAR_LED_OFF_INTENSITY);
+                    this->RearLight->setIntensity(REAR_LED_DIM_INTENSITY);
                     break;
                 case LIGHTS_DIM:
                     this->HeadLightLeft->setIntensity(HEAD_LED_DIM_INTENSITY);
