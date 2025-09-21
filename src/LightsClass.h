@@ -2,6 +2,7 @@
 
 #include "Arduino.h"
 
+#include "core_pins.h"
 #include "settings.h"
 
 #include "BatteryClass.h"
@@ -15,6 +16,8 @@
 #define LIGHTS_BEAM 4
 #define LIGHTS_FOG 5
 
+#define BREAK_LIGHTS_OFF_TIMER 5000
+
 class LightsClass
 {
 
@@ -25,6 +28,7 @@ private:
     int lights = LIGHTS_OFF;
     bool brake = false;
     bool beam = false;
+    unsigned long breakTimer = 0;
 
 public:
 
@@ -141,7 +145,15 @@ public:
     bool getBrake()
     {
         if (this->brake && !this->Battery->isAlmostDead()) {
-            return true;
+            if (this->breakTimer==0) {
+                this->breakTimer = millis();
+            }
+            if ( millis() - this->breakTimer < BREAK_LIGHTS_OFF_TIMER) {
+                return true;
+            }
+        }
+        else {
+            this->breakTimer = 0;
         }
         return false;
     }
