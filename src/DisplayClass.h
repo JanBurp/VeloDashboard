@@ -26,6 +26,7 @@ Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, -1);  // on test boar
 // #endif
 
 #define DISPLAY_DIMMED_LOOP_COUNT 2
+#define MINIMAL_DISPLAY_RESET_TIMER 20000
 
 typedef struct {
     unsigned int label_x;
@@ -59,6 +60,7 @@ private:
     bool startupQuestion = false;
     int cursorPosition = 0;
     bool minimalDisplay = true;
+    unsigned long minimalDisplayTimer = 0;
 
     SpeedClass *Speed;
     BatteryClass *Battery;
@@ -118,6 +120,7 @@ public:
         {
             if (this->minimalDisplay) {
                 this->minimalDisplay = false;
+                this->minimalDisplayTimer = millis();
             }
             else {
                 this->displayMode++;
@@ -125,6 +128,7 @@ public:
                 {
                     this->displayMode = this->firstMode;
                     this->minimalDisplay = true;
+                    this->minimalDisplayTimer = 0;
                 }
             }
 
@@ -747,6 +751,12 @@ public:
         OLED.clearDisplay();
         bool dimmed = (this->Lights->getLights() > LIGHTS_ON) || this->Battery->isLow();
         this->dim(dimmed);
+
+        if (this->minimalDisplayTimer > 0) {
+            if (millis() - this->minimalDisplayTimer > MINIMAL_DISPLAY_RESET_TIMER) {
+                this->minimalDisplay = true;
+            }
+        }
 
         if (this->settingsMenu)
         {
