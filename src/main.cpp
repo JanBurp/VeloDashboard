@@ -166,7 +166,7 @@ void setup()
             Display.askStartupQuestion();
             Display.show();
             Dashboard.waitForButtonPress();
-            if ( Dashboard.isLightsUp() ) {
+            if ( Dashboard.isLightsUp() || Dashboard.isBrake() ) {
                 Speed.continueCurrent();
             }
             else {
