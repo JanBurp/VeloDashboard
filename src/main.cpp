@@ -41,7 +41,7 @@ IndicatorClass Indicators;
 LightsClass Lights;
 SpeedClass Speed;
 LEDstripClass LEDstrips;
-LedClass LedHeadLightLeft,LedHeadLightRight, LedRearLight,LedBrakeLight, LedBlinkLeft,LedBlinkRight;
+LedClass LedHeadLightLeft, LedHeadLightRight, LedRearLight, LedBrakeLight, LedBlinkLeft, LedBlinkRight;
 
 /**
  * Get the Teensy3 Time object
@@ -74,7 +74,6 @@ void buzzer(bool state)
 {
     if (state)
     {
-
         tone(PIN_BUZZER, BUZZER_TONE);
     }
     else
@@ -114,8 +113,8 @@ void setup()
     }
 
     // Disable unused pins (saves a bit current)
-    pinMode(INTERNAL_LED,OUTPUT);
-    digitalWrite(INTERNAL_LED,HIGH);
+    pinMode(INTERNAL_LED, OUTPUT);
+    digitalWrite(INTERNAL_LED, HIGH);
     int unusedPins[] = UNUSED_PINS;
     for (size_t pin = 0; pin < NR_UNUSED_PINS; pin++)
     {
@@ -126,8 +125,8 @@ void setup()
     setSyncProvider(getTeensy3Time);
 
     // Knobs & Buttons
-    Dashboard.init(DASHBOARD_BREAK,DASHBOARD_BUTTONS_LEFT,DASHBOARD_BUTTONS_RIGHT);
-    Battery.init(PIN_BATTERY_METER,PIN_POWER_OFF);
+    Dashboard.init(DASHBOARD_BREAK, DASHBOARD_BUTTONS_LEFT, DASHBOARD_BUTTONS_RIGHT);
+    Battery.init(PIN_BATTERY_METER, PIN_POWER_OFF);
     Battery.loop();
     IdleTimer.action();
 
@@ -140,9 +139,9 @@ void setup()
     LedBrakeLight.init(PIN_BRAKE_LIGHT);
     LedBlinkLeft.init(PIN_BLINK_LEFT);
     LedBlinkRight.init(PIN_BLINK_RIGHT);
-    Lights.init(&Battery, &Speed, &LedHeadLightLeft,&LedHeadLightRight,&LedRearLight,&LedBrakeLight);
-    Indicators.init(DASHBOARD_LED_LEFT,DASHBOARD_LED_RIGHT,&LedBlinkLeft,&LedBlinkRight,&Speed);
-    LEDstrips.init(&Indicators,&Lights,&Battery,&IdleTimer,&Speed);
+    Lights.init(&Battery, &Speed, &LedHeadLightLeft, &LedHeadLightRight, &LedRearLight, &LedBrakeLight);
+    Indicators.init(DASHBOARD_LED_LEFT, DASHBOARD_LED_RIGHT, &LedBlinkLeft, &LedBlinkRight, &Speed);
+    LEDstrips.init(&Indicators, &Lights, &Battery, &IdleTimer, &Speed);
 
     // Buzzer
     pinMode(PIN_BUZZER, OUTPUT);
@@ -154,33 +153,40 @@ void setup()
     Display.show();
 
     // Startup
-    if ( !Battery.isDead() ) {
+    if (!Battery.isDead())
+    {
         LEDstrips.startup_animation();
     }
 
-    if ( Speed.IsNewDay() ) {
+    if (Speed.IsNewDay())
+    {
         Speed.startDay();
     }
-    else {
-        if ( Speed.IsShortPause() ) {
+    else
+    {
+        if (Speed.IsShortPause())
+        {
             Display.askStartupQuestion();
             Display.show();
             Dashboard.waitForButtonPress();
-            if ( Dashboard.isLightsUp() || Dashboard.isBrake() ) {
+            if (Dashboard.isLightsUp() || Dashboard.isBrake())
+            {
                 Speed.continueCurrent();
             }
-            else {
+            else
+            {
                 Speed.resetCurrent();
             }
         }
-        else {
+        else
+        {
             Speed.resetCurrent();
         }
     }
 
     Display.setDisplayMode(DISPLAY_HOME);
     Display.show();
-    digitalWrite(INTERNAL_LED,LOW);
+    digitalWrite(INTERNAL_LED, LOW);
 
     pinMode(PIN_SPEED, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(PIN_SPEED), speedSensorChange, CHANGE);
@@ -188,7 +194,7 @@ void setup()
     pinMode(PIN_CADANS, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(PIN_CADANS), cadansSensorChange, CHANGE);
 
-    speedCalculationTimer.begin([]{ Speed.loop(); },SPEED_CALCULATION_TIMER);
+    speedCalculationTimer.begin([] { Speed.loop(); }, SPEED_CALCULATION_TIMER);
 }
 
 /*
@@ -196,101 +202,126 @@ void setup()
 */
 void readButtons()
 {
-
     // Break & Beam
-    Lights.setBrake( Dashboard.isBrake() );
-    Lights.setBeam( Dashboard.isBeam() );
+    Lights.setBrake(Dashboard.isBrake());
+    Lights.setBeam(Dashboard.isBeam());
 
     // Others
-    if ( Dashboard.read() ) {
+    if (Dashboard.read())
+    {
         IdleTimer.action();
 
         // LEFT - RIGHT
-        if ( Display.isSettingsMenu() ) {
-            if ( Dashboard.isIndicatorLeft() ) {
-                Display.moveCursor( 1 );
+        if (Display.isSettingsMenu())
+        {
+            if (Dashboard.isIndicatorLeft())
+            {
+                Display.moveCursor(1);
             }
-            if ( Dashboard.isIndicatorRight() ) {
-                Display.moveCursor( -1 );
+            if (Dashboard.isIndicatorRight())
+            {
+                Display.moveCursor(-1);
             }
         }
-        else {
-            if ( Dashboard.isIndicatorLeft() ) {
+        else
+        {
+            if (Dashboard.isIndicatorLeft())
+            {
                 Indicators.setLeft();
             }
-            if ( Dashboard.isIndicatorRight() ) {
+            if (Dashboard.isIndicatorRight())
+            {
                 Indicators.setRight();
             }
         }
 
         // UP - DOWN
-        if ( Display.isResetTripMenu() ) {
-            if ( Dashboard.isLightsUp() )  {
+        if (Display.isResetTripMenu())
+        {
+            if (Dashboard.isLightsUp())
+            {
                 Speed.resetTripDistance(1);
             }
-            if ( Dashboard.isLightsDown() )  {
+            if (Dashboard.isLightsDown())
+            {
                 Speed.resetTripDistance(2);
             }
-            if ( Dashboard.isIndicatorLeft() )  {
+            if (Dashboard.isIndicatorLeft())
+            {
                 Speed.resetTripDistance(3);
             }
         }
-        else if ( Display.isSetClockMenu() ) {
-            if ( Dashboard.isLightsUp() )  {
-                Speed.increaseClock( Display.cursorAmount() );
+        else if (Display.isSetClockMenu())
+        {
+            if (Dashboard.isLightsUp())
+            {
+                Speed.increaseClock(Display.cursorAmount());
             }
-            if ( Dashboard.isLightsDown() )  {
-                Speed.decreaseClock( Display.cursorAmount() );
-            }
-        }
-        else if ( Display.isSetTyreMenu() ) {
-            if ( Dashboard.isLightsUp() )  {
-                Speed.increaseCircumference( Display.cursorAmount() );
-            }
-            if ( Dashboard.isLightsDown() )  {
-                Speed.decreaseCircumference( Display.cursorAmount() );
+            if (Dashboard.isLightsDown())
+            {
+                Speed.decreaseClock(Display.cursorAmount());
             }
         }
-        else if ( Display.isSetTotalMenu() ) {
-            if ( Dashboard.isLightsUp() )  {
-                Speed.increaseTotal( Display.cursorAmount() );
+        else if (Display.isSetTyreMenu())
+        {
+            if (Dashboard.isLightsUp())
+            {
+                Speed.increaseCircumference(Display.cursorAmount());
             }
-            if ( Dashboard.isLightsDown() )  {
-                Speed.decreaseTotal( Display.cursorAmount() );
+            if (Dashboard.isLightsDown())
+            {
+                Speed.decreaseCircumference(Display.cursorAmount());
             }
         }
-        else {
-            if ( Dashboard.isLightsUp() )  {
+        else if (Display.isSetTotalMenu())
+        {
+            if (Dashboard.isLightsUp())
+            {
+                Speed.increaseTotal(Display.cursorAmount());
+            }
+            if (Dashboard.isLightsDown())
+            {
+                Speed.decreaseTotal(Display.cursorAmount());
+            }
+        }
+        else
+        {
+            if (Dashboard.isLightsUp())
+            {
                 Display.setDisplayModeHome();
                 Lights.increaseLights();
-                if ( Dashboard.isLongPressed() ) {
+                if (Dashboard.isLongPressed())
+                {
                     Lights.setFogLight();
                 }
             }
-            if ( Dashboard.isLightsDown() )  {
+            if (Dashboard.isLightsDown())
+            {
                 Display.setDisplayModeHome();
                 Lights.decreaseLights();
-                if ( Dashboard.isLongPressed() ) {
+                if (Dashboard.isLongPressed())
+                {
                     Lights.resetLights();
                 }
             }
         }
 
         // Display pages
-        if (Dashboard.isDisplay()) {
+        if (Dashboard.isDisplay())
+        {
             Display.nextDisplayMode();
         }
-        if ( Dashboard.isDisplay() && Dashboard.isLongPressed() ) {
+        if (Dashboard.isDisplay() && Dashboard.isLongPressed())
+        {
             Display.toggleSettings();
         }
-
     }
 
-    if ( IdleTimer.warning() ) {
+    if (IdleTimer.warning())
+    {
         Display.setDisplayModeHome();
         Lights.resetLights();
     }
-
 }
 
 
@@ -304,7 +335,8 @@ void loop()
     readButtons();
     updateBuzzer();
 
-    if ( IdleTimer.ended() ) {
+    if (IdleTimer.ended())
+    {
         Speed.storeMemory();
         LEDstrips.off();
         Lights.off();
@@ -312,23 +344,26 @@ void loop()
         Battery.powerOff();
     }
 
-    if (Battery.isDead()) {
+    if (Battery.isDead())
+    {
         LEDstrips.off();
         Lights.off();
         Display.off();
-        if (Battery.delayedPowerOff()) {
+        if (Battery.delayedPowerOff())
+        {
             Speed.storeMemory();
             Battery.powerOff();
         }
     }
-    else {
+    else
+    {
         LEDstrips.loop();
         Lights.loop();
         Display.show();
     }
 
-    if ( !Dashboard.isBrake() ) {
+    if (!Dashboard.isBrake())
+    {
         Battery.loop();
     }
-
 }
