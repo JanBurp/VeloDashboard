@@ -1,26 +1,27 @@
 #pragma once
 
 #include "Arduino.h"
-#include "settings.h"
-#include "SpeedClass.h"
 #include "BatteryClass.h"
 #include "IdleClass.h"
 #include "IndicatorClass.h"
-#include "LightsClass.h"
 #include "LEDstripClass.h"
+#include "LightsClass.h"
+#include "SpeedClass.h"
+#include "settings.h"
 
 #include "Icons.h"
 
-#include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <Fonts/FreeSans9pt7b.h>
 #include <Fonts/FreeMonoBold12pt7b.h>
 #include <Fonts/FreeMonoBold24pt7b.h>
+#include <Fonts/FreeSans9pt7b.h>
+#include <Wire.h>
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 // #if TEST
-Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, -1);  // on test board, we use second i2c port on pins 16 & 17
+Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1,
+                      -1); // on test board, we use second i2c port on pins 16 & 17
 // #else
 // Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 // #endif
@@ -28,7 +29,8 @@ Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, -1);  // on test boar
 #define DISPLAY_DIMMED_LOOP_COUNT 2
 #define MINIMAL_DISPLAY_RESET_TIMER 20000
 
-typedef struct {
+typedef struct
+{
     unsigned int label_x;
     unsigned int label_y;
     unsigned int value_x;
@@ -36,9 +38,6 @@ typedef struct {
 } PositionStruct;
 
 PositionStruct Positions[6];
-
-
-
 
 enum DisplayType
 {
@@ -49,7 +48,6 @@ enum DisplayType
 
 class DisplayClass
 {
-
 private:
     int displayMode = DISPLAY_HOME;
     int firstMode = DISPLAY_HOME;
@@ -62,14 +60,15 @@ private:
     bool minimalDisplay = true;
     unsigned long minimalDisplayTimer = 0;
 
-    SpeedClass *Speed;
-    BatteryClass *Battery;
-    IdleClass *IdleTimer;
-    IndicatorClass *Indicators;
-    LightsClass *Lights;
+    SpeedClass* Speed;
+    BatteryClass* Battery;
+    IdleClass* IdleTimer;
+    IndicatorClass* Indicators;
+    LightsClass* Lights;
 
 public:
-    void init(SpeedClass *speed, BatteryClass *battery, IdleClass *idle, IndicatorClass *indicators, LightsClass *lights)
+    void
+    init(SpeedClass* speed, BatteryClass* battery, IdleClass* idle, IndicatorClass* indicators, LightsClass* lights)
     {
         this->Speed = speed;
         this->Battery = battery;
@@ -88,12 +87,12 @@ public:
         OLED.clearDisplay();
         OLED.setTextColor(WHITE);
 
-        Positions[0] = {0,15, 18,27};
-        Positions[1] = {64,15, 82,27};
-        Positions[2] = {0,33, 18,45};
-        Positions[3] = {64,33, 82,45};
-        Positions[4] = {0,50, 18,62};
-        Positions[5] = {64,50, 82,62};
+        Positions[0] = {0, 15, 18, 27};
+        Positions[1] = {64, 15, 82, 27};
+        Positions[2] = {0, 33, 18, 45};
+        Positions[3] = {64, 33, 82, 45};
+        Positions[4] = {0, 50, 18, 62};
+        Positions[5] = {64, 50, 82, 62};
     }
 
     void setDisplayModeHome()
@@ -119,11 +118,13 @@ public:
         }
         else
         {
-            if (this->minimalDisplay) {
+            if (this->minimalDisplay)
+            {
                 this->minimalDisplay = false;
                 this->minimalDisplayTimer = millis();
             }
-            else {
+            else
+            {
                 this->displayMode++;
                 if (this->displayMode > this->lastMode)
                 {
@@ -132,7 +133,6 @@ public:
                     this->minimalDisplayTimer = 0;
                 }
             }
-
         }
     }
 
@@ -168,19 +168,21 @@ public:
     void show_test()
     {
         OLED.setTextSize(1);
-        OLED.setCursor(103,39);
+        OLED.setCursor(103, 39);
         OLED.print("T");
     }
 
-    void show_graphics_home() {
-        OLED.drawCircle(SCREEN_HALF_WIDTH-1, SCREEN_HALF_HEIGHT, 37, WHITE);
-        OLED.fillRect(0,-1, SCREEN_WIDTH, 17, BLACK);
-        OLED.fillRect(0,SCREEN_HEIGHT - 18, SCREEN_WIDTH, 18, BLACK);
+    void show_graphics_home()
+    {
+        OLED.drawCircle(SCREEN_HALF_WIDTH - 1, SCREEN_HALF_HEIGHT, 37, WHITE);
+        OLED.fillRect(0, -1, SCREEN_WIDTH, 17, BLACK);
+        OLED.fillRect(0, SCREEN_HEIGHT - 18, SCREEN_WIDTH, 18, BLACK);
 
-        if (!this->minimalDisplay) {
-            OLED.drawCircle(SCREEN_HALF_WIDTH-1, SCREEN_HEIGHT - 8, 17, WHITE);
-            OLED.fillRect(SCREEN_HALF_WIDTH - 20,SCREEN_HEIGHT - 36, 40, 21, BLACK);
-            OLED.fillRect(SCREEN_HALF_WIDTH - 20,SCREEN_HEIGHT - 1, 40, 2, BLACK);
+        if (!this->minimalDisplay)
+        {
+            OLED.drawCircle(SCREEN_HALF_WIDTH - 1, SCREEN_HEIGHT - 8, 17, WHITE);
+            OLED.fillRect(SCREEN_HALF_WIDTH - 20, SCREEN_HEIGHT - 36, 40, 21, BLACK);
+            OLED.fillRect(SCREEN_HALF_WIDTH - 20, SCREEN_HEIGHT - 1, 40, 2, BLACK);
         }
     }
 
@@ -189,7 +191,6 @@ public:
         OLED.setTextColor(WHITE);
         if (this->Speed->isStarted())
         {
-
             float speed = this->Speed->getSpeed();
             int decis = (int)speed;
             int precision = (speed - decis) * 10;
@@ -206,7 +207,7 @@ public:
             // Small digit
             OLED.setFont(&FreeMonoBold12pt7b);
             snprintf(speedStr, 3, "%1i", precision);
-            OLED.setCursor(x + 56, y+1);
+            OLED.setCursor(x + 56, y + 1);
             OLED.print(speedStr);
             // Sensor
             // OLED.setTextSize(1);
@@ -240,29 +241,34 @@ public:
         }
     }
 
-    void show_avg_max() {
-        if (this->Speed->getAvgSpeed()>0) {
+    void show_avg_max()
+    {
+        if (this->Speed->getAvgSpeed() > 0)
+        {
             char avStr[6];
             snprintf(avStr, 7, "%-6.1f", this->Speed->getAvgSpeed());
             OLED.setFont(&FreeSans9pt7b);
-            OLED.setCursor(0,62);
+            OLED.setCursor(0, 62);
             OLED.print(avStr);
         }
-        if (this->Speed->getCurrentMaxSpeed()>0) {
+        if (this->Speed->getCurrentMaxSpeed() > 0)
+        {
             char maxStr[6];
             snprintf(maxStr, 7, "%6.1f", this->Speed->getCurrentMaxSpeed());
-            OLED.setCursor(83,62);
+            OLED.setCursor(83, 62);
             OLED.print(maxStr);
             OLED.setFont();
         }
     }
 
-    void show_cadans() {
-        if (this->Speed->getCadans() > 0) {
+    void show_cadans()
+    {
+        if (this->Speed->getCadans() > 0)
+        {
             char cadansStr[4];
             snprintf(cadansStr, 4, "%3i", this->Speed->getCadans());
             OLED.setFont(&FreeSans9pt7b);
-            OLED.setCursor(48,62);
+            OLED.setCursor(48, 62);
             OLED.print(cadansStr);
             OLED.setFont();
         }
@@ -275,7 +281,7 @@ public:
         int size = 16;
         if (this->Indicators->getStateLeft())
         {
-            OLED.fillTriangle(x, y + size, x + size, y, x+ size, y + 2 * size, WHITE);
+            OLED.fillTriangle(x, y + size, x + size, y, x + size, y + 2 * size, WHITE);
         }
         if (this->Indicators->getStateRight())
         {
@@ -314,7 +320,7 @@ public:
 
         if (!this->IdleTimer->warning())
         {
-            OLED.setCursor(x + 21, y-1);
+            OLED.setCursor(x + 21, y - 1);
             if ((millis() / 500) % 2 == 0)
             {
                 OLED.print(":");
@@ -329,7 +335,8 @@ public:
 
     void show_distance()
     {
-        if (this->Speed->getCurrentDistance()>0) {
+        if (this->Speed->getCurrentDistance() > 0)
+        {
             int x = 0;
             int y = 12;
             std::string format = "%-6.2f";
@@ -349,7 +356,8 @@ public:
 
     void show_battery(bool off = false)
     {
-        if (!this->Indicators->isActive()) {
+        if (!this->Indicators->isActive())
+        {
             OLED.setTextColor(WHITE);
             int toppad = 3;
             int innerpad = 2;
@@ -365,7 +373,8 @@ public:
                 float percentage = this->Battery->getBatteryPercentage();
                 int juiceHeight = (h - innerpad * 2) * percentage;
                 int color = WHITE;
-                if (this->Battery->isLow()) {
+                if (this->Battery->isLow())
+                {
                     if ((millis() / 333) % 2 == 0)
                     {
                         color = BLACK;
@@ -373,9 +382,24 @@ public:
                 }
                 OLED.fillRect(x + innerpad, y + innerpad + (h - juiceHeight) - 2, w - 2 * innerpad, juiceHeight, color);
 
-                OLED.drawLine(x + innerpad, y + 1 + innerpad + h / 4, x + w - innerpad, y + 1 + innerpad + h / 4, BLACK);
-                OLED.drawLine(x + innerpad, y + 0 + innerpad + h / 2, x + w - innerpad, y + 0 + innerpad + h / 2, BLACK);
-                OLED.drawLine(x + innerpad, y + 1 + innerpad + h / 4 * 3, x + w - innerpad, y + 1 + innerpad + h / 4 * 3, BLACK);
+                OLED.drawLine(
+                    x + innerpad,
+                    y + 1 + innerpad + h / 4,
+                    x + w - innerpad,
+                    y + 1 + innerpad + h / 4,
+                    BLACK);
+                OLED.drawLine(
+                    x + innerpad,
+                    y + 0 + innerpad + h / 2,
+                    x + w - innerpad,
+                    y + 0 + innerpad + h / 2,
+                    BLACK);
+                OLED.drawLine(
+                    x + innerpad,
+                    y + 1 + innerpad + h / 4 * 3,
+                    x + w - innerpad,
+                    y + 1 + innerpad + h / 4 * 3,
+                    BLACK);
 
                 // print cell voltage
                 // int cellMilliV = this->Battery->getCellVoltage();
@@ -412,7 +436,6 @@ public:
 
     void show_lights()
     {
-
         // headlights
         int x = 0;
         int y = 17;
@@ -421,31 +444,30 @@ public:
         int w = 24;
         int h = 14;
 
-        if (!this->Indicators->isActive()) {
+        if (!this->Indicators->isActive())
+        {
             switch (this->Lights->getLights())
             {
-            case LIGHTS_OFF:
-                // OLED.drawBitmap(x, y, icoLowBeam, w, h, WHITE);
-                break;
-            case LIGHTS_DIM:
-                OLED.drawBitmap(x, y, icoLowBeam, w, h, WHITE);
-                break;
-            case LIGHTS_ON:
-                OLED.drawBitmap(x, y, icoDefaultBeam, w, h, WHITE);
-                OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
-                break;
-            case LIGHTS_NORMAL:
-                OLED.drawBitmap(x, y, icoHighBeam, w, h, WHITE);
-                OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
-                break;
-            case LIGHTS_BEAM:
-                OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
-                OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
-                break;
-            case LIGHTS_FOG:
-                OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
-                OLED.drawBitmap(xr, yr, icoHighRear, w, h, WHITE);
-                break;
+                case LIGHTS_OFF:
+                    // OLED.drawBitmap(x, y, icoLowBeam, w, h, WHITE);
+                    break;
+                case LIGHTS_DIM: OLED.drawBitmap(x, y, icoLowBeam, w, h, WHITE); break;
+                case LIGHTS_ON:
+                    OLED.drawBitmap(x, y, icoDefaultBeam, w, h, WHITE);
+                    OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
+                    break;
+                case LIGHTS_NORMAL:
+                    OLED.drawBitmap(x, y, icoHighBeam, w, h, WHITE);
+                    OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
+                    break;
+                case LIGHTS_BEAM:
+                    OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
+                    OLED.drawBitmap(xr, yr, icoLowRear, w, h, WHITE);
+                    break;
+                case LIGHTS_FOG:
+                    OLED.drawBitmap(x, y, icoMaxBeam, w, h, WHITE);
+                    OLED.drawBitmap(xr, yr, icoHighRear, w, h, WHITE);
+                    break;
             }
         }
 
@@ -506,12 +528,12 @@ public:
         OLED.display();
     }
 
-
-    void show_title(const char title[]) {
+    void show_title(const char title[])
+    {
         OLED.setTextSize(1);
-        OLED.setCursor(0,0);
+        OLED.setCursor(0, 0);
         OLED.print(title);
-        OLED.drawLine(0,10,128,10,WHITE);
+        OLED.drawLine(0, 10, 128, 10, WHITE);
     }
 
     void show_item_string(DisplayType type, int row, const char label[], const char value[])
@@ -566,8 +588,9 @@ public:
                 OLED.print(value);
             }
         }
-        else {
-            int pos = row-1;
+        else
+        {
+            int pos = row - 1;
             OLED.setTextSize(1);
             OLED.setCursor(Positions[pos].label_x, Positions[pos].label_y);
             OLED.print(label);
@@ -683,21 +706,11 @@ public:
         int amount = 1;
         switch (cursorPosition)
         {
-        case 1:
-            amount = 10;
-            break;
-        case 2:
-            amount = 100;
-            break;
-        case 3:
-            amount = 1000;
-            break;
-        case 4:
-            amount = 10000;
-            break;
-        case 5:
-            amount = 100000;
-            break;
+            case 1: amount = 10; break;
+            case 2: amount = 100; break;
+            case 3: amount = 1000; break;
+            case 4: amount = 10000; break;
+            case 5: amount = 100000; break;
         }
         return amount;
     }
@@ -753,8 +766,10 @@ public:
         bool dimmed = (this->Lights->getLights() > LIGHTS_ON) || this->Battery->isLow();
         this->dim(dimmed);
 
-        if (this->minimalDisplayTimer > 0) {
-            if (millis() - this->minimalDisplayTimer > MINIMAL_DISPLAY_RESET_TIMER) {
+        if (this->minimalDisplayTimer > 0)
+        {
+            if (millis() - this->minimalDisplayTimer > MINIMAL_DISPLAY_RESET_TIMER)
+            {
                 this->minimalDisplay = true;
             }
         }
@@ -763,64 +778,56 @@ public:
         {
             switch (this->displayMode)
             {
-            case DISPLAY_SETTINGS_TRIP:
-                this->showSettingsMode("TRIP");
-                this->showResetTrip();
-                break;
-            case DISPLAY_SETTINGS_CLOCK:
-                this->showSettingsMode("CLOCK");
-                this->showSetTime();
-                break;
-            case DISPLAY_SETTINGS_TYRE:
-                this->showSettingsMode("TYRE");
-                this->showTyreEdit();
-                break;
-            case DISPLAY_SETTINGS_TOTAL:
-                this->showSettingsMode("BIKE");
-                this->showTotalEdit();
-                break;
+                case DISPLAY_SETTINGS_TRIP:
+                    this->showSettingsMode("TRIP");
+                    this->showResetTrip();
+                    break;
+                case DISPLAY_SETTINGS_CLOCK:
+                    this->showSettingsMode("CLOCK");
+                    this->showSetTime();
+                    break;
+                case DISPLAY_SETTINGS_TYRE:
+                    this->showSettingsMode("TYRE");
+                    this->showTyreEdit();
+                    break;
+                case DISPLAY_SETTINGS_TOTAL:
+                    this->showSettingsMode("BIKE");
+                    this->showTotalEdit();
+                    break;
             }
         }
         else
         {
             switch (this->displayMode)
             {
-            case DISPLAY_WELCOME:
-                this->show_welcome();
-                break;
-            case DISPLAY_HOME:
-                this->show_graphics_home();
-                if (!this->IdleTimer->warning())
-                {
-                    this->show_speed();
-                    this->show_indicators();
-
-                    if (!this->minimalDisplay) {
-                        this->show_distance();
-                        this->show_avg_max();
-                        this->show_cadans();
+                case DISPLAY_WELCOME: this->show_welcome(); break;
+                case DISPLAY_HOME:
+                    this->show_graphics_home();
+                    if (!this->IdleTimer->warning())
+                    {
+                        this->show_speed();
+                        this->show_indicators();
                         this->show_lights();
                         this->show_battery();
-                    }
 
-                    #if TEST
-                    this->show_test();
-                    #endif
-                }
-                if (!this->minimalDisplay) this->show_time();
-                break;
-            case DISPLAY_CURRENT:
-                this->show_current();
-            break;
-            case DISPLAY_TODAY:
-                this->show_today();
-                break;
-            case DISPLAY_PREV:
-                this->show_prev();
-                break;
-            case DISPLAY_TOTALS:
-                this->show_totals();
-                break;
+                        if (!this->minimalDisplay)
+                        {
+                            this->show_distance();
+                            this->show_avg_max();
+                            this->show_cadans();
+                        }
+
+#if TEST
+                        this->show_test();
+#endif
+                    }
+                    if (!this->minimalDisplay)
+                        this->show_time();
+                    break;
+                case DISPLAY_CURRENT: this->show_current(); break;
+                case DISPLAY_TODAY: this->show_today(); break;
+                case DISPLAY_PREV: this->show_prev(); break;
+                case DISPLAY_TOTALS: this->show_totals(); break;
             }
         }
         OLED.display();

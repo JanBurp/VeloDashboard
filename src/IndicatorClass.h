@@ -11,13 +11,12 @@
 #define INDICATORS_RIGHT 2
 #define INDICATORS_BOTH 4
 
-#define INDICATOR_AUTO_OFF_TIMER 10000
+#define INDICATOR_AUTO_OFF_TIMER 15000
 
 PeriodicTimer indicatorTimer(TCK);
 
 class IndicatorClass
 {
-
 private:
     byte leftLED;
     byte rightLED;
@@ -25,11 +24,11 @@ private:
     bool stateLeft;
     bool stateRight;
     LedClass *BlinkLeft, *BlinkRight;
-    SpeedClass *Speed;
+    SpeedClass* Speed;
     unsigned long autoOffTime = 0;
 
 public:
-    void init(byte left, byte right, LedClass *LedLeft, LedClass *LedRight, SpeedClass *speed)
+    void init(byte left, byte right, LedClass* LedLeft, LedClass* LedRight, SpeedClass* speed)
     {
         this->leftLED = left;
         this->rightLED = right;
@@ -38,8 +37,7 @@ public:
         this->BlinkLeft = LedLeft;
         this->BlinkRight = LedRight;
         this->Speed = speed;
-        indicatorTimer.begin([this]
-                             { this->loop(); }, INDICATOR_TIMER, false);
+        indicatorTimer.begin([this] { this->loop(); }, INDICATOR_TIMER, false);
         this->reset();
     }
 
@@ -146,11 +144,14 @@ public:
         }
 
         // Auto Off
-        if (!Speed->isPaused()) {
-            if (this->autoOffTime==0) {
+        if (!Speed->isPaused())
+        {
+            if (this->autoOffTime == 0)
+            {
                 this->autoOffTime = millis();
             }
-            if (millis()-this->autoOffTime > INDICATOR_AUTO_OFF_TIMER) {
+            if (millis() - this->autoOffTime > INDICATOR_AUTO_OFF_TIMER)
+            {
                 this->reset();
             }
         }

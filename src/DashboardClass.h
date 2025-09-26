@@ -2,13 +2,13 @@
 
 #include "Arduino.h"
 
-#define SWITCH_BRAKE    0
-#define BUTTON_LEFT     1
-#define BUTTON_DOWN     2
-#define BUTTON_UP       3
-#define BUTTON_ALARM    4
-#define BUTTON_DISPLAY  5
-#define BUTTON_RIGHT    6
+#define SWITCH_BRAKE 0
+#define BUTTON_LEFT 1
+#define BUTTON_DOWN 2
+#define BUTTON_UP 3
+#define BUTTON_ALARM 4
+#define BUTTON_DISPLAY 5
+#define BUTTON_RIGHT 6
 
 #define NUM_BUTTONS 7
 
@@ -47,7 +47,6 @@ DashboardButton Buttons[NUM_BUTTONS];
 
 class DashboardClass
 {
-
 private:
     byte pinBrake;
     byte pinButtonsL;
@@ -116,13 +115,15 @@ public:
         for (size_t i = 0; i < NUM_BUTTONS; i++)
         {
             int value = Values[Buttons[i].pin].value;
-            if (value > START_THRESHOLD) {
+            if (value > START_THRESHOLD)
+            {
                 if (value >= Buttons[i].startmin && value < Buttons[i].startmax)
                 {
                     button = Buttons[i].button;
                 }
             }
-            else {
+            else
+            {
                 if (value >= Buttons[i].min && value < Buttons[i].max)
                 {
                     button = Buttons[i].button;
@@ -195,16 +196,18 @@ public:
 
     bool waitForButtonPress()
     {
-        if (DEBUG) {
+        if (DEBUG)
+        {
             Serial.println("\rKeep distance?\r");
         }
-        #if !TEST
+#if !TEST
         while (!this->read())
         {
             ;
         }
-        #endif
-        if (DEBUG) {
+#endif
+        if (DEBUG)
+        {
             Serial.println("================");
         }
         return true;
