@@ -388,6 +388,7 @@ public:
         // & Calc moved distance
         float movedDistance = 0.0;
         int buffLength = SENSOR_BUFF;
+
         unsigned long totalSensorTime = 0;
         for (size_t i = 0; i < SENSOR_BUFF; i++)
         {
@@ -613,8 +614,10 @@ public:
     {
         unsigned long now = millis();
         unsigned long sensorTime = now - this->lastSensorTimeMs;
+
         // Filter double triggers
-        if (sensorTime > MIN_SENSOR_TIME && sensorTime > this->lastSensorTimeMs / 2 || sensorTime > MIN_SENSOR_TIME * 2)
+        if (sensorTime > MIN_SENSOR_TIME &&
+            (sensorTime > this->lastSensorTimeMs / 3 || sensorTime > MIN_SENSOR_TIME * 3))
         {
             this->lastSensorTimeMs = now;
             // Shift sensor times

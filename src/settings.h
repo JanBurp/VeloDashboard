@@ -1,7 +1,7 @@
 #pragma once
 
-#define DEBUG true // [default = false] - set to true for Serial output
-#define TEST true // [default = false] - set to true for local test environment
+#define DEBUG false // [default = false] - set to true for Serial output
+#define TEST false // [default = false] - set to true for local test environment
 
 /*
   WHEELS
@@ -183,8 +183,8 @@ typedef struct
 */
 
 #define SENSOR_BUFF 12
-#define MIN_SENSOR_TIME 75 // ~ 72 km/h
-// #define MIN_SENSOR_TIME 50      // ~ 100 km/h
+// #define MIN_SENSOR_TIME 75 // ~ 72 km/h
+#define MIN_SENSOR_TIME 50 // ~ 100 km/h
 #define MAX_SENSOR_TIME 3000
 #define MIN_SPEED 2
 
