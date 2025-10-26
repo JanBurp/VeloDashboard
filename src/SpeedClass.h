@@ -481,7 +481,7 @@ public:
             // (float(this->Memory.currentTime)/1000.0) * 3.6;
             // this->Memory.dayAverageSpeed = this->Memory.dayDistance /
             // (float(this->Memory.dayTime)/1000.0) * 3.6;
-            if (this->speed < 120.0)
+            if (this->speed < 80.0)
             {
                 if (this->speed >= this->Memory.currentMaxSpeed)
                 {
@@ -615,9 +615,11 @@ public:
         unsigned long now = millis();
         unsigned long sensorTime = now - this->lastSensorTimeMs;
 
-        // Filter double triggers
-        if (sensorTime > MIN_SENSOR_TIME &&
-            (sensorTime > this->lastSensorTimeMs / 3 || sensorTime > MIN_SENSOR_TIME * 3))
+        // Debounce time is 1/8 of last rotation
+        unsigned long debounceTime = this->sensorTimesMs[SENSOR_BUFF - 1] - this->sensorTimesMs[SENSOR_BUFF - 2] / 8;
+
+        // Filter double and to fast triggers
+        if (sensorTime > MIN_SENSOR_TIME && sensorTime > debounceTime)
         {
             this->lastSensorTimeMs = now;
             // Shift sensor times
