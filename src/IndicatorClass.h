@@ -101,7 +101,8 @@ public:
 
     bool isActive()
     {
-        return this->function > INDICATORS_OFF;
+        // return this->function > INDICATORS_OFF;
+        return this->stateLeft || this->stateRight;
     }
 
     bool getStateLeft()

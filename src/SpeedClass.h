@@ -3,6 +3,8 @@
 #include "Arduino.h"
 #include <EEPROM.h>
 
+#include <algorithm>
+
 #define PAUSE_THRESHOLD 1.0
 #define SPEED_FILTER_THRESHOLD 15.0
 #define SPEED_FILTER_RATIO 2.0
@@ -386,8 +388,11 @@ public:
         // Read & clear sensor buffers
         // & Calc sensor time average (only those that are larger than 0)
         // & Calc moved distance
+
         float movedDistance = 0.0;
+        // filterBuffer();
         int buffLength = SENSOR_BUFF;
+
         unsigned long totalSensorTime = 0;
         for (size_t i = 0; i < SENSOR_BUFF; i++)
         {
@@ -480,7 +485,7 @@ public:
             // (float(this->Memory.currentTime)/1000.0) * 3.6;
             // this->Memory.dayAverageSpeed = this->Memory.dayDistance /
             // (float(this->Memory.dayTime)/1000.0) * 3.6;
-            if (this->speed < 120.0)
+            if (this->speed < 80.0)
             {
                 if (this->speed >= this->Memory.currentMaxSpeed)
                 {
@@ -609,12 +614,23 @@ public:
         Serial.println("\r\r");
     }
 
+    void filterBuffer() {
+        unsigned long sorted[SENSOR_BUFF] = {0};
+        int size = sizeof(sorted) / sizeof(sorted[0]);
+        std::sort(this->sensorTimesMs, this->sensorTimesMs + size);
+        // filter lowest and highest
+        this->sensorTimesMs[0] = 0;
+        this->sensorTimesMs[1] = 0;
+        this->sensorTimesMs[SENSOR_BUFF-2] = 0;
+        this->sensorTimesMs[SENSOR_BUFF-1] = 0;
+    }
+
     void speedTrigger()
     {
         unsigned long now = millis();
         unsigned long sensorTime = now - this->lastSensorTimeMs;
-        // Filter double triggers
-        if (sensorTime > MIN_SENSOR_TIME && sensorTime > this->lastSensorTimeMs / 2 || sensorTime > MIN_SENSOR_TIME * 2)
+
+        if (sensorTime > MIN_SENSOR_TIME)
         {
             this->lastSensorTimeMs = now;
             // Shift sensor times
