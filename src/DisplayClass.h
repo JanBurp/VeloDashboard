@@ -27,7 +27,6 @@ Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1,
 // #endif
 
 #define DISPLAY_DIMMED_LOOP_COUNT 2
-#define MINIMAL_DISPLAY_RESET_TIMER 20000
 
 typedef struct
 {
@@ -49,16 +48,14 @@ enum DisplayType
 class DisplayClass
 {
 private:
-    int displayMode = DISPLAY_HOME;
-    int firstMode = DISPLAY_HOME;
+    int displayMode = DISPLAY_MINIMAL;
+    int firstMode = DISPLAY_MINIMAL;
     int lastMode = DISPLAY_TOTALS;
     int firstSettingsMode = DISPLAY_SETTINGS_TRIP;
     int lastSettingsMode = DISPLAY_SETTINGS_TOTAL;
     bool settingsMenu = false;
     bool startupQuestion = false;
     int cursorPosition = 0;
-    bool minimalDisplay = true;
-    unsigned long minimalDisplayTimer = 0;
 
     SpeedClass* Speed;
     BatteryClass* Battery;
@@ -97,7 +94,7 @@ public:
 
     void setDisplayModeHome()
     {
-        this->setDisplayMode(DISPLAY_HOME);
+        this->setDisplayMode(DISPLAY_MINIMAL);
     }
 
     void setDisplayMode(int mode)
@@ -118,27 +115,17 @@ public:
         }
         else
         {
-            if (this->minimalDisplay)
+            this->displayMode++;
+            if (this->displayMode > this->lastMode)
             {
-                this->minimalDisplay = false;
-                this->minimalDisplayTimer = millis();
-            }
-            else
-            {
-                this->displayMode++;
-                if (this->displayMode > this->lastMode)
-                {
-                    this->displayMode = this->firstMode;
-                    this->minimalDisplay = true;
-                    this->minimalDisplayTimer = 0;
-                }
+                this->displayMode = this->firstMode;
             }
         }
     }
 
     void resetDisplayMode()
     {
-        this->displayMode = DISPLAY_HOME;
+        this->displayMode = DISPLAY_MINIMAL;
     }
 
     void askStartupQuestion()
@@ -174,12 +161,11 @@ public:
 
     void show_graphics_home()
     {
-        OLED.drawCircle(SCREEN_HALF_WIDTH - 1, SCREEN_HALF_HEIGHT, 37, WHITE);
-        OLED.fillRect(0, -1, SCREEN_WIDTH, 17, BLACK);
-        OLED.fillRect(0, SCREEN_HEIGHT - 18, SCREEN_WIDTH, 18, BLACK);
-
-        if (!this->minimalDisplay)
+        if (this->displayMode==DISPLAY_HOME)
         {
+            OLED.drawCircle(SCREEN_HALF_WIDTH - 1, SCREEN_HALF_HEIGHT, 37, WHITE);
+            OLED.fillRect(0, -1, SCREEN_WIDTH, 17, BLACK);
+            OLED.fillRect(0, SCREEN_HEIGHT - 18, SCREEN_WIDTH, 18, BLACK);
             OLED.drawCircle(SCREEN_HALF_WIDTH - 1, SCREEN_HEIGHT - 8, 17, WHITE);
             OLED.fillRect(SCREEN_HALF_WIDTH - 20, SCREEN_HEIGHT - 36, 40, 21, BLACK);
             OLED.fillRect(SCREEN_HALF_WIDTH - 20, SCREEN_HEIGHT - 1, 40, 2, BLACK);
@@ -222,7 +208,7 @@ public:
             // }
 
             // Faster / Slower than average | flash every second
-            if (!this->Speed->isPaused() && (millis() / 500) % 2 == 0)
+            if (this->displayMode==DISPLAY_HOME && !this->Speed->isPaused() && (millis() / 500) % 2 == 0)
             {
                 x = SCREEN_HALF_WIDTH + 22;
                 y = 20;
@@ -279,6 +265,10 @@ public:
         int x = 0;
         int y = 14;
         int size = 16;
+        if (this->displayMode==DISPLAY_MINIMAL) {
+            size = 24;
+            y = 10;
+        }
         if (this->Indicators->getStateLeft())
         {
             OLED.fillTriangle(x, y + size, x + size, y, x + size, y + 2 * size, WHITE);
@@ -296,6 +286,12 @@ public:
         int y = 12;
         char hourStr[3];
         char minStr[3];
+        if (this->displayMode == DISPLAY_MINIMAL) {
+            x = SCREEN_HALF_WIDTH - 18;
+            y = 63;
+        }
+
+
         if (this->IdleTimer->warning())
         {
             // Idle clock
@@ -361,12 +357,16 @@ public:
             OLED.setTextColor(WHITE);
             int toppad = 3;
             int innerpad = 2;
-            int x = 111;
+            int x = 120;
             int y = 18;
-            int w = 16;
+            int w = 8;
             int h = 27;
-            OLED.drawRect(x + toppad, y, w - 2 * toppad, toppad, WHITE);
-            OLED.drawRect(x, y + toppad - 1, w, h, WHITE);
+            if (this->displayMode==DISPLAY_HOME) {
+                x = 111;
+                w = 16;
+                OLED.drawRect(x + toppad, y, w - 2 * toppad, toppad, WHITE);
+                OLED.drawRect(x, y + toppad - 1, w, h, WHITE);
+            }
 
             if (!off)
             {
@@ -766,14 +766,6 @@ public:
         bool dimmed = (this->Lights->getLights() > LIGHTS_ON) || this->Battery->isLow();
         this->dim(dimmed);
 
-        if (this->minimalDisplayTimer > 0)
-        {
-            if (millis() - this->minimalDisplayTimer > MINIMAL_DISPLAY_RESET_TIMER)
-            {
-                this->minimalDisplay = true;
-            }
-        }
-
         if (this->settingsMenu)
         {
             switch (this->displayMode)
@@ -801,6 +793,7 @@ public:
             switch (this->displayMode)
             {
                 case DISPLAY_WELCOME: this->show_welcome(); break;
+                case DISPLAY_MINIMAL:
                 case DISPLAY_HOME:
                     this->show_graphics_home();
                     if (!this->IdleTimer->warning())
@@ -810,7 +803,7 @@ public:
                         this->show_lights();
                         this->show_battery();
 
-                        if (!this->minimalDisplay)
+                        if (this->displayMode==DISPLAY_HOME)
                         {
                             this->show_distance();
                             this->show_avg_max();
@@ -821,8 +814,7 @@ public:
                         this->show_test();
 #endif
                     }
-                    if (!this->minimalDisplay)
-                        this->show_time();
+                    this->show_time();
                     break;
                 case DISPLAY_CURRENT: this->show_current(); break;
                 case DISPLAY_TODAY: this->show_today(); break;

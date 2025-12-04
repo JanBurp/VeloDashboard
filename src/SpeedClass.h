@@ -3,6 +3,8 @@
 #include "Arduino.h"
 #include <EEPROM.h>
 
+#include <algorithm>
+
 #define PAUSE_THRESHOLD 1.0
 #define SPEED_FILTER_THRESHOLD 15.0
 #define SPEED_FILTER_RATIO 2.0
@@ -386,7 +388,9 @@ public:
         // Read & clear sensor buffers
         // & Calc sensor time average (only those that are larger than 0)
         // & Calc moved distance
+
         float movedDistance = 0.0;
+        // filterBuffer();
         int buffLength = SENSOR_BUFF;
 
         unsigned long totalSensorTime = 0;
@@ -610,16 +614,23 @@ public:
         Serial.println("\r\r");
     }
 
+    void filterBuffer() {
+        unsigned long sorted[SENSOR_BUFF] = {0};
+        int size = sizeof(sorted) / sizeof(sorted[0]);
+        std::sort(this->sensorTimesMs, this->sensorTimesMs + size);
+        // filter lowest and highest
+        this->sensorTimesMs[0] = 0;
+        this->sensorTimesMs[1] = 0;
+        this->sensorTimesMs[SENSOR_BUFF-2] = 0;
+        this->sensorTimesMs[SENSOR_BUFF-1] = 0;
+    }
+
     void speedTrigger()
     {
         unsigned long now = millis();
         unsigned long sensorTime = now - this->lastSensorTimeMs;
 
-        // Debounce time is 1/8 of last rotation
-        unsigned long debounceTime = this->sensorTimesMs[SENSOR_BUFF - 1] - this->sensorTimesMs[SENSOR_BUFF - 2] / 8;
-
-        // Filter double and to fast triggers
-        if (sensorTime > MIN_SENSOR_TIME && sensorTime > debounceTime)
+        if (sensorTime > MIN_SENSOR_TIME)
         {
             this->lastSensorTimeMs = now;
             // Shift sensor times

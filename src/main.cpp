@@ -184,7 +184,7 @@ void setup()
         }
     }
 
-    Display.setDisplayMode(DISPLAY_HOME);
+    Display.setDisplayMode(DISPLAY_MINIMAL);
     Display.show();
     digitalWrite(INTERNAL_LED, LOW);
 
