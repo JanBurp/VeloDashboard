@@ -7,6 +7,7 @@
 #include "LEDstripClass.h"
 #include "LightsClass.h"
 #include "SpeedClass.h"
+#include "core_pins.h"
 #include "settings.h"
 
 #include "Icons.h"
@@ -26,7 +27,7 @@ Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1,
 // Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 // #endif
 
-#define DISPLAY_DIMMED_LOOP_COUNT 2
+#define DISPLAY_MINIMAL_BACK_TIME 2000 // 10 seconds
 
 typedef struct
 {
@@ -56,6 +57,7 @@ private:
     bool settingsMenu = false;
     bool startupQuestion = false;
     int cursorPosition = 0;
+    unsigned long minimalDisplayTimer = 0;
 
     SpeedClass* Speed;
     BatteryClass* Battery;
@@ -115,10 +117,20 @@ public:
         }
         else
         {
-            this->displayMode++;
-            if (this->displayMode > this->lastMode)
-            {
-                this->displayMode = this->firstMode;
+            if (this->displayMode==DISPLAY_HOME && this->minimalDisplayTimer + DISPLAY_MINIMAL_BACK_TIME < millis()) {
+                this->displayMode=DISPLAY_MINIMAL;
+                this->minimalDisplayTimer = 0;
+            }
+            else if (this->displayMode==DISPLAY_MINIMAL) {
+                this->minimalDisplayTimer = millis();
+                this->displayMode=DISPLAY_HOME;
+            }
+            else {
+                this->displayMode++;
+                if (this->displayMode > this->lastMode)
+                {
+                    this->displayMode = this->firstMode;
+                }
             }
         }
     }
