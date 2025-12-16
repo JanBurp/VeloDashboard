@@ -300,7 +300,7 @@ public:
         char minStr[3];
         if (this->displayMode == DISPLAY_MINIMAL) {
             x = SCREEN_HALF_WIDTH - 18;
-            y = 63;
+            y = 62;
         }
 
 
